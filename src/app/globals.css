@@ -1,26 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --bg-page: #f5f4f0;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1efe8;
+  --border: #e8e7e2;
+  --border-secondary: #d3d1c7;
+  --text-primary: #1a1a18;
+  --text-secondary: #3d3c39;
+  --text-tertiary: #6e6c67;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --green: #1D9E75;
+  --green-light-bg: #E1F5EE;
+  --green-text: #0F6E56;
+  --blue-bg: #E6F1FB;
+  --blue-text: #185FA5;
+  --red-bg: #FCEBEB;
+  --red-text: #A32D2D;
+  --amber-bg: #FAEEDA;
+  --amber-text: #854F0B;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-page: #141414;
+    --bg-card: #1a1a1a;
+    --bg-secondary: #222222;
+    --border: #2e2e2e;
+    --border-secondary: #333333;
+    --text-primary: #f2f0ea;
+    --text-secondary: #d4d1ca;
+    --text-tertiary: #9e9b95;
+
+    --green-light-bg: #0a2e20;
+    --green-text: #5DCAA5;
+    --blue-bg: #0d2140;
+    --blue-text: #85B7EB;
+    --red-bg: #3d1515;
+    --red-text: #f09595;
+    --amber-bg: #2e1f08;
+    --amber-text: #EF9F27;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hover with CSS variable — usable in server components */
+.hover-bg:hover {
+  background: var(--bg-secondary) !important;
+}
+
+::placeholder {
+  color: var(--text-tertiary);
 }

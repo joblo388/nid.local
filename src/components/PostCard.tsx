@@ -1,0 +1,164 @@
+"use client";
+
+import Link from "next/link";
+import { Post } from "@/lib/types";
+
+// bg et color mappés sur les variables CSS dark-mode-aware
+const badgeBg: Record<string, string> = {
+  alerte:    "var(--red-bg)",
+  question:  "var(--blue-bg)",
+  vente:     "var(--green-light-bg)",
+  location:  "#EEE9FB",
+  renovation:"var(--amber-bg)",
+  voisinage: "var(--bg-secondary)",
+};
+
+const badgeFg: Record<string, string> = {
+  alerte:    "var(--red-text)",
+  question:  "var(--blue-text)",
+  vente:     "var(--green-text)",
+  location:  "#5B31B3",
+  renovation:"var(--amber-text)",
+  voisinage: "var(--text-secondary)",
+};
+
+const badgeLabels: Record<string, string> = {
+  alerte: "Alerte", question: "Question", vente: "Vente",
+  location: "Location", renovation: "Conseil", voisinage: "Voisinage",
+};
+
+function tempsRelatif(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  return `${Math.floor(h / 24)}j`;
+}
+
+function escapeRegex(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function Highlighted({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+  const parts = text.split(new RegExp(`(${escapeRegex(query)})`, "gi"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark
+            key={i}
+            className="rounded-sm not-italic px-0.5"
+            style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
+          >
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
+export function PostCard({ post, searchQuery = "" }: { post: Post; searchQuery?: string }) {
+  return (
+    <article
+      className="hover-bg rounded-xl p-[14px_16px] transition-colors"
+      style={{
+        background: "var(--bg-card)",
+        border: "0.5px solid var(--border)",
+      }}
+    >
+      {/* Meta ligne */}
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <span
+          className="inline-block px-2 py-0.5 rounded-md text-[11px] font-medium leading-none"
+          style={{
+            background: badgeBg[post.categorie] ?? "var(--bg-secondary)",
+            color: badgeFg[post.categorie] ?? "var(--text-secondary)",
+          }}
+        >
+          {badgeLabels[post.categorie] ?? post.categorie}
+        </span>
+        <span className="text-[12px] font-medium" style={{ color: "var(--text-secondary)" }}>
+          {post.auteur}
+        </span>
+        <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
+        <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+          {tempsRelatif(post.creeLe)}
+        </span>
+        <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
+        <Link
+          href={`/quartier/${post.quartier.slug}`}
+          className="text-[11px] font-medium transition-opacity hover:opacity-70"
+          style={{ color: "var(--green)" }}
+        >
+          {post.quartier.nom}
+        </Link>
+      </div>
+
+      {/* Titre */}
+      <Link href={`/post/${post.id}`}>
+        <h2
+          className="text-[15px] font-[600] leading-snug mb-1.5 transition-colors hover:opacity-70"
+          style={{ color: "var(--text-primary)" }}
+        >
+          <Highlighted text={post.titre} query={searchQuery} />
+        </h2>
+      </Link>
+
+      {/* Extrait */}
+      <p
+        className="text-[13px] line-clamp-2 leading-relaxed mb-3"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        <Highlighted text={post.contenu} query={searchQuery} />
+      </p>
+
+      {/* Footer */}
+      <div
+        className="flex items-center gap-4 pt-2.5"
+        style={{ borderTop: "0.5px solid var(--border)" }}
+      >
+        <button
+          className="flex items-center gap-1 text-[12px] transition-colors"
+          style={{ color: "var(--text-tertiary)" }}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--green)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--text-tertiary)")}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+          </svg>
+          <span className="font-semibold" style={{ color: "var(--text-secondary)" }}>
+            {post.nbVotes}
+          </span>
+        </button>
+        <Link
+          href={`/post/${post.id}`}
+          className="flex items-center gap-1 text-[12px] transition-opacity hover:opacity-60"
+          style={{ color: "var(--text-tertiary)" }}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          {post.nbCommentaires} réponses
+        </Link>
+        <span
+          className="flex items-center gap-1 text-[12px] ml-auto"
+          style={{ color: "var(--text-tertiary)" }}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          {post.nbVues.toLocaleString("fr-CA")}
+        </span>
+      </div>
+    </article>
+  );
+}
