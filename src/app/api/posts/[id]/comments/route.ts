@@ -1,0 +1,60 @@
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { rateLimit, getIp } from "@/lib/rateLimit";
+
+type Params = { params: Promise<{ id: string }> };
+
+export async function POST(req: NextRequest, { params }: Params) {
+  if (!rateLimit(getIp(req), 10, 60_000)) {
+    return NextResponse.json({ error: "Trop de requêtes. Réessayez dans une minute." }, { status: 429 });
+  }
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  }
+
+  const { id: postId } = await params;
+  const post = await prisma.post.findUnique({ where: { id: postId } });
+  if (!post) {
+    return NextResponse.json({ error: "Post introuvable" }, { status: 404 });
+  }
+
+  const body = await req.json();
+  const { contenu } = body;
+  if (!contenu?.trim() || contenu.trim().length < 2) {
+    return NextResponse.json({ error: "Le commentaire est trop court." }, { status: 400 });
+  }
+
+  const auteurNom = session.user.username ?? session.user.name ?? session.user.email ?? "anonyme";
+  const sessionUserId = session.user.id ?? null;
+  const userExists = sessionUserId
+    ? await prisma.user.findUnique({ where: { id: sessionUserId }, select: { id: true } })
+    : null;
+  const auteurId = userExists ? sessionUserId : null;
+
+  const [comment] = await prisma.$transaction([
+    prisma.comment.create({
+      data: { contenu: contenu.trim(), auteurNom, auteurId, postId },
+    }),
+    prisma.post.update({
+      where: { id: postId },
+      data: { nbCommentaires: { increment: 1 } },
+    }),
+  ]);
+
+  // Notify post author (if different from commenter)
+  if (post.auteurId && post.auteurId !== auteurId) {
+    prisma.notification.create({
+      data: {
+        userId: post.auteurId,
+        type: "comment",
+        postId,
+        postTitre: post.titre,
+        acteurNom: auteurNom,
+      },
+    }).catch(() => {});
+  }
+
+  return NextResponse.json(comment, { status: 201 });
+}

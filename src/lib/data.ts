@@ -1,135 +1,140 @@
-import { Quartier, Post } from "./types";
+import { Ville, Quartier, Post, Categorie } from "./types";
+
+// ─── Villes ───────────────────────────────────────────────────────────────────
+
+export const villes: Ville[] = [
+  { slug: "montreal",      nom: "Montréal",       region: "Grand Montréal" },
+  { slug: "quebec",        nom: "Québec",          region: "Capitale-Nationale" },
+  { slug: "laval",         nom: "Laval",           region: "Grand Montréal" },
+  { slug: "longueuil",     nom: "Longueuil",       region: "Grand Montréal" },
+  { slug: "sherbrooke",    nom: "Sherbrooke",      region: "Estrie" },
+  { slug: "gatineau",      nom: "Gatineau",        region: "Outaouais" },
+  { slug: "trois-rivieres",nom: "Trois-Rivières",  region: "Mauricie" },
+  { slug: "saguenay",      nom: "Saguenay",        region: "Saguenay–Lac-Saint-Jean" },
+  { slug: "levis",         nom: "Lévis",           region: "Chaudière-Appalaches" },
+  { slug: "terrebonne",    nom: "Terrebonne",      region: "Lanaudière" },
+  { slug: "rimouski",      nom: "Rimouski",        region: "Bas-Saint-Laurent" },
+  { slug: "drummondville", nom: "Drummondville",   region: "Centre-du-Québec" },
+];
+
+// ─── Quartiers ────────────────────────────────────────────────────────────────
 
 export const quartiers: Quartier[] = [
-  // ── Montréal ──────────────────────────────────────────────────────────────
-  { slug: "plateau-mont-royal",     nom: "Plateau-Mont-Royal",         ville: "Montréal", couleur: "bg-rose-500" },
-  { slug: "rosemont",               nom: "Rosemont–La Petite-Patrie",  ville: "Montréal", couleur: "bg-orange-500" },
-  { slug: "verdun",                 nom: "Verdun",                     ville: "Montréal", couleur: "bg-teal-500" },
-  { slug: "hochelaga",              nom: "Hochelaga-Maisonneuve",      ville: "Montréal", couleur: "bg-purple-500" },
-  { slug: "griffintown",            nom: "Griffintown",                ville: "Montréal", couleur: "bg-blue-500" },
-  { slug: "mile-end",               nom: "Mile End",                   ville: "Montréal", couleur: "bg-pink-500" },
-  { slug: "outremont",              nom: "Outremont",                  ville: "Montréal", couleur: "bg-emerald-500" },
-  { slug: "villeray",               nom: "Villeray",                   ville: "Montréal", couleur: "bg-amber-500" },
-  { slug: "saint-henri",            nom: "Saint-Henri",                ville: "Montréal", couleur: "bg-cyan-600" },
-  { slug: "cote-des-neiges",        nom: "Côte-des-Neiges",            ville: "Montréal", couleur: "bg-lime-600" },
-  { slug: "notre-dame-de-grace",    nom: "Notre-Dame-de-Grâce",        ville: "Montréal", couleur: "bg-violet-500" },
-  { slug: "petite-bourgogne",       nom: "Petite-Bourgogne",           ville: "Montréal", couleur: "bg-red-400" },
-  { slug: "vieux-montreal",         nom: "Vieux-Montréal",             ville: "Montréal", couleur: "bg-stone-500" },
-  { slug: "pointe-saint-charles",   nom: "Pointe-Saint-Charles",       ville: "Montréal", couleur: "bg-sky-500" },
-  { slug: "lachine",                nom: "Lachine",                    ville: "Montréal", couleur: "bg-fuchsia-500" },
-  { slug: "lasalle",                nom: "LaSalle",                    ville: "Montréal", couleur: "bg-yellow-600" },
-  { slug: "anjou",                  nom: "Anjou",                      ville: "Montréal", couleur: "bg-green-600" },
-  { slug: "saint-leonard",          nom: "Saint-Léonard",              ville: "Montréal", couleur: "bg-blue-600" },
-  { slug: "montreal-nord",          nom: "Montréal-Nord",              ville: "Montréal", couleur: "bg-orange-600" },
-  { slug: "riviere-des-prairies",   nom: "Rivière-des-Prairies",       ville: "Montréal", couleur: "bg-teal-600" },
-  { slug: "saint-laurent",          nom: "Saint-Laurent",              ville: "Montréal", couleur: "bg-rose-600" },
-  { slug: "dollard-des-ormeaux",    nom: "Dollard-des-Ormeaux",        ville: "Montréal", couleur: "bg-purple-600" },
-  { slug: "mont-royal",             nom: "Mont-Royal",                 ville: "Montréal", couleur: "bg-indigo-400" },
-  { slug: "westmount",              nom: "Westmount",                  ville: "Montréal", couleur: "bg-slate-500" },
-  // ── Québec ────────────────────────────────────────────────────────────────
-  { slug: "saint-sauveur",          nom: "Saint-Sauveur",              ville: "Québec",   couleur: "bg-green-500" },
-  { slug: "limoilou",               nom: "Limoilou",                   ville: "Québec",   couleur: "bg-yellow-500" },
-  { slug: "vieux-port-qc",          nom: "Vieux-Port",                 ville: "Québec",   couleur: "bg-red-500" },
-  { slug: "saint-roch",             nom: "Saint-Roch",                 ville: "Québec",   couleur: "bg-indigo-500" },
+  // ── Montréal ────────────────────────────────────────────────────────────
+  { slug: "plateau-mont-royal",   nom: "Plateau-Mont-Royal",        villeSlug: "montreal", couleur: "bg-rose-500" },
+  { slug: "rosemont",             nom: "Rosemont–La Petite-Patrie", villeSlug: "montreal", couleur: "bg-orange-500" },
+  { slug: "verdun",               nom: "Verdun",                    villeSlug: "montreal", couleur: "bg-teal-500" },
+  { slug: "hochelaga",            nom: "Hochelaga-Maisonneuve",     villeSlug: "montreal", couleur: "bg-purple-500" },
+  { slug: "griffintown",          nom: "Griffintown",               villeSlug: "montreal", couleur: "bg-blue-500" },
+  { slug: "mile-end",             nom: "Mile End",                  villeSlug: "montreal", couleur: "bg-pink-500" },
+  { slug: "outremont",            nom: "Outremont",                 villeSlug: "montreal", couleur: "bg-emerald-500" },
+  { slug: "villeray",             nom: "Villeray",                  villeSlug: "montreal", couleur: "bg-amber-500" },
+  { slug: "saint-henri",          nom: "Saint-Henri",               villeSlug: "montreal", couleur: "bg-cyan-600" },
+  { slug: "cote-des-neiges",      nom: "Côte-des-Neiges",           villeSlug: "montreal", couleur: "bg-lime-600" },
+  { slug: "notre-dame-de-grace",  nom: "Notre-Dame-de-Grâce",       villeSlug: "montreal", couleur: "bg-violet-500" },
+  { slug: "petite-bourgogne",     nom: "Petite-Bourgogne",          villeSlug: "montreal", couleur: "bg-red-400" },
+  { slug: "vieux-montreal",       nom: "Vieux-Montréal",            villeSlug: "montreal", couleur: "bg-stone-500" },
+  { slug: "pointe-saint-charles", nom: "Pointe-Saint-Charles",      villeSlug: "montreal", couleur: "bg-sky-500" },
+  { slug: "lachine",              nom: "Lachine",                   villeSlug: "montreal", couleur: "bg-fuchsia-500" },
+  { slug: "lasalle",              nom: "LaSalle",                   villeSlug: "montreal", couleur: "bg-yellow-600" },
+  { slug: "anjou",                nom: "Anjou",                     villeSlug: "montreal", couleur: "bg-green-600" },
+  { slug: "saint-leonard",        nom: "Saint-Léonard",             villeSlug: "montreal", couleur: "bg-blue-600" },
+  { slug: "montreal-nord",        nom: "Montréal-Nord",             villeSlug: "montreal", couleur: "bg-orange-600" },
+  { slug: "riviere-des-prairies", nom: "Rivière-des-Prairies",      villeSlug: "montreal", couleur: "bg-teal-600" },
+  { slug: "saint-laurent",        nom: "Saint-Laurent",             villeSlug: "montreal", couleur: "bg-rose-600" },
+  { slug: "dollard-des-ormeaux",  nom: "Dollard-des-Ormeaux",       villeSlug: "montreal", couleur: "bg-purple-600" },
+  { slug: "mont-royal",           nom: "Mont-Royal",                villeSlug: "montreal", couleur: "bg-indigo-400" },
+  { slug: "westmount",            nom: "Westmount",                 villeSlug: "montreal", couleur: "bg-slate-500" },
+
+  // ── Québec ──────────────────────────────────────────────────────────────
+  { slug: "saint-sauveur-qc",     nom: "Saint-Sauveur",             villeSlug: "quebec",   couleur: "bg-green-500" },
+  { slug: "limoilou",             nom: "Limoilou",                  villeSlug: "quebec",   couleur: "bg-yellow-500" },
+  { slug: "vieux-port-qc",        nom: "Vieux-Port",                villeSlug: "quebec",   couleur: "bg-red-500" },
+  { slug: "saint-roch",           nom: "Saint-Roch",                villeSlug: "quebec",   couleur: "bg-indigo-500" },
+  { slug: "haute-ville",          nom: "Haute-Ville",               villeSlug: "quebec",   couleur: "bg-amber-600" },
+  { slug: "sainte-foy",           nom: "Sainte-Foy",                villeSlug: "quebec",   couleur: "bg-teal-600" },
+  { slug: "charlesbourg",         nom: "Charlesbourg",              villeSlug: "quebec",   couleur: "bg-blue-600" },
+  { slug: "beauport",             nom: "Beauport",                  villeSlug: "quebec",   couleur: "bg-emerald-600" },
+
+  // ── Laval ───────────────────────────────────────────────────────────────
+  { slug: "chomedey",             nom: "Chomedey",                  villeSlug: "laval",    couleur: "bg-blue-400" },
+  { slug: "sainte-rose",          nom: "Sainte-Rose",               villeSlug: "laval",    couleur: "bg-rose-400" },
+  { slug: "vimont",               nom: "Vimont",                    villeSlug: "laval",    couleur: "bg-purple-400" },
+  { slug: "auteuil",              nom: "Auteuil",                   villeSlug: "laval",    couleur: "bg-orange-400" },
+  { slug: "duvernay",             nom: "Duvernay",                  villeSlug: "laval",    couleur: "bg-green-400" },
+  { slug: "fabreville",           nom: "Fabreville",                villeSlug: "laval",    couleur: "bg-cyan-400" },
+
+  // ── Longueuil ───────────────────────────────────────────────────────────
+  { slug: "vieux-longueuil",      nom: "Vieux-Longueuil",           villeSlug: "longueuil",couleur: "bg-indigo-500" },
+  { slug: "saint-hubert",         nom: "Saint-Hubert",              villeSlug: "longueuil",couleur: "bg-teal-400" },
+  { slug: "greenfield-park",      nom: "Greenfield Park",           villeSlug: "longueuil",couleur: "bg-emerald-400" },
+  { slug: "brossard",             nom: "Brossard",                  villeSlug: "longueuil",couleur: "bg-violet-400" },
+
+  // ── Sherbrooke ──────────────────────────────────────────────────────────
+  { slug: "fleurimont",           nom: "Fleurimont",                villeSlug: "sherbrooke",couleur: "bg-violet-500" },
+  { slug: "jacques-cartier-shbk", nom: "Jacques-Cartier",           villeSlug: "sherbrooke",couleur: "bg-amber-500" },
+  { slug: "mont-bellevue",        nom: "Mont-Bellevue",             villeSlug: "sherbrooke",couleur: "bg-cyan-500" },
+  { slug: "rock-forest",          nom: "Rock Forest",               villeSlug: "sherbrooke",couleur: "bg-green-500" },
+
+  // ── Gatineau ────────────────────────────────────────────────────────────
+  { slug: "hull",                 nom: "Hull",                      villeSlug: "gatineau", couleur: "bg-red-400" },
+  { slug: "aylmer",               nom: "Aylmer",                    villeSlug: "gatineau", couleur: "bg-blue-400" },
+  { slug: "gatineau-secteur",     nom: "Gatineau (secteur)",        villeSlug: "gatineau", couleur: "bg-orange-500" },
+  { slug: "buckingham",           nom: "Buckingham",                villeSlug: "gatineau", couleur: "bg-lime-500" },
+
+  // ── Villes sans sous-quartiers ──────────────────────────────────────────
+  { slug: "trois-rivieres",       nom: "Trois-Rivières",            villeSlug: "trois-rivieres", couleur: "bg-blue-600" },
+  { slug: "saguenay",             nom: "Saguenay",                  villeSlug: "saguenay",       couleur: "bg-indigo-600" },
+  { slug: "levis",                nom: "Lévis",                     villeSlug: "levis",          couleur: "bg-teal-600" },
+  { slug: "terrebonne",           nom: "Terrebonne",                villeSlug: "terrebonne",     couleur: "bg-green-600" },
+  { slug: "rimouski",             nom: "Rimouski",                  villeSlug: "rimouski",       couleur: "bg-amber-600" },
+  { slug: "drummondville",        nom: "Drummondville",             villeSlug: "drummondville",  couleur: "bg-rose-600" },
 ];
 
-export const posts: Post[] = [
-  {
-    id: "1",
-    titre: "Nouveau propriétaire sur le Plateau — quelques questions sur la copropriété",
-    contenu: "Bonjour! On vient d'acheter notre premier plex au coin de Laurier et Saint-Denis. Est-ce que quelqu'un peut m'expliquer comment fonctionne la déclaration de copropriété? Notre notaire nous a remis un document de 80 pages et je me sens un peu perdu.",
-    auteur: "marie.belanger",
-    quartier: quartiers[0],
-    categorie: "question",
-    creeLe: "2026-03-20T08:32:00Z",
-    nbCommentaires: 14,
-    nbVotes: 47,
-    nbVues: 312,
-    epingle: false,
-  },
-  {
-    id: "2",
-    titre: "ALERTE — dégât d'eau au 3450 Masson, locataires informez votre proprio",
-    contenu: "Ce matin vers 6h, une conduite a cédé dans la cage d'escalier de l'immeuble au 3450 rue Masson. Si vous demeurez aux alentours, vérifiez vos sous-sols. La Ville a été contactée mais les délais sont longs.",
-    auteur: "simon.tremblay",
-    quartier: quartiers[1],
-    categorie: "alerte",
-    creeLe: "2026-03-20T07:15:00Z",
-    nbCommentaires: 31,
-    nbVotes: 128,
-    nbVues: 1847,
-    epingle: true,
-  },
-  {
-    id: "3",
-    titre: "Rénovation de salle de bain — recommandez-vous des entrepreneurs fiables à Verdun?",
-    contenu: "On cherche un plombier-rénovateur sérieux pour refaire la salle de bain de notre condo. Budget autour de 12 000$. On a eu des mauvaises expériences par le passé avec des entrepreneurs qui disparaissent en cours de projet.",
-    auteur: "luc.gagnon",
-    quartier: quartiers[2],
-    categorie: "renovation",
-    creeLe: "2026-03-19T21:45:00Z",
-    nbCommentaires: 22,
-    nbVotes: 63,
-    nbVues: 541,
-  },
-  {
-    id: "4",
-    titre: "À louer — 4½ lumineux, chauffé-éclairé inclus, Hochelaga",
-    contenu: "Beau 4½ au 2e étage d'un duplex bien entretenu. Planchers de bois franc, cuisine rénovée, grande cour arrière partagée. Disponible le 1er juillet. 1 350$/mois, chauffé-éclairé inclus. Aucun animal, non-fumeur svp.",
-    auteur: "proprioHoch",
-    quartier: quartiers[3],
-    categorie: "location",
-    creeLe: "2026-03-19T18:00:00Z",
-    nbCommentaires: 8,
-    nbVotes: 35,
-    nbVues: 289,
-  },
-  {
-    id: "5",
-    titre: "Mise en vente — condo neuf Griffintown, 2 chambres, garage",
-    contenu: "Superbe condo de 2 chambres dans un immeuble de 2022. Vue sur le canal Lachine, terrasse privée, stationnement intérieur. Prix demandé: 549 000$. Visite libre samedi prochain entre 13h et 16h.",
-    auteur: "agentImmo_mtl",
-    quartier: quartiers[4],
-    categorie: "vente",
-    creeLe: "2026-03-19T14:30:00Z",
-    nbCommentaires: 5,
-    nbVotes: 19,
-    nbVues: 178,
-  },
-  {
-    id: "6",
-    titre: "Bruit excessif du voisin du dessus — quels sont mes recours?",
-    contenu: "Ça fait trois semaines que mon voisin marche avec des talons durs jusqu'à 2h du matin. J'ai frappé à sa porte deux fois. Je veux savoir si je peux faire quelque chose de plus formel sans aller directement à la Régie du logement.",
-    auteur: "residents.limoilou",
-    quartier: quartiers[25],
-    categorie: "voisinage",
-    creeLe: "2026-03-18T23:10:00Z",
-    nbCommentaires: 41,
-    nbVotes: 89,
-    nbVues: 763,
-  },
-  {
-    id: "7",
-    titre: "Revitalisation de Saint-Roch — vos impressions après 5 ans?",
-    contenu: "J'ai quitté Saint-Roch en 2021 et je reviens m'y installer. Le quartier a beaucoup changé. Quelqu'un peut me donner un portrait honnête de la situation actuelle? Prix, mixité sociale, commerces, sécurité?",
-    auteur: "retour_en_ville",
-    quartier: quartiers[27],
-    categorie: "question",
-    creeLe: "2026-03-18T16:00:00Z",
-    nbCommentaires: 67,
-    nbVotes: 154,
-    nbVues: 2103,
-  },
-  {
-    id: "8",
-    titre: "Droit de préemption — la Ville a refusé d'acheter notre immeuble, que faire?",
-    contenu: "On a soumis notre immeuble à 6 logements au droit de préemption de la Ville de Montréal comme requis. La Ville n'a pas exercé son droit. On peut donc vendre librement? Quelqu'un a vécu la même situation récemment?",
-    auteur: "proprio.rosemont",
-    quartier: quartiers[1],
-    categorie: "question",
-    creeLe: "2026-03-17T11:20:00Z",
-    nbCommentaires: 18,
-    nbVotes: 72,
-    nbVues: 634,
-  },
-];
+// Lookup helpers
+export const villeBySlug = Object.fromEntries(villes.map((v) => [v.slug, v]));
+export const quartierBySlug = Object.fromEntries(quartiers.map((q) => [q.slug, q]));
+export const quartiersDeVille = (villeSlug: string) =>
+  quartiers.filter((q) => q.villeSlug === villeSlug);
+
+// ─── Conversion DB → App ───────────────────────────────────────────────────────
+
+type DbPost = {
+  id: string;
+  titre: string;
+  contenu: string;
+  auteurNom: string;
+  auteurId?: string | null;
+  quartierSlug: string;
+  villeSlug: string;
+  categorie: string;
+  imageUrl?: string | null;
+  nbCommentaires: number;
+  nbVotes: number;
+  nbVues: number;
+  epingle: boolean;
+  creeLe: Date;
+};
+
+export function dbPostToAppPost(p: DbPost): Post {
+  const quartier: Quartier = quartierBySlug[p.quartierSlug] ?? {
+    slug: p.quartierSlug,
+    nom: p.quartierSlug,
+    villeSlug: p.villeSlug,
+    couleur: "bg-gray-400",
+  };
+  return {
+    id: p.id,
+    titre: p.titre,
+    contenu: p.contenu,
+    auteur: p.auteurNom,
+    auteurId: p.auteurId ?? null,
+    quartier,
+    categorie: p.categorie as Categorie,
+    creeLe: p.creeLe.toISOString(),
+    nbCommentaires: p.nbCommentaires,
+    nbVotes: p.nbVotes,
+    nbVues: p.nbVues,
+    epingle: p.epingle,
+  };
+}

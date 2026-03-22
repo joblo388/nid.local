@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { SessionProvider } from "@/components/SessionProvider";
 import "./globals.css";
 
 const geist = Geist({
@@ -20,7 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={geist.variable}>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+          <SessionProvider>{children}</SessionProvider>
+        </body>
     </html>
   );
 }

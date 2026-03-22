@@ -2,28 +2,44 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
-import { posts } from "@/lib/data";
+import { CommentSection } from "@/components/CommentSection";
+import { PostActions } from "@/components/PostActions";
+import { ShareButton } from "@/components/ShareButton";
+import { ReportButton } from "@/components/ReportButton";
+import { VoteButton } from "@/components/VoteButton";
+import { dbPostToAppPost } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { Categorie } from "@/lib/types";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ id: string }> };
 
-export async function generateStaticParams() {
-  return posts.map((p) => ({ id: p.id }));
-}
-
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const post = posts.find((p) => p.id === id);
+  const post = await prisma.post.findUnique({ where: { id } });
   if (!post) return {};
-  return { title: `${post.titre} — nid.local` };
+  const excerpt = post.contenu.slice(0, 155).replace(/\s\S*$/, "") + "…";
+  return {
+    title: `${post.titre} — nid.local`,
+    description: excerpt,
+    openGraph: {
+      title: post.titre,
+      description: excerpt,
+      type: "article",
+      siteName: "nid.local",
+    },
+  };
 }
 
 const badgeStyles: Record<string, { bg: string; color: string }> = {
-  alerte:    { bg: "#FCEBEB", color: "#A32D2D" },
-  question:  { bg: "#E6F1FB", color: "#185FA5" },
-  vente:     { bg: "#E1F5EE", color: "#0F6E56" },
-  location:  { bg: "#EEE9FB", color: "#5B31B3" },
-  renovation:{ bg: "#FAEEDA", color: "#854F0B" },
-  voisinage: { bg: "#F1F0F5", color: "#4A4660" },
+  alerte:    { bg: "var(--red-bg)",        color: "var(--red-text)" },
+  question:  { bg: "var(--blue-bg)",       color: "var(--blue-text)" },
+  vente:     { bg: "var(--green-light-bg)",color: "var(--green-text)" },
+  location:  { bg: "#EEE9FB",              color: "#5B31B3" },
+  renovation:{ bg: "var(--amber-bg)",      color: "var(--amber-text)" },
+  voisinage: { bg: "var(--bg-secondary)",  color: "var(--text-secondary)" },
 };
 
 const badgeLabels: Record<string, string> = {
@@ -33,15 +49,33 @@ const badgeLabels: Record<string, string> = {
 
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
-  const post = posts.find((p) => p.id === id);
-  if (!post) notFound();
+  const session = await auth();
+
+  const userId = session?.user?.id;
+  const [dbPost, allDbPosts, dbComments, userVote] = await Promise.all([
+    prisma.post.findUnique({ where: { id } }),
+    prisma.post.findMany({ select: { villeSlug: true, quartierSlug: true, nbVues: true, nbCommentaires: true, id: true, titre: true, contenu: true, auteurNom: true, categorie: true, nbVotes: true, epingle: true, creeLe: true, auteurId: true } }),
+    prisma.comment.findMany({ where: { postId: id }, orderBy: { creeLe: "asc" } }),
+    userId ? prisma.vote.findUnique({ where: { userId_postId: { userId, postId: id } } }) : null,
+  ]);
+
+  if (!dbPost) notFound();
+
+  // Incrémenter les vues (sans attendre)
+  prisma.post.update({ where: { id }, data: { nbVues: { increment: 1 } } }).catch(() => {});
+
+  const post = dbPostToAppPost(dbPost);
+  const allPosts = allDbPosts.map(dbPostToAppPost);
+  const comments = dbComments.map((c) => ({ ...c, creeLe: c.creeLe.toISOString(), auteurId: c.auteurId ?? null }));
+
+  const isAuthor = !!(session?.user?.id && session.user.id === dbPost.auteurId);
 
   const dateStr = new Date(post.creeLe).toLocaleDateString("fr-CA", {
     year: "numeric", month: "long", day: "numeric",
     hour: "2-digit", minute: "2-digit",
   });
 
-  const badge = badgeStyles[post.categorie] ?? { bg: "#f1f1f1", color: "#555" };
+  const badge = badgeStyles[post.categorie] ?? { bg: "var(--bg-secondary)", color: "var(--text-secondary)" };
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
@@ -84,54 +118,50 @@ export default async function PostPage({ params }: Props) {
                 {post.titre}
               </h1>
 
-              <p className="text-[14px] leading-relaxed mb-6" style={{ color: "var(--text-secondary)" }}>{post.contenu}</p>
+              <p className="text-[14px] leading-relaxed mb-6" style={{ color: "var(--text-secondary)" }}>
+                {post.contenu}
+              </p>
 
               <div
                 className="flex items-center justify-between pt-4"
                 style={{ borderTop: "0.5px solid var(--border)" }}
               >
                 <div className="flex items-center gap-3 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-                  <span>par <span className="font-medium" style={{ color: "var(--text-secondary)" }}>{post.auteur}</span></span>
+                  <span>
+                    par{" "}
+                    <Link
+                      href={`/u/${post.auteur}`}
+                      className="font-medium transition-opacity hover:opacity-70"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      {post.auteur}
+                    </Link>
+                  </span>
                   <span>·</span>
                   <span>{dateStr}</span>
+                  <span>·</span>
+                  <span>{post.nbVues.toLocaleString("fr-CA")} vues</span>
                 </div>
-                <button
-                  className="flex items-center gap-1.5 text-[12px] font-medium transition-opacity hover:opacity-70"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                  </svg>
-                  {post.nbVotes}
-                </button>
+                <div className="flex items-center gap-3">
+                  <ShareButton />
+                  {!isAuthor && <ReportButton type="post" targetId={post.id} />}
+                </div>
+                <VoteButton postId={post.id} initialVotes={post.nbVotes} initialHasVoted={!!userVote} />
               </div>
+
+              {isAuthor && (
+                <PostActions
+                  postId={post.id}
+                  initialTitre={post.titre}
+                  initialContenu={post.contenu}
+                  initialCategorie={post.categorie as Categorie}
+                />
+              )}
             </article>
 
-            <div
-              className="rounded-xl p-6"
-              style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-            >
-              <h2 className="text-[14px] font-bold mb-4" style={{ color: "var(--text-primary)" }}>
-                {post.nbCommentaires} réponses
-              </h2>
-              <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="w-7 h-7 rounded-full shrink-0 mt-0.5" style={{ background: "var(--bg-secondary)" }} />
-                    <div className="flex-1 space-y-1.5">
-                      <div className="h-2.5 rounded-full w-1/4" style={{ background: "var(--bg-secondary)" }} />
-                      <div className="h-2.5 rounded-full w-3/4" style={{ background: "var(--bg-secondary)" }} />
-                      <div className="h-2.5 rounded-full w-1/2" style={{ background: "var(--bg-secondary)" }} />
-                    </div>
-                  </div>
-                ))}
-                <p className="text-[12px] text-center pt-2" style={{ color: "var(--text-tertiary)" }}>
-                  Connectez-vous pour voir les commentaires et participer à la discussion.
-                </p>
-              </div>
-            </div>
+            <CommentSection postId={post.id} initial={comments} />
           </div>
-          <Sidebar />
+          <Sidebar posts={allPosts} />
         </div>
       </main>
     </div>

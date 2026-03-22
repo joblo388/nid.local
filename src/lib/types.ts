@@ -1,7 +1,13 @@
+export type Ville = {
+  slug: string;
+  nom: string;
+  region: string;
+};
+
 export type Quartier = {
   slug: string;
   nom: string;
-  ville: string;
+  villeSlug: string;
   couleur: string;
 };
 
@@ -25,4 +31,5 @@ export type Post = {
   nbVotes: number;
   nbVues: number;
   epingle?: boolean;
+  auteurId?: string | null;
 };
