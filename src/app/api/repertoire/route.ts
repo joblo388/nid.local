@@ -13,12 +13,21 @@ const SPECIALITES = [
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
 
-  // Return own profile if ?own=1
+  // Return own profile if ?own=1 (includes team profiles by domain)
   if (searchParams.get("own") === "1") {
     const session = await auth();
     if (!session?.user?.id) return NextResponse.json({ profile: null });
-    const profile = await prisma.proProfile.findUnique({ where: { userId: session.user.id } });
-    return NextResponse.json({ profile });
+    // First check own profile
+    let profile = await prisma.proProfile.findUnique({ where: { userId: session.user.id } });
+    // If no own profile, check if domain matches a team profile
+    if (!profile && session.user.email) {
+      const PUBLIC_DOMAINS = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "yahoo.ca", "live.com", "icloud.com", "me.com", "protonmail.com", "mail.com", "aol.com", "nid.local"];
+      const domain = session.user.email.split("@")[1]?.toLowerCase();
+      if (domain && !PUBLIC_DOMAINS.includes(domain)) {
+        profile = await prisma.proProfile.findFirst({ where: { domaine: domain } });
+      }
+    }
+    return NextResponse.json({ profile, isTeam: profile ? profile.userId !== session.user.id : false });
   }
 
   const specialite = searchParams.get("specialite");
@@ -126,31 +135,48 @@ export async function POST(req: NextRequest) {
 
   const userId = session.user.id;
 
-  // Upsert — create or update own profile
-  const profile = await prisma.proProfile.upsert({
-    where: { userId },
-    create: {
-      userId,
-      nomEntreprise: nomEntreprise.trim(),
-      specialite,
-      description: description.trim(),
-      telephone: telephone?.trim() || null,
-      courriel: courriel?.trim() || null,
-      siteWeb: siteWeb?.trim() || null,
-      villeSlug,
-      imageUrl: typeof imageUrl === "string" && (imageUrl.startsWith("data:image/") || imageUrl.startsWith("https://")) ? imageUrl : null,
-    },
-    update: {
-      nomEntreprise: nomEntreprise.trim(),
-      specialite,
-      description: description.trim(),
-      telephone: telephone?.trim() || null,
-      courriel: courriel?.trim() || null,
-      siteWeb: siteWeb?.trim() || null,
-      villeSlug,
-      imageUrl: typeof imageUrl === "string" && (imageUrl.startsWith("data:image/") || imageUrl.startsWith("https://")) ? imageUrl : null,
-    },
-  });
+  // Extract domain from user email (ignore public domains)
+  const PUBLIC_DOMAINS = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "yahoo.ca", "live.com", "icloud.com", "me.com", "protonmail.com", "mail.com", "aol.com", "nid.local"];
+  const userEmail = session.user.email ?? "";
+  const emailDomain = userEmail.includes("@") ? userEmail.split("@")[1].toLowerCase() : null;
+  const domaine = emailDomain && !PUBLIC_DOMAINS.includes(emailDomain) ? emailDomain : null;
+
+  // Check if user's domain matches an existing team profile
+  let teamProfile = null;
+  if (domaine) {
+    teamProfile = await prisma.proProfile.findFirst({
+      where: { domaine, userId: { not: userId } },
+    });
+  }
+
+  const imgVal = typeof imageUrl === "string" && (imageUrl.startsWith("data:image/") || imageUrl.startsWith("https://")) ? imageUrl : null;
+  const data = {
+    nomEntreprise: nomEntreprise.trim(),
+    specialite,
+    description: description.trim(),
+    telephone: telephone?.trim() || null,
+    courriel: courriel?.trim() || null,
+    siteWeb: siteWeb?.trim() || null,
+    villeSlug,
+    imageUrl: imgVal,
+    domaine,
+  };
+
+  let profile;
+  if (teamProfile) {
+    // Update the team's existing profile (same domain)
+    profile = await prisma.proProfile.update({
+      where: { id: teamProfile.id },
+      data,
+    });
+  } else {
+    // Upsert — create or update own profile
+    profile = await prisma.proProfile.upsert({
+      where: { userId },
+      create: { userId, ...data },
+      update: data,
+    });
+  }
 
   return NextResponse.json({ id: profile.id }, { status: 201 });
 }
