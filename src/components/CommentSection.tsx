@@ -5,8 +5,10 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReportButton } from "./ReportButton";
-import { MarkdownContent } from "./MarkdownContent";
+import { RichContent } from "./RichContent";
 import { MarkdownToolbar } from "./MarkdownToolbar";
+import { useToast } from "./Toast";
+import { useLightbox } from "./LightboxProvider";
 
 type Comment = {
   id: string;
@@ -114,7 +116,7 @@ function ReplyForm({ commentId, onReply, onCancel }: {
         <button
           type="submit"
           disabled={loading}
-          className="px-3 py-1 rounded-lg text-[12px] font-semibold text-white disabled:opacity-50"
+          className="px-3 py-1 rounded-lg text-[12px] font-semibold text-white disabled:opacity-50 btn-press"
           style={{ background: "var(--green)" }}
         >
           {loading ? "…" : "Répondre"}
@@ -145,6 +147,7 @@ function CommentItem({
 }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const { openLightbox } = useLightbox();
   const [mode, setMode] = useState<"view" | "edit" | "delete">("view");
   const [contenu, setContenu] = useState(comment.contenu);
   const [displayed, setDisplayed] = useState(comment.contenu);
@@ -248,7 +251,7 @@ function CommentItem({
         ) : (
           <div className="space-y-2">
             <div className="text-[13px]">
-              <MarkdownContent content={displayed} />
+              <RichContent content={displayed} />
             </div>
             {comment.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -256,7 +259,8 @@ function CommentItem({
                 src={comment.imageUrl}
                 alt=""
                 className="rounded-lg object-cover"
-                style={{ maxWidth: "100%", maxHeight: "300px", border: "0.5px solid var(--border)" }}
+                style={{ maxWidth: "100%", maxHeight: "300px", border: "0.5px solid var(--border)", cursor: "zoom-in" }}
+                onClick={() => openLightbox([comment.imageUrl!])}
               />
             )}
             {/* Reply button */}
@@ -312,7 +316,9 @@ function CommentItem({
 export function CommentSection({ postId, initial }: { postId: string; initial: Comment[] }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const { toast } = useToast();
   const [comments, setComments] = useState<Comment[]>(initial);
+  const [newestId, setNewestId] = useState<string | null>(null);
   const [contenu, setContenu] = useState("");
   const [imageData, setImageData] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -364,11 +370,14 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
       });
       const data = await res.json();
       if (!res.ok) { setErreur(data.error ?? "Une erreur est survenue."); return; }
-      setComments((prev) => [...prev, { ...data, auteurId: data.auteurId ?? null, nbVotes: 0, replies: [] }]);
+      const newComment = { ...data, auteurId: data.auteurId ?? null, nbVotes: 0, replies: [] };
+      setComments((prev) => [...prev, newComment]);
+      setNewestId(newComment.id);
       setContenu("");
       setImageData(null);
       setImagePreview(null);
       if (fileRef.current) fileRef.current.value = "";
+      toast({ message: "Commentaire ajouté.", type: "success" });
     } catch {
       setErreur("Une erreur est survenue. Veuillez réessayer.");
     } finally {
@@ -390,7 +399,13 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
       {comments.length > 0 && (
         <div className="space-y-4 mb-6">
           {comments.map((c) => (
-            <CommentItem key={c.id} comment={c} currentUserId={currentUserId} />
+            <div
+              key={c.id}
+              className={c.id === newestId ? "comment-slide-in" : ""}
+              onAnimationEnd={() => { if (c.id === newestId) setNewestId(null); }}
+            >
+              <CommentItem comment={c} currentUserId={currentUserId} />
+            </div>
           ))}
         </div>
       )}
@@ -453,7 +468,7 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
             </p>
           )}
           <button type="submit" disabled={loading || imageUploading}
-            className="px-4 py-2 rounded-lg text-[13px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-[13px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 btn-press"
             style={{ background: "var(--green)" }}>
             {imageUploading ? "Téléversement…" : loading ? "Envoi…" : "Répondre"}
           </button>

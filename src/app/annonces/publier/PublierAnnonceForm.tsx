@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
+import { useConfetti } from "@/components/Confetti";
 import { villes, quartiersDeVille } from "@/lib/data";
 import "../marketplace.css";
 
@@ -41,6 +42,7 @@ type FormData = {
 
 export function PublierAnnonceForm() {
   const router = useRouter();
+  const { celebrate } = useConfetti();
   const [current, setCurrent] = useState(1);
   const [accOpen, setAccOpen] = useState(false);
   const [published, setPublished] = useState(false);
@@ -176,6 +178,7 @@ export function PublierAnnonceForm() {
         setErreur(data.error ?? "Une erreur est survenue.");
         return;
       }
+      celebrate();
       setPublished(true);
     } catch {
       setErreur("Une erreur est survenue.");

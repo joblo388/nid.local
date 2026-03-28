@@ -8,8 +8,11 @@ import { PostActions } from "@/components/PostActions";
 import { ShareButton } from "@/components/ShareButton";
 import { VoteButton } from "@/components/VoteButton";
 import { ViewTracker } from "@/components/ViewTracker";
-import { MarkdownContent } from "@/components/MarkdownContent";
+import { ScrollProgress } from "@/components/ScrollProgress";
+import { RichContent } from "@/components/RichContent";
 import { PollDisplay } from "@/components/PollDisplay";
+import { LightboxImage } from "@/components/LightboxImage";
+import { SimilarPosts } from "@/components/SimilarPosts";
 import { dbPostToAppPost } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { Categorie } from "@/lib/types";
@@ -109,6 +112,7 @@ export default async function PostPage({ params }: Props) {
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       {/* Track view client-side so ISR cache hits still count */}
       <ViewTracker postId={id} />
+      <ScrollProgress />
       <Header />
       <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-5">
         <div className="flex gap-5 items-start">
@@ -149,20 +153,22 @@ export default async function PostPage({ params }: Props) {
               </h1>
 
               <div className="text-[14px] mb-6">
-                <MarkdownContent content={post.contenu} />
+                <RichContent content={post.contenu} />
               </div>
 
               {dbPost.imageUrl && (
-                dbPost.imageUrl.startsWith("data:") ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={dbPost.imageUrl} alt="" className="w-full rounded-xl object-contain mb-6"
-                    style={{ maxHeight: "500px", border: "0.5px solid var(--border)" }} />
-                ) : (
-                  <div className="relative w-full mb-6 rounded-xl overflow-hidden" style={{ maxHeight: "500px", border: "0.5px solid var(--border)" }}>
-                    <Image src={dbPost.imageUrl} alt="" width={1100} height={500}
-                      className="w-full object-contain" sizes="(max-width: 1100px) 100vw, 1100px" />
-                  </div>
-                )
+                <LightboxImage images={[dbPost.imageUrl]}>
+                  {dbPost.imageUrl.startsWith("data:") ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={dbPost.imageUrl} alt="" className="w-full rounded-xl object-contain mb-6"
+                      style={{ maxHeight: "500px", border: "0.5px solid var(--border)" }} />
+                  ) : (
+                    <div className="relative w-full mb-6 rounded-xl overflow-hidden" style={{ maxHeight: "500px", border: "0.5px solid var(--border)" }}>
+                      <Image src={dbPost.imageUrl} alt="" width={1100} height={500}
+                        className="w-full object-contain" sizes="(max-width: 1100px) 100vw, 1100px" />
+                    </div>
+                  )}
+                </LightboxImage>
               )}
 
               <div
@@ -203,6 +209,8 @@ export default async function PostPage({ params }: Props) {
             {dbPoll && <PollDisplay pollId={dbPoll.id} />}
 
             <CommentSection postId={post.id} initial={comments} />
+
+            <SimilarPosts postId={post.id} />
           </div>
           <div className="hidden md:block">
             <Sidebar stats={sidebarStats} />

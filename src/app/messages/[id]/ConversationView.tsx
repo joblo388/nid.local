@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
+import { TypingIndicator } from "@/components/TypingIndicator";
 
 type Msg = {
   id: string;
@@ -32,6 +33,14 @@ export function ConversationView() {
   const [loading, setLoading] = useState(true);
   const [newMsg, setNewMsg] = useState("");
   const [sending, setSending] = useState(false);
+  const lastTypingRef = useRef(0);
+
+  const notifyTyping = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTypingRef.current < 2000) return;
+    lastTypingRef.current = now;
+    fetch(`/api/conversations/${id}/typing`, { method: "POST" }).catch(() => {});
+  }, [id]);
 
   useEffect(() => {
     fetch(`/api/conversations/${id}/messages`)
@@ -147,6 +156,7 @@ export function ConversationView() {
               </div>
             </div>
           ))}
+          <TypingIndicator conversationId={id} />
           <div ref={bottomRef} />
         </div>
 
@@ -155,7 +165,7 @@ export function ConversationView() {
           <input
             type="text"
             value={newMsg}
-            onChange={(e) => setNewMsg(e.target.value)}
+            onChange={(e) => { setNewMsg(e.target.value); if (e.target.value.trim()) notifyTyping(); }}
             placeholder="Écrire un message..."
             className="flex-1 px-3.5 py-2.5 rounded-full text-[13px] outline-none"
             style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)", color: "var(--text-primary)" }}

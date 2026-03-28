@@ -6,7 +6,7 @@ function BadgePill({ badge }: { badge: Badge }) {
   const c = badgeCouleurs[badge.couleur];
   return (
     <span
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none whitespace-nowrap relative group"
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none whitespace-nowrap relative group badge-shimmer"
       style={{ background: c.bg, color: c.text, border: "0.5px solid var(--border)" }}
     >
       <span>{badge.icon}</span>

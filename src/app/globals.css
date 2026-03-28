@@ -43,6 +43,48 @@
   }
 }
 
+/* Manual dark mode override */
+:root.dark {
+  --bg-page: #141414;
+  --bg-card: #1a1a1a;
+  --bg-secondary: #222222;
+  --border: #2e2e2e;
+  --border-secondary: #333333;
+  --text-primary: #f2f0ea;
+  --text-secondary: #d4d1ca;
+  --text-tertiary: #9e9b95;
+
+  --green-light-bg: #0a2e20;
+  --green-text: #5DCAA5;
+  --blue-bg: #0d2140;
+  --blue-text: #85B7EB;
+  --red-bg: #3d1515;
+  --red-text: #f09595;
+  --amber-bg: #2e1f08;
+  --amber-text: #EF9F27;
+}
+
+/* Manual light mode override */
+:root.light {
+  --bg-page: #f5f4f0;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1efe8;
+  --border: #e8e7e2;
+  --border-secondary: #d3d1c7;
+  --text-primary: #1a1a18;
+  --text-secondary: #3d3c39;
+  --text-tertiary: #6e6c67;
+
+  --green-light-bg: #E1F5EE;
+  --green-text: #0F6E56;
+  --blue-bg: #E6F1FB;
+  --blue-text: #185FA5;
+  --red-bg: #FCEBEB;
+  --red-text: #A32D2D;
+  --amber-bg: #FAEEDA;
+  --amber-text: #854F0B;
+}
+
 body {
   background: var(--bg-page);
   color: var(--text-primary);
@@ -50,6 +92,71 @@ body {
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Markdown content styles ─────────────────────────────────────────── */
+.md-content h2 { font-size: 16px; font-weight: 700; margin: 16px 0 8px; color: var(--text-primary); }
+.md-content h3 { font-size: 14px; font-weight: 600; margin: 12px 0 6px; color: var(--text-primary); }
+.md-content strong { font-weight: 600; color: var(--text-primary); }
+.md-content em { font-style: italic; }
+.md-content p { margin-bottom: 12px; line-height: 1.6; color: var(--text-secondary); }
+.md-content p:last-child { margin-bottom: 0; }
+.md-content code { background: var(--bg-secondary); padding: 2px 4px; border-radius: 4px; font-size: 12px; color: var(--green-text); }
+.md-content pre { background: var(--bg-secondary); padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 12px; margin: 12px 0; border: 0.5px solid var(--border); }
+.md-content pre code { background: none; padding: 0; border-radius: 0; color: var(--text-primary); }
+.md-content blockquote { border-left: 3px solid var(--green); padding-left: 12px; color: var(--text-secondary); margin: 12px 0; }
+.md-content blockquote p { margin-bottom: 0; }
+.md-content ul { list-style: disc; padding-left: 20px; margin-bottom: 12px; color: var(--text-secondary); }
+.md-content ul:last-child { margin-bottom: 0; }
+.md-content li { line-height: 1.6; }
+.md-content a { color: var(--green); text-decoration: underline; }
+.md-content a:hover { opacity: 0.7; }
+
+/* Pull-to-refresh spinner */
+@keyframes ptr-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Skeleton loading shimmer */
+@keyframes skeleton-shimmer {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+.skeleton-pulse {
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+}
+
+/* Typing indicator — bouncing dots */
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  animation: typing-bounce 1.2s infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
 /* Touch targets — minimum 44px on mobile */
@@ -75,6 +182,119 @@ body {
 /* Bottom nav — mobile only */
 .bottom-nav {
   display: none;
+}
+
+/* ─── Micro-animations ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* 1. Vote button bounce */
+  @keyframes vote-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+  .vote-pop {
+    animation: vote-pop 300ms ease-out;
+  }
+
+  /* 2. Favorite heart pop */
+  @keyframes heart-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+  .heart-pop {
+    animation: heart-pop 200ms ease-out;
+  }
+
+  /* 3. Badge shimmer on hover */
+  @keyframes badge-shimmer {
+    0% { background-position: -100% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .badge-shimmer:hover {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,255,255,0.25) 40%,
+      rgba(255,255,255,0.25) 60%,
+      transparent 100%
+    );
+    background-size: 50% 100%;
+    background-repeat: no-repeat;
+    animation: badge-shimmer 400ms ease-out forwards;
+  }
+
+  /* 4. Counter roll animation */
+  @keyframes counter-roll-out {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-100%); opacity: 0; }
+  }
+  @keyframes counter-roll-in {
+    0% { transform: translateY(100%); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .counter-roll-out {
+    animation: counter-roll-out 250ms ease-out forwards;
+  }
+  .counter-roll-in {
+    animation: counter-roll-in 250ms ease-out forwards;
+  }
+
+  /* 5. Card hover lift */
+  .card-hover-lift {
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  }
+  .card-hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  /* 6. Button press effect */
+  .btn-press:active {
+    transform: scale(0.97);
+    transition: transform 100ms ease-out;
+  }
+
+  /* 7. Comment slide-in */
+  @keyframes comment-slide-in {
+    0% { transform: translateY(-8px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .comment-slide-in {
+    animation: comment-slide-in 300ms ease-out;
+  }
+
+  /* 8. Confetti celebration */
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(-10vh) translateX(0) rotate(var(--confetti-rot-start));
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(110vh) translateX(var(--confetti-drift)) rotate(var(--confetti-rot-end));
+      opacity: 0;
+    }
+  }
+
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    top: 0;
+    border-radius: 2px;
+    animation: confetti-fall ease-out forwards;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
 }
 
 @media (max-width: 768px) {

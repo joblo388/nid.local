@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 type UserData = {
   id: string;
@@ -20,6 +21,7 @@ type UserData = {
 export function ParametresForm({ user }: { user: UserData }) {
   const { update } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
 
   const [username, setUsername] = useState(user.username ?? "");
   const [name, setName] = useState(user.name ?? "");
@@ -31,7 +33,6 @@ export function ParametresForm({ user }: { user: UserData }) {
   const [emailNotifMentions, setEmailNotifMentions] = useState(user.emailNotifMentions);
   const [emailNotifMessages, setEmailNotifMessages] = useState(user.emailNotifMessages);
   const [emailNotifAnnonces, setEmailNotifAnnonces] = useState(user.emailNotifAnnonces);
-  const [emailSuccess, setEmailSuccess] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
 
   const [currentPassword, setCurrentPassword] = useState("");
@@ -39,9 +40,7 @@ export function ParametresForm({ user }: { user: UserData }) {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [profileError, setProfileError] = useState("");
-  const [profileSuccess, setProfileSuccess] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [passwordSuccess, setPasswordSuccess] = useState("");
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
@@ -80,7 +79,6 @@ export function ParametresForm({ user }: { user: UserData }) {
   async function saveProfile(e: React.FormEvent) {
     e.preventDefault();
     setProfileError("");
-    setProfileSuccess("");
     setLoadingProfile(true);
 
     const body: Record<string, string | null> = { username, name };
@@ -97,7 +95,7 @@ export function ParametresForm({ user }: { user: UserData }) {
     if (!res.ok) {
       setProfileError(data.error ?? "Une erreur est survenue.");
     } else {
-      setProfileSuccess("Profil mis à jour.");
+      toast({ message: "Profil mis à jour.", type: "success" });
       await update({ username });
       router.refresh();
     }
@@ -106,7 +104,6 @@ export function ParametresForm({ user }: { user: UserData }) {
   async function savePassword(e: React.FormEvent) {
     e.preventDefault();
     setPasswordError("");
-    setPasswordSuccess("");
     if (newPassword !== confirmPassword) {
       setPasswordError("Les mots de passe ne correspondent pas.");
       return;
@@ -123,7 +120,7 @@ export function ParametresForm({ user }: { user: UserData }) {
     if (!res.ok) {
       setPasswordError(data.error ?? "Une erreur est survenue.");
     } else {
-      setPasswordSuccess("Mot de passe mis à jour.");
+      toast({ message: "Mot de passe mis à jour.", type: "success" });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -260,9 +257,6 @@ export function ParametresForm({ user }: { user: UserData }) {
           {profileError && (
             <p className="text-[12px]" style={{ color: "var(--red-text)" }}>{profileError}</p>
           )}
-          {profileSuccess && (
-            <p className="text-[12px]" style={{ color: "var(--green)" }}>{profileSuccess}</p>
-          )}
 
           <button
             type="submit"
@@ -314,15 +308,10 @@ export function ParametresForm({ user }: { user: UserData }) {
           ))}
         </div>
 
-        {emailSuccess && (
-          <p className="text-[12px] mt-3" style={{ color: "var(--green)" }}>{emailSuccess}</p>
-        )}
-
         <button
           type="button"
           disabled={emailLoading}
           onClick={async () => {
-            setEmailSuccess("");
             setEmailLoading(true);
             const res = await fetch("/api/user/settings", {
               method: "PATCH",
@@ -330,7 +319,7 @@ export function ParametresForm({ user }: { user: UserData }) {
               body: JSON.stringify({ emailNotifComments, emailNotifReplies, emailNotifMentions, emailNotifMessages, emailNotifAnnonces }),
             });
             setEmailLoading(false);
-            if (res.ok) setEmailSuccess("Préférences mises à jour.");
+            if (res.ok) toast({ message: "Préférences mises à jour.", type: "success" });
           }}
           className="mt-4 px-4 py-2 text-[13px] font-semibold text-white rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
           style={{ background: "var(--green)" }}
@@ -390,9 +379,6 @@ export function ParametresForm({ user }: { user: UserData }) {
 
             {passwordError && (
               <p className="text-[12px]" style={{ color: "var(--red-text)" }}>{passwordError}</p>
-            )}
-            {passwordSuccess && (
-              <p className="text-[12px]" style={{ color: "var(--green)" }}>{passwordSuccess}</p>
             )}
 
             <button

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
 import { ListingActions } from "@/components/ListingActions";
 import { ReportButton } from "@/components/ReportButton";
+import { useLightbox } from "@/components/LightboxProvider";
 import { quartierBySlug } from "@/lib/data";
 import "../marketplace.css";
 
@@ -79,6 +80,7 @@ function timeAgo(d: string) {
 export function AnnonceDetailView() {
   const params = useParams();
   const id = params.id as string;
+  const { openLightbox } = useLightbox();
 
   const [listing, setListing] = useState<ListingDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,12 +89,10 @@ export function AnnonceDetailView() {
   const [contactMsg, setContactMsg] = useState("Bonjour, je suis intéressé par votre propriété. Serait-il possible de planifier une visite?");
   const [sending, setSending] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
-  const [lightbox, setLightbox] = useState(false);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [newComment, setNewComment] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);
   const [similar, setSimilar] = useState<{ id: string; titre: string; prix: number; type: string; quartierSlug: string; imageUrl: string | null; chambres: number; sallesDeBain: number; superficie: number }[]>([]);
-  const touchStart = useRef<number | null>(null);
 
   const goPrev = useCallback(() => {
     if (!listing) return;
@@ -223,7 +223,7 @@ export function AnnonceDetailView() {
             {/* Gallery */}
             {listing.images.length > 0 ? (
               <div className="mp-gallery">
-                <div className="mp-gallery-main" style={{ position: "relative", cursor: "pointer" }} onClick={() => setLightbox(true)}>
+                <div className="mp-gallery-main" style={{ position: "relative", cursor: "pointer" }} onClick={() => openLightbox(listing.images.map((img) => img.url), galleryIndex)}>
                   <Image src={listing.images[galleryIndex]?.url ?? listing.images[0].url} alt={listing.titre} fill sizes="450px" style={{ objectFit: "cover" }} />
                   {listing.lienVisite && <div className="mp-gallery-badge">Visite 360°</div>}
                   <div className="mp-gallery-count">{galleryIndex + 1} / {listing.images.length}</div>
@@ -538,51 +538,6 @@ export function AnnonceDetailView() {
         )}
       </div>
 
-      {/* Lightbox */}
-      {lightbox && listing && listing.images.length > 0 && (
-        <div
-          style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", touchAction: "none" }}
-          onClick={() => setLightbox(false)}
-          onTouchStart={(e) => { touchStart.current = e.touches[0].clientX; }}
-          onTouchEnd={(e) => {
-            if (touchStart.current === null) return;
-            const diff = e.changedTouches[0].clientX - touchStart.current;
-            if (Math.abs(diff) > 50) { diff > 0 ? goPrev() : goNext(); }
-            touchStart.current = null;
-          }}
-        >
-          <button
-            onClick={(e) => { e.stopPropagation(); goPrev(); }}
-            style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.15)", border: "none", cursor: "pointer", color: "white", fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center" }}
-          >
-            ‹
-          </button>
-          <div style={{ position: "relative", maxWidth: "90vw", maxHeight: "85vh", width: 900, aspectRatio: "4/3" }} onClick={(e) => e.stopPropagation()}>
-            <Image
-              src={listing.images[galleryIndex].url}
-              alt={listing.titre}
-              fill
-              sizes="90vw"
-              style={{ objectFit: "contain" }}
-            />
-          </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); goNext(); }}
-            style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.15)", border: "none", cursor: "pointer", color: "white", fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center" }}
-          >
-            ›
-          </button>
-          <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", color: "white", fontSize: 13 }}>
-            {galleryIndex + 1} / {listing.images.length} — Glisser pour naviguer
-          </div>
-          <button
-            onClick={() => setLightbox(false)}
-            style={{ position: "absolute", top: 16, right: 16, width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.15)", border: "none", cursor: "pointer", color: "white", fontSize: 18 }}
-          >
-            ✕
-          </button>
-        </div>
-      )}
     </>
   );
 }

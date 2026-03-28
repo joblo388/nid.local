@@ -6,6 +6,8 @@ import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { NotificationBell } from "./NotificationBell";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
+import { CommandPaletteTrigger } from "./CommandPalette";
 import { useLocale } from "@/lib/useLocale";
 
 export function Header() {
@@ -150,6 +152,8 @@ export function Header() {
             <div className="w-8 h-8 rounded-full animate-pulse" style={{ background: "var(--bg-secondary)" }} />
           ) : session ? (
             <>
+              <CommandPaletteTrigger />
+              <ThemeToggle />
               <LanguageSwitcher />
               <NotificationBell />
               <div className="relative" ref={menuRef}>
@@ -233,6 +237,8 @@ export function Header() {
             </>
           ) : (
             <>
+              <CommandPaletteTrigger />
+              <ThemeToggle />
               <LanguageSwitcher />
               <Link
                 href={`/auth/connexion?callbackUrl=${encodeURIComponent(pathname)}`}

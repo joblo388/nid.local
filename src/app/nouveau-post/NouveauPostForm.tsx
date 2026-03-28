@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { villes, quartiersDeVille } from "@/lib/data";
-import { MarkdownToolbar } from "@/components/MarkdownToolbar";
+import { MarkdownEditor } from "@/components/MarkdownEditor";
+import { useConfetti } from "@/components/Confetti";
 
 const DRAFT_KEY = "nid_nouveau_post_draft";
 
@@ -21,6 +22,7 @@ const CATEGORIES = [
 
 export function NouveauPostForm() {
   const router = useRouter();
+  const { celebrate } = useConfetti();
   const [titre, setTitre] = useState("");
   const [contenu, setContenu] = useState("");
   const [villeSlug, setVilleSlug] = useState("montreal");
@@ -36,7 +38,6 @@ export function NouveauPostForm() {
   const [showPoll, setShowPoll] = useState(false);
   const [pollOptions, setPollOptions] = useState(["", ""]);
   const fileRef = useRef<HTMLInputElement>(null);
-  const contenuRef = useRef<HTMLTextAreaElement>(null);
 
   const quartiersDispo = quartiersDeVille(villeSlug);
 
@@ -145,6 +146,7 @@ export function NouveauPostForm() {
         return;
       }
       clearDraft();
+      celebrate();
       router.push(`/post/${data.id}`);
     } catch {
       setErreur("Une erreur est survenue. Veuillez réessayer.");
@@ -218,24 +220,16 @@ export function NouveauPostForm() {
 
       {/* Contenu */}
       <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
-            Description
-          </label>
-          <MarkdownToolbar textareaRef={contenuRef} onChange={setContenu} />
-        </div>
-        <textarea
-          ref={contenuRef}
+        <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+          Description
+        </label>
+        <MarkdownEditor
           value={contenu}
-          onChange={(e) => setContenu(e.target.value)}
+          onChange={setContenu}
           placeholder="Décrivez votre question, annonce ou situation en détail…"
           required
           minLength={20}
           rows={6}
-          className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all resize-none"
-          style={{ background: "var(--bg-secondary)", border: "1.5px solid var(--border)", color: "var(--text-primary)" }}
-          onFocus={(e) => (e.target.style.borderColor = "var(--green)")}
-          onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
         />
       </div>
 

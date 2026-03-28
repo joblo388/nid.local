@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Post, Categorie } from "@/lib/types";
 import { villes, quartiers, quartiersDeVille, villeBySlug, ressourcesUtiles } from "@/lib/data";
 import { PostCard } from "./PostCard";
+import { SkeletonPostCard } from "./Skeleton";
 import { Sidebar, SidebarStats } from "./Sidebar";
+import { PullToRefresh } from "./PullToRefresh";
 
 const PAGE_SIZE = 20;
 
@@ -272,7 +274,10 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
   const [bookmarkedPostIds, setBookmarkedPostIds] = useState<Set<string>>(() => new Set(initialBookmarkedPostIds));
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(initialTotal > PAGE_SIZE);
   const listRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
@@ -306,11 +311,16 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  async function fetchPosts(params: {
+  const fetchPosts = useCallback(async (params: {
     villeSlug: string; quartierSlug: string; categorie: string; tri: string; page: number;
     subscribedQuartiers?: string;
-  }) {
-    setLoading(true);
+    append?: boolean;
+  }) => {
+    if (params.append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
     try {
       const qsObj: Record<string, string> = {
         villeSlug: params.villeSlug,
@@ -326,8 +336,13 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
       const res = await fetch(`/api/posts?${qs}`);
       if (!res.ok) return;
       const data = await res.json();
-      setPosts(data.posts);
+      if (params.append) {
+        setPosts((prev) => [...prev, ...data.posts]);
+      } else {
+        setPosts(data.posts);
+      }
       setTotal(data.total);
+      setHasMore(data.posts.length >= PAGE_SIZE);
       setVotedPostIds((prev) => {
         const next = new Set(prev);
         (data.votedPostIds as string[]).forEach((id) => next.add(id));
@@ -339,17 +354,24 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
         return next;
       });
     } finally {
-      setLoading(false);
+      if (params.append) {
+        setLoadingMore(false);
+      } else {
+        setLoading(false);
+      }
     }
-  }
+  }, []);
 
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     setPage(1);
+    setPosts([]);
+    setHasMore(true);
     const subQ = mesQuartiersActive && subscribedSlugs.length > 0
       ? subscribedSlugs.join(",")
       : undefined;
     fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: 1, subscribedQuartiers: subQ });
+    listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [villeSlug, quartierSlug, categorie, tri, mesQuartiersActive]);
 
@@ -364,14 +386,37 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
     setMesQuartiersActive((prev) => !prev);
   }
 
-  function goToPage(p: number) {
-    setPage(p);
-    const subQ = mesQuartiersActive && subscribedSlugs.length > 0
-      ? subscribedSlugs.join(",")
-      : undefined;
-    fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: p, subscribedQuartiers: subQ });
-    listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  // Infinite scroll — load next page
+  const loadNextPage = useCallback(() => {
+    setPage((prev) => {
+      const nextPage = prev + 1;
+      const subQ = mesQuartiersActive && subscribedSlugs.length > 0
+        ? subscribedSlugs.join(",")
+        : undefined;
+      fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: nextPage, subscribedQuartiers: subQ, append: true });
+      return nextPage;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [villeSlug, quartierSlug, categorie, tri, mesQuartiersActive, subscribedSlugs, fetchPosts]);
+
+  // IntersectionObserver for infinite scroll sentinel
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
+          loadNextPage();
+        }
+      },
+      { threshold: 0.1, rootMargin: "200px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore, loadNextPage]);
 
   function handleSearchChange(q: string) {
     setSearchQuery(q);
@@ -383,6 +428,16 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
     }, 300);
   }
 
+  const handlePullToRefresh = useCallback(async () => {
+    setPage(1);
+    setPosts([]);
+    setHasMore(true);
+    const subQ = mesQuartiersActive && subscribedSlugs.length > 0
+      ? subscribedSlugs.join(",")
+      : undefined;
+    await fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: 1, subscribedQuartiers: subQ });
+  }, [villeSlug, quartierSlug, categorie, tri, mesQuartiersActive, subscribedSlugs, fetchPosts]);
+
   const searchResults = searchQuery.trim().length >= 2 ? dbResults : [];
   const villeActive = villeBySlug[villeSlug];
   const quartierActif = quartiers.find((q) => q.slug === quartierSlug);
@@ -390,7 +445,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
   const hasQuartiers = qDeVille.length > 1;
 
   return (
-    <>
+    <PullToRefresh onRefresh={handlePullToRefresh}>
       {/* Barres de navigation — sticky sous le header */}
       <div className="sticky z-40" style={{ top: "52px" }}>
         <VilleBar selected={mesQuartiersActive ? "" : villeSlug} onSelect={selectVille} />
@@ -556,8 +611,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
             {loading && posts.length === 0 ? (
               <div className="space-y-2">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="rounded-xl h-[100px] animate-pulse"
-                    style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }} />
+                  <SkeletonPostCard key={i} />
                 ))}
               </div>
             ) : posts.length === 0 ? (
@@ -577,12 +631,29 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                 </Link>
               </div>
             ) : (
-              <div className="space-y-2">
-                {posts.map((post) => (
-                  <PostCard key={post.id} post={post} searchQuery={searchQuery} hasVoted={votedPostIds.has(post.id)} isBookmarked={bookmarkedPostIds.has(post.id)} />
-                ))}
-                <Pagination page={page} total={total} onPage={goToPage} />
-              </div>
+              <>
+                <div className="space-y-2">
+                  {posts.map((post) => (
+                    <PostCard key={post.id} post={post} searchQuery={searchQuery} hasVoted={votedPostIds.has(post.id)} isBookmarked={bookmarkedPostIds.has(post.id)} />
+                  ))}
+                </div>
+                {/* Infinite scroll sentinel */}
+                <div ref={sentinelRef} className="h-1" />
+                {loadingMore && (
+                  <div className="space-y-2 mt-2">
+                    <SkeletonPostCard />
+                    <SkeletonPostCard />
+                    <p className="text-center pt-1" style={{ color: "var(--text-tertiary)", fontSize: "12px" }}>
+                      Chargement...
+                    </p>
+                  </div>
+                )}
+                {!hasMore && posts.length > 0 && !loadingMore && (
+                  <p className="text-center py-4" style={{ color: "var(--text-tertiary)", fontSize: "12px" }}>
+                    Aucune autre discussion
+                  </p>
+                )}
+              </>
             )}
             </div>
           </div>
@@ -628,6 +699,6 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
           </div>
         </div>
       </main>
-    </>
+    </PullToRefresh>
   );
 }

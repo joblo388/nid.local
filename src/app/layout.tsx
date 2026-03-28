@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { ToastProvider } from "@/components/Toast";
+import { LightboxProvider } from "@/components/LightboxProvider";
 import { BottomNav } from "@/components/BottomNav";
+import { CommandPalette } from "@/components/CommandPalette";
+import { ConfettiProvider } from "@/components/Confetti";
+import { PageTransition } from "@/components/PageTransition";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
@@ -80,7 +86,7 @@ export default function RootLayout({
         `}</Script>
       </head>
       <body className="min-h-screen">
-          <SessionProvider>{children}<BottomNav /></SessionProvider>
+          <SessionProvider><ThemeProvider><ToastProvider><LightboxProvider><ConfettiProvider><PageTransition>{children}</PageTransition><BottomNav /><CommandPalette /></ConfettiProvider></LightboxProvider></ToastProvider></ThemeProvider></SessionProvider>
           <ServiceWorkerRegister />
           <Analytics />
         </body>

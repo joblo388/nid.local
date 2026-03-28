@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
 import { quartierBySlug, ressourcesUtiles } from "@/lib/data";
+import { SkeletonListingCard } from "@/components/Skeleton";
 import { AnnonceMapView } from "./AnnonceMapView";
 import "./marketplace.css";
 
@@ -91,6 +92,13 @@ export function AnnoncesListeView() {
   async function toggleFav(id: string, e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    // Trigger heart pop animation
+    const btn = (e.currentTarget as HTMLElement);
+    btn.classList.remove("heart-pop");
+    void btn.offsetWidth;
+    btn.classList.add("heart-pop");
+    btn.addEventListener("animationend", () => btn.classList.remove("heart-pop"), { once: true });
+
     setFavs((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
@@ -124,7 +132,7 @@ export function AnnoncesListeView() {
             <div className="mp-page-title">Annonces immobilières</div>
             <div className="mp-page-sub">Propriétés vendues directement par les propriétaires — sans commission</div>
           </div>
-          <Link className="mp-btn-primary" href="/annonces/publier">+ Publier une annonce</Link>
+          <Link className="mp-btn-primary btn-press" href="/annonces/publier">+ Publier une annonce</Link>
         </div>
 
         {/* Search bar */}
@@ -204,7 +212,11 @@ export function AnnoncesListeView() {
         <div className="mp-layout">
           <div className="mp-listings">
             {loading && listings.length === 0 ? (
-              <div className="mp-sidebar-card" style={{ textAlign: "center", padding: 40, color: "var(--text-tertiary)", fontSize: 13 }}>Chargement…</div>
+              <div className="space-y-3">
+                {[...Array(3)].map((_, i) => (
+                  <SkeletonListingCard key={i} />
+                ))}
+              </div>
             ) : listings.length === 0 ? (
               <div className="mp-sidebar-card" style={{ textAlign: "center", padding: 40 }}>
                 <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>Aucune annonce</div>
@@ -214,7 +226,7 @@ export function AnnoncesListeView() {
                 {filters.q ? (
                   <button className="mp-btn-primary" onClick={() => { setSearchInput(""); setFilters((f) => ({ ...f, q: "" })); }}>Effacer la recherche</button>
                 ) : (
-                  <Link className="mp-btn-primary" href="/annonces/publier">+ Publier une annonce</Link>
+                  <Link className="mp-btn-primary btn-press" href="/annonces/publier">+ Publier une annonce</Link>
                 )}
               </div>
             ) : (
@@ -315,7 +327,7 @@ export function AnnoncesListeView() {
             <div className="mp-sidebar-card">
               <h3>Alerte courriel</h3>
               <div style={{ fontSize: 13, color: "var(--text-tertiary)", marginBottom: 10, lineHeight: 1.55 }}>Reçois un courriel dès qu&apos;une nouvelle annonce correspond à tes critères.</div>
-              <button className="mp-btn-primary" style={{ width: "100%", borderRadius: 8 }}>Créer une alerte</button>
+              <button className="mp-btn-primary btn-press" style={{ width: "100%", borderRadius: 8 }}>Créer une alerte</button>
             </div>
 
             <div className="mp-sidebar-card" style={{ padding: 0 }}>

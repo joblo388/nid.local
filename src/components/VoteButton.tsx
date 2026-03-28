@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
+import { useToast } from "./Toast";
+import { useConfetti } from "./Confetti";
 
 export function VoteButton({
   postId,
@@ -18,10 +20,12 @@ export function VoteButton({
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const { toast } = useToast();
+  const { celebrate } = useConfetti();
   const [nbVotes, setNbVotes] = useState(initialVotes);
   const [hasVoted, setHasVoted] = useState(initialHasVoted);
   const [loading, setLoading] = useState(false);
-  const [erreur, setErreur] = useState("");
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   // When page is served from ISR cache, hydrate the real vote state client-side
   useEffect(() => {
@@ -43,7 +47,6 @@ export function VoteButton({
     }
     if (loading) return;
     setLoading(true);
-    setErreur("");
     // Optimistic update
     setHasVoted(!hasVoted);
     setNbVotes((n) => n + (hasVoted ? -1 : 1));
@@ -51,20 +54,30 @@ export function VoteButton({
       const res = await fetch(`/api/posts/${postId}/vote`, { method: "POST" });
       const data = await res.json();
       if (res.ok) {
+        // Celebrate first vote on a post (0 -> 1)
+        if (data.hasVoted && data.nbVotes === 1) {
+          celebrate();
+        }
         setHasVoted(data.hasVoted);
         setNbVotes(data.nbVotes);
+        // Trigger vote-pop animation
+        const el = btnRef.current;
+        if (el) {
+          el.classList.remove("vote-pop");
+          void el.offsetWidth; // force reflow
+          el.classList.add("vote-pop");
+          el.addEventListener("animationend", () => el.classList.remove("vote-pop"), { once: true });
+        }
       } else {
         // Revert
         setHasVoted(hasVoted);
         setNbVotes((n) => n + (hasVoted ? 1 : -1));
-        setErreur(data.error ?? "Erreur lors du vote.");
-        setTimeout(() => setErreur(""), 3000);
+        toast({ message: data.error ?? "Erreur lors du vote.", type: "error" });
       }
     } catch {
       setHasVoted(hasVoted);
       setNbVotes((n) => n + (hasVoted ? 1 : -1));
-      setErreur("Une erreur est survenue.");
-      setTimeout(() => setErreur(""), 3000);
+      toast({ message: "Une erreur est survenue.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -73,6 +86,7 @@ export function VoteButton({
   return (
     <div className="flex flex-col items-center gap-1">
       <button
+        ref={btnRef}
         onClick={handleVote}
         className="flex items-center justify-center w-8 h-8 rounded-lg transition-all"
         style={{
@@ -93,11 +107,6 @@ export function VoteButton({
       >
         {nbVotes}
       </span>
-      {erreur && (
-        <span className="text-[10px] text-center max-w-[60px]" style={{ color: "var(--red-text)" }}>
-          {erreur}
-        </span>
-      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Post } from "@/lib/types";
@@ -69,6 +70,34 @@ function Highlighted({ text, query }: { text: string; query: string }) {
   );
 }
 
+function AnimatedCounter({ value, format }: { value: number; format?: (n: number) => string }) {
+  const fmt = format ?? ((n: number) => String(n));
+  const [displayed, setDisplayed] = useState(value);
+  const [animClass, setAnimClass] = useState("");
+  const prevRef = useRef(value);
+
+  useEffect(() => {
+    if (prevRef.current !== value) {
+      setAnimClass("counter-roll-out");
+      const t = setTimeout(() => {
+        setDisplayed(value);
+        setAnimClass("counter-roll-in");
+      }, 250);
+      prevRef.current = value;
+      return () => clearTimeout(t);
+    }
+  }, [value]);
+
+  return (
+    <span
+      className={`inline-block ${animClass}`}
+      onAnimationEnd={() => setAnimClass("")}
+    >
+      {fmt(displayed)}
+    </span>
+  );
+}
+
 function PostImage({ src }: { src: string }) {
   if (src.startsWith("data:")) {
     // eslint-disable-next-line @next/next/no-img-element
@@ -91,7 +120,7 @@ function PostImage({ src }: { src: string }) {
 export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false, authorBadges }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean; authorBadges?: Badge[] }) {
   return (
     <article
-      className="rounded-xl transition-colors hover-bg"
+      className="rounded-xl transition-colors hover-bg card-hover-lift"
       style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", cursor: "pointer" }}
       onClick={(e) => {
         // Don't navigate if clicking on interactive elements
@@ -158,7 +187,7 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
               </svg>
-              {post.nbVotes}
+              <AnimatedCounter value={post.nbVotes} />
             </span>
             <Link href={`/post/${post.id}`}
               className="flex items-center gap-1.5 text-[12px] transition-opacity hover:opacity-60"
@@ -167,7 +196,7 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              {post.nbCommentaires} réponses
+              <AnimatedCounter value={post.nbCommentaires} /> réponses
             </Link>
             <BookmarkButton postId={post.id} initialBookmarked={isBookmarked} />
             <span className="flex items-center gap-1 text-[12px] ml-auto" style={{ color: "var(--text-tertiary)" }}>
@@ -176,7 +205,7 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              {post.nbVues.toLocaleString("fr-CA")}
+              <AnimatedCounter value={post.nbVues} format={(n) => n.toLocaleString("fr-CA")} />
             </span>
           </div>
         </div>
