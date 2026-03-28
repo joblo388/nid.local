@@ -1,6 +1,6 @@
 # nid.local — Forum immobilier québécois
 
-Forum communautaire sur l'immobilier au Québec. Discussions de quartier, ventes, locations, rénovations et alertes de voisinage.
+Communauté immobilière du Québec. Forum de discussions, marketplace sans commission (vente + location), calculatrices financières, données de marché, répertoire de professionnels.
 
 ---
 
@@ -11,313 +11,192 @@ Forum communautaire sur l'immobilier au Québec. Discussions de quartier, ventes
 | Framework | Next.js 16 (App Router) |
 | UI | React 19 |
 | Styling | Tailwind CSS 4 + CSS custom properties |
-| Typo | Geist (Google Fonts via next/font) |
+| Typo | Geist (Google Fonts via next/font, display: swap) |
 | Auth | NextAuth v5 (beta) — JWT strategy |
 | ORM | Prisma 5 |
 | Base de données | PostgreSQL (Neon) |
+| Email | SendGrid (@sendgrid/mail) |
+| Upload | Vercel Blob (fallback base64) |
+| Analytics | Google Analytics (GA4) + Vercel Analytics |
+| Tests | Playwright (e2e, 21 tests) |
 | Langage | TypeScript 5 strict |
+| Déploiement | Vercel + domaine nidlocal.com |
 
 ---
 
-## Structure des fichiers
+## Couleur d'accent
 
-```
-src/
-├── app/
-│   ├── page.tsx                    # Homepage — charge 20 posts (Montréal, populaires) + stats sidebar
-│   ├── layout.tsx                  # Root layout — SessionProvider, Geist, globals.css
-│   ├── globals.css                 # CSS custom properties (couleurs + dark mode)
-│   ├── not-found.tsx               # Page 404 personnalisée
-│   ├── villes/page.tsx             # Liste de toutes les villes groupées par région
-│   ├── ville/[slug]/page.tsx       # Page d'une ville + quartiers + posts paginés
-│   ├── quartiers/page.tsx          # Liste de tous les quartiers groupés par ville
-│   ├── quartier/[slug]/page.tsx    # Page d'un quartier + posts paginés
-│   ├── post/[id]/page.tsx          # Détail d'un post (commentaires + votes + actions)
-│   ├── post/[id]/opengraph-image.tsx
-│   ├── nouveau-post/page.tsx       # Formulaire de création de post (auth requise)
-│   ├── nouveau-post/NouveauPostForm.tsx
-│   ├── u/[username]/page.tsx       # Profil utilisateur — posts + réponses récentes
-│   ├── parametres/page.tsx         # Paramètres du compte (profil, avatar, mot de passe)
-│   ├── parametres/ParametresForm.tsx
-│   ├── notifications/page.tsx      # Centre de notifications
-│   ├── admin/page.tsx              # Admin — signalements (rôle admin requis)
-│   ├── admin/AdminActions.tsx
-│   ├── annonces/
-│   │   ├── page.tsx                # Liste des annonces marketplace (filtres + sidebar)
-│   │   ├── AnnoncesListeView.tsx   # Client component — liste, favoris, filtres
-│   │   ├── marketplace.css         # CSS dédié marketplace (pas Tailwind)
-│   │   ├── [id]/page.tsx           # Détail d'une annonce (galerie, contact, docs)
-│   │   ├── [id]/AnnonceDetailView.tsx
-│   │   ├── publier/page.tsx        # Formulaire publication en 4 étapes (stepper)
-│   │   └── publier/PublierAnnonceForm.tsx
-│   ├── auth/
-│   │   ├── connexion/page.tsx      # Login email/password + Google OAuth
-│   │   └── inscription/page.tsx   # Inscription avec validation + auto sign-in
-│   └── api/
-│       ├── auth/[...nextauth]/     # Handler NextAuth (GET + POST)
-│       ├── auth/register/          # POST — créer un compte (hash bcryptjs)
-│       ├── posts/route.ts          # GET (paginé+filtré) + POST créer post
-│       ├── posts/[id]/route.ts     # PATCH/DELETE post (auteur ou admin)
-│       ├── posts/[id]/vote/        # POST — voter sur un post
-│       ├── posts/[id]/comments/    # POST — créer un commentaire
-│       ├── comments/[id]/          # PATCH/DELETE commentaire
-│       ├── notifications/          # GET notifications + PATCH marquer lu
-│       ├── reports/                # POST — signaler post ou commentaire
-│       ├── search/                 # GET — recherche plein texte
-│       └── user/settings/          # PATCH — profil, avatar, mot de passe
-├── components/
-│   ├── Header.tsx                  # Navbar sticky — logo, nav, menu utilisateur
-│   ├── HomepageView.tsx            # Fil principal — filtres ville/quartier/catégorie/tri + pagination API
-│   ├── PostCard.tsx                # Carte de post avec highlighting + vignette image
-│   ├── PostsFiltres.tsx            # Filtres catégorie/tri + pagination API (pages ville/quartier)
-│   ├── PostActions.tsx             # Modifier/supprimer post (auteur)
-│   ├── CommentSection.tsx          # Section commentaires + formulaire (avec upload image)
-│   ├── Sidebar.tsx                 # Sidebar droite — stats, villes actives, ressources
-│   ├── VoteButton.tsx              # Bouton vote optimiste
-│   ├── ShareButton.tsx             # Partager un post
-│   ├── ReportButton.tsx            # Signaler post ou commentaire
-│   ├── NotificationBell.tsx        # Cloche de notifications
-│   ├── SessionProvider.tsx         # Wrapper client NextAuth SessionProvider
-│   ├── QuartierBadge.tsx           # Badge quartier (non utilisé pour l'instant)
-│   └── FiltreBar.tsx               # Barre de filtres (non utilisé pour l'instant)
-├── lib/
-│   ├── data.ts                     # Données statiques: 18 villes, ~85 quartiers + dbPostToAppPost
-│   ├── types.ts                    # Types TypeScript: Ville, Quartier, Post, Categorie
-│   ├── prisma.ts                   # Singleton PrismaClient
-│   └── rateLimit.ts                # Rate limiting en mémoire
-├── types/
-│   └── next-auth.d.ts              # Extension du type Session (id, username)
-└── auth.ts                         # Config NextAuth — providers, callbacks JWT/session
-prisma/
-├── schema.prisma                   # Modèles: User, Post, Comment, Vote, Notification, Report, ...
-└── dev.db                          # (obsolète — DB migrée sur Neon PostgreSQL)
-```
+La couleur principale est **terracotta orange** `#D4742A` (pas le vert AI). Toutes les couleurs passent par des CSS custom properties dans `globals.css`. **Ne jamais hardcoder de couleurs** — toujours `var(--nom)`.
+
+| Variable | Clair | Sombre |
+|----------|-------|--------|
+| `--green` | `#D4742A` | `#D4742A` |
+| `--green-light-bg` | `#FDF0E6` | `#2D1A0A` |
+| `--green-text` | `#A8511B` | `#E8A070` |
+
+Note : les noms de variables contiennent encore "green" pour des raisons historiques, mais la couleur est orange.
 
 ---
 
-## Pagination
+## Dark mode
 
-La pagination est **serveur** sur toutes les pages de listing :
-
-- `GET /api/posts?villeSlug=&quartierSlug=&categorie=&tri=&page=` retourne 20 posts filtrés + `total` + `hasMore` + `votedPostIds`
-- Homepage (`HomepageView`), pages ville et quartier (`PostsFiltres`) : charge la 1re page côté serveur, fetche via API sur changement de filtre/tri ou "Charger plus"
-- La `Sidebar` reçoit des stats précalculées (groupBy) au lieu de tous les posts
-
----
-
-## Palette de couleurs
-
-Toutes les couleurs passent par des CSS custom properties définies dans `globals.css`. **Ne jamais hardcoder de couleurs directement** — toujours utiliser `var(--nom)`.
-
-### Mode clair (défaut)
-
-| Variable | Valeur | Usage |
-|----------|--------|-------|
-| `--bg-page` | `#f5f4f0` | Fond de page (légèrement crème) |
-| `--bg-card` | `#ffffff` | Fond des cartes et header |
-| `--bg-secondary` | `#f1efe8` | Fond secondaire (barre quartiers, inputs) |
-| `--border` | `#e8e7e2` | Bordures principales (0.5px) |
-| `--border-secondary` | `#d3d1c7` | Bordures secondaires |
-| `--text-primary` | `#1a1a18` | Titres et texte principal |
-| `--text-secondary` | `#3d3c39` | Navigation, labels |
-| `--text-tertiary` | `#6e6c67` | Métadonnées, dates, placeholders |
-| `--green` | `#1D9E75` | Couleur d'accent principale (CTA, actif) |
-| `--green-light-bg` | `#E1F5EE` | Fond badge vert clair |
-| `--green-text` | `#0F6E56` | Texte sur fond vert clair |
-| `--blue-bg` | `#E6F1FB` | Fond badge bleu |
-| `--blue-text` | `#185FA5` | Texte sur fond bleu |
-| `--red-bg` | `#FCEBEB` | Fond badge rouge |
-| `--red-text` | `#A32D2D` | Texte sur fond rouge |
-| `--amber-bg` | `#FAEEDA` | Fond badge ambré |
-| `--amber-text` | `#854F0B` | Texte sur fond ambré |
-
-### Mode sombre (automatique via `prefers-color-scheme: dark`)
-
-| Variable | Valeur dark |
-|----------|-------------|
-| `--bg-page` | `#141414` |
-| `--bg-card` | `#1a1a1a` |
-| `--bg-secondary` | `#222222` |
-| `--border` | `#2e2e2e` |
-| `--border-secondary` | `#333333` |
-| `--text-primary` | `#f2f0ea` |
-| `--text-secondary` | `#d4d1ca` |
-| `--text-tertiary` | `#9e9b95` |
-| `--green` | `#1D9E75` (inchangé) |
-| `--green-light-bg` | `#0a2e20` |
-| `--green-text` | `#5DCAA5` |
-| `--blue-bg` | `#0d2140` |
-| `--blue-text` | `#85B7EB` |
-| `--red-bg` | `#3d1515` |
-| `--red-text` | `#f09595` |
-| `--amber-bg` | `#2e1f08` |
-| `--amber-text` | `#EF9F27` |
+- **3 modes** : auto (système), clair, sombre
+- Toggle soleil/lune/auto dans le header (ThemeToggle)
+- Persisté dans un cookie "theme"
+- Classes CSS : `:root.dark`, `:root.light`, ou auto via `@media (prefers-color-scheme: dark)`
+- `suppressHydrationWarning` sur html/body pour éviter les mismatches
 
 ---
 
-## Règles de dark mode
+## Architecture des pages
 
-- Le dark mode est **entièrement automatique** via `@media (prefers-color-scheme: dark)` dans `globals.css`.
-- Pas de toggle manuel — pas de classe `.dark` Tailwind — pas de `localStorage`.
-- Tout composant doit utiliser uniquement `var(--...)` pour les couleurs, jamais de valeurs Tailwind comme `bg-white` ou `text-gray-900` qui ne s'adaptent pas.
-- Exception autorisée: les couleurs de quartier (`couleur: string` dans `Quartier`) utilisent des classes Tailwind (`bg-rose-500`, etc.) car elles servent uniquement de points de couleur décoratifs (petits ronds `w-1.5 h-1.5`).
-- La classe utilitaire `.hover-bg` est définie dans `globals.css` pour les hovers sur composants server (impossible d'utiliser `hover:` Tailwind avec `var()`).
+### Forum / Communauté
+- `/` — Homepage avec infinite scroll, pull-to-refresh mobile
+- `/tendances` — Posts populaires de la semaine
+- `/quartier/[slug]` — Posts d'un quartier + avis + abonnement
+- `/ville/[slug]` — Posts d'une ville
+- `/post/[id]` — Détail post + commentaires + sondage + posts similaires + scroll progress bar
+- `/nouveau-post` — Création avec éditeur markdown + sondage optionnel
+- `/villes` — Liste de toutes les villes (95 villes, 16 régions)
+
+### Marketplace (vente + location)
+- `/annonces` — Liste avec filtres (ville, type, prix, mode acheter/louer) + vue carte
+- `/annonces/[id]` — Détail avec carousel photos, MLS, estimation prix, dashboard vendeur
+- `/annonces/publier` — Formulaire 4 étapes (vente ou location)
+- `/annonces/comparer` — Comparateur côte à côte (2-3 annonces)
+- Modes : **vente** (unifamiliale, condo, duplex...5-plex, terrain, commercial) + **location** (studio, 1½ à 6½, loft)
+- Max 40 images par annonce, champ MLS avec liens Centris/Realtor.ca
+
+### Outils / Calculatrices
+- `/ressources` — Hub des outils (page dédiée mobile)
+- `/calculatrice-hypothecaire` — Paiements mensuels, SCHL
+- `/capacite-emprunt` — GDS/TDS, scénarios
+- `/calculateur-plex` — MRB, cashflow, projection 5 ans
+- `/acheter-ou-louer` — Comparateur avec revenu locatif
+- `/estimation` — Estimation valeur basée sur données de marché
+- `/donnees-marche` — Prix médians 80+ quartiers + graphiques SVG 2020-2026
+- `/comparer-quartiers` — Comparaison côte à côte de quartiers
+- Toutes les calculatrices ont un bouton **Partager** (encode les valeurs dans l'URL)
+- Calculatrices disponibles **offline** (service worker stale-while-revalidate)
+
+### Répertoire professionnel
+- `/repertoire` — Grille 5 colonnes de pros (courtier, notaire, finance, entrepreneur...)
+- `/repertoire/[id]` — Détail pro avec votes, commentaires, contact DM/email
+- Gestion d'équipe par domaine email (même domaine = même page pro)
+- Stats : votes, vues, commentaires dans l'onglet Profil pro du profil utilisateur
+
+### Profil utilisateur
+- `/u/[username]` — Onglets : Discussions, Annonces, Finance, Réponses, Paramètres, Profil pro
+- Paramètres et Profil pro éditables inline sans quitter la page
+- Badges (8 calculés), niveau (Bronze→Légende), points, karma
+- Tags professionnels affichés sur les posts et commentaires
+- Historique de navigation (posts + annonces consultés)
+
+### Auth
+- Inscription avec vérification email obligatoire (SendGrid)
+- Connexion email/password + Google OAuth
+- Email de bienvenue automatique à l'inscription
+- Réinitialisation de mot de passe par email
 
 ---
 
-## Types de données
+## Notifications & Email
 
-```typescript
-type Ville = { slug: string; nom: string; region: string }
-
-type Quartier = { slug: string; nom: string; villeSlug: string; couleur: string }
-
-type Categorie = "vente" | "location" | "question" | "renovation" | "voisinage" | "alerte"
-
-type Post = {
-  id: string; titre: string; contenu: string; auteur: string;
-  quartier: Quartier; categorie: Categorie; creeLe: string;
-  nbCommentaires: number; nbVotes: number; nbVues: number;
-  epingle?: boolean; auteurId?: string | null; imageUrl?: string | null;
-}
-```
+- **SendGrid** pour tous les emails (clé dans `.env`)
+- Types d'emails : vérification, bienvenue, reset password, commentaire, réponse, mention, message, alerte marketplace, baisse de prix, expert request
+- **Préférences email** configurables par l'utilisateur dans Paramètres
+- **Notifications in-app** : polling 30s (60s tab caché), browser Notification API
+- **Alertes marketplace** : email auto quand une annonce matche les critères
+- **Baisse de prix** : notifie les users qui ont favori une annonce
 
 ---
 
-## Catégories de posts
+## UX Features
 
-| Valeur | Label affiché |
-|--------|--------------|
-| `vente` | Vente |
-| `location` | Location |
-| `question` | Question |
-| `renovation` | Conseil |
-| `voisinage` | Voisinage |
-| `construction` | Construction |
-| `legal` | Légal |
-| `financement` | Financement |
-| `copropriete` | Co-propriété |
+- **Cmd+K** command palette (recherche globale, navigation)
+- **Infinite scroll** sur le homepage feed
+- **Pull-to-refresh** mobile
+- **Page transitions** (fade + slide-up)
+- **Image lightbox** (zoom, swipe, keyboard)
+- **Skeleton loading** (PostCard, ListingCard)
+- **Micro-animations** (vote bounce, heart pop, badge shimmer, card lift)
+- **Confetti** sur publication de post/annonce
+- **Link previews** auto dans les posts/commentaires
+- **Éditeur markdown** avec toolbar + aperçu
+- **Posts similaires** (4 recommandations)
+- **Typing indicator** dans la messagerie
+- **Scroll progress bar** sur les posts longs
+- **Toast notifications** (success/error/info)
+- **Onboarding tour** (4 étapes pour nouveaux visiteurs)
+- **Sondages** dans les posts
+- **AMA** (Ask Me Anything) comme type de post
+
+---
+
+## Mobile
+
+Le mobile est **simplifié à l'essentiel** :
+- Header : logo + burger menu + auth
+- Pas de VilleBar, QuartierBar, breadcrumb, search, catégories, tri
+- Bottom nav : **Fil — Publier — Outils — Annonces**
+- PostCard : vote + commentaires + bookmark (pas de tags/badges)
+- Calculatrices : tout empilé verticalement (breakpoint 640px)
+- Marketplace : filtres 2x2, pas de sidebar ni carte
 
 ---
 
 ## Décisions de design
 
-### Général
-- **Langue**: 100% français québécois dans toute l'interface.
-- **Max-width**: `1100px` centré avec `px-5` sur toutes les pages.
-- **Font size**: petite — 11px, 12px, 13px, 14px. Pas de grands textes sauf titres de posts.
-- **Bordures**: `0.5px solid var(--border)` partout — jamais `1px`.
-- **Border-radius**: `rounded-xl` (12px) pour cartes et dropdowns, `rounded-lg` (8px) pour boutons et badges.
-- **Shadows**: uniquement sur les dropdowns — `0 8px 24px rgba(0,0,0,0.12)`.
-
-### Header
-- Sticky, hauteur fixe `52px`.
-- Logo: `nid` en `--text-primary`, `.local` en `--green`, font-black 18px.
-- Auth: bouton "Se connecter" discret + bouton "S'inscrire" vert plein.
-- Menu utilisateur: avatar circulaire vert avec initiale, dropdown à droite.
-
-### Navigation des villes/quartiers
-- Deux barres sticky sous le header: `VilleBar` (bg-card) puis `QuartierBar` (bg-secondary).
-- Élément actif dans VilleBar: `green-light-bg` + `green-text`.
-- Élément actif dans QuartierBar: `--green` plein blanc.
-- Scroll horizontal sans scrollbar visible (`scrollbarWidth: none`).
-
-### PostCard
-- Fond `--bg-card`, bordure `0.5px`, `rounded-xl`.
-- Badge catégorie en haut à gauche, couleur selon catégorie (vert, bleu, rouge, ambré).
-- Highlighting des mots recherchés dans le titre.
-- Vignette image (max 180px de hauteur) si `imageUrl` présent.
-- Footer: votes, commentaires, vues avec icônes SVG inline.
-
-### Images
-- Stockées en base64 data URL dans la colonne `imageUrl` (Post et Comment).
-- Limite : 2 MB pour les posts et commentaires, 500 KB pour les avatars.
-- Validation côté serveur : doit commencer par `data:image/`.
-
-### Sidebar
-- Visible uniquement `md:` et plus, largeur fixe `240px`.
-- CTA "Nouvelle discussion" en pleine largeur, vert.
-- Reçoit des stats précalculées (`SidebarStats`) — pas de posts entiers.
-
-### Pages auth
-- Formulaires centrés, max-width étroit.
-- Erreurs affichées inline sous les champs.
-- Bouton Google OAuth présent mais désactivé (clés non configurées).
-- Après inscription réussie: auto sign-in + redirection vers `/`.
-
-### Marketplace (annonces)
-- CSS dans `src/app/annonces/marketplace.css` — **ne pas convertir en Tailwind**, utilise les CSS custom properties existantes.
-- Max-width `900px` pour les pages liste et détail, `700px` pour le formulaire de publication.
-- **Persisté en DB** — modèles Prisma: `Listing`, `ListingImage`, `ListingDocument`, `ListingFavorite`, `ListingComment`.
-- API routes: `GET/POST /api/annonces`, `GET/PATCH/DELETE /api/annonces/[id]`, `POST /api/annonces/[id]/favorite`, `POST /api/annonces/[id]/comments`, `POST /api/annonces/[id]/click`.
-- Le formulaire de publication utilise un **stepper 4 étapes** avec navigation avant/arrière + upload d'images réel via `/api/upload`.
-- Ville et quartier sélectionnables depuis les mêmes données statiques que le forum (`data.ts`).
-- **Mode anonyme**: le propriétaire peut masquer son username (champ `anonyme` sur `Listing`).
-- **Téléphone optionnel**: le propriétaire peut afficher son numéro publiquement (champ `telephone` sur `Listing`).
-- **Commentaires** sur les annonces — tout utilisateur connecté peut commenter.
-- **Stats** visibles: vues, clics (depuis la liste), favoris, commentaires. Le propriétaire voit un "Tableau de bord" en haut de la page détail.
-- **Carte Google Maps** intégrée en iframe sur la page détail et en aperçu dans le formulaire (étape 4).
-- Les utilisateurs du forum réutilisent leur compte pour acheter/vendre.
-- Lien "Annonces" dans le Header (nav desktop + mobile) et dans la Sidebar (Ressources utiles).
-- Section "Mes annonces" visible sur le profil utilisateur (`/u/[username]`) avec statut (active/vendu/retiré).
-- Header affiche un badge **MARKETPLACE** et une nav contextuelle quand on est sur `/annonces/*`.
-- Images: upload via Vercel Blob (avec fallback base64), affichage via `next/image`.
-
-### Données actuelles
-- Posts, commentaires et votes sont **persistés en base de données** (PostgreSQL Neon).
-- Villes et quartiers sont des **données statiques** dans `src/lib/data.ts`.
-- Annonces marketplace: **persistées en DB** (Listing + images + documents + favoris).
+- **Langue** : 100% français québécois (i18n FR/EN disponible mais FR par défaut)
+- **Max-width** : `1100px` centré, `900px` marketplace, `700px` formulaires
+- **Font size** : 10-14px. Pas de grands textes sauf titres.
+- **Bordures** : `0.5px solid var(--border)` — jamais `1px`
+- **Border-radius** : `rounded-xl` (12px) cartes, `rounded-lg` (8px) boutons
+- **Images** : Vercel Blob upload, next/image avec blur placeholder, lazy loading
+- **Performance** : React.memo sur PostCard, cache headers API (30s-300s), font-display swap
+- **PWA** : manifest.json, service worker, offline fallback, installable sur mobile
+- **Favicon** : maison noire avec porte orange + point orange (généré via Next.js ImageResponse)
 
 ---
 
-## État d'avancement
+## Modèles Prisma principaux
 
-- [x] Structure de navigation (villes, quartiers, posts)
-- [x] Fil de discussions avec filtres et recherche
-- [x] Auth (inscription, connexion, session, déconnexion)
-- [x] Dark mode automatique
-- [x] Création de posts (avec upload d'image)
-- [x] Commentaires (avec upload d'image)
-- [x] Posts en base de données (PostgreSQL Neon)
-- [x] Votes sur les posts
-- [x] Signalements (posts et commentaires)
-- [x] Notifications
-- [x] Page profil (`/u/[username]`)
-- [x] Paramètres du compte (profil, avatar, mot de passe)
-- [x] Admin — gestion des signalements
-- [x] Pagination serveur (homepage, ville, quartier)
-- [x] Réinitialisation de mot de passe (token en DB, lien loggé en console — brancher un service email en prod)
-- [x] Marketplace immobilier — liste, détail, formulaire publication 4 étapes
-- [x] Marketplace — persistance en DB (Listing, ListingImage, ListingDocument, ListingFavorite)
-- [x] Marketplace — API routes CRUD + favoris
-- [x] Marketplace — upload d'images réel (Vercel Blob / base64 fallback) + next/image
-- [x] Marketplace — filtres fonctionnels (quartier, type, prix max)
-- [x] Marketplace — favoris persistés en DB
-- [x] Marketplace — "Mes annonces" sur le profil utilisateur (statut, vues, gestion)
-- [x] Marketplace — messagerie privée acheteur/vendeur (conversations + messages temps réel)
-- [x] Marketplace — signalement d'annonces frauduleuses
-- [x] Marketplace — modifier annonce avec images/docs (PATCH API corrigé)
-- [x] Google OAuth (connexion Google + sync photo profil)
-- [x] Calculatrice hypothécaire avec SEO complet
-- [x] Calculateur plex (MRB, cashflow, rendement, projection 5 ans)
-- [x] Acheter ou louer (comparateur avec horizon ajustable)
-- [x] Capacité d'emprunt (GDS/TDS, scénarios)
-- [x] Données de marché immobilier Québec (80+ quartiers, filtres par ville)
-- [x] Sauvegarde de rapports financiers (PDF/CSV export, section Finance au profil)
-- [x] Page tendances (posts populaires de la semaine)
-- [x] Page favoris (/favoris)
-- [x] Recherche globale (posts + annonces)
-- [x] Page suggestions (/suggestions) avec notifications admin
-- [x] Profil avec onglets (Discussions, Annonces, Finance, Réponses)
-- [x] Bottom nav mobile
-- [x] Catégories étendues (construction, légal, financement, copropriété)
-- [x] 20 posts seed avec commentaires + 15 utilisateurs
-- [x] SEO complet (JSON-LD, sitemap, OpenGraph, FAQ)
-- [x] Partage fonctionnel (natif mobile + clipboard)
-- [x] Anti-bot (honeypot sur inscription, posts, annonces)
-- [x] Google Analytics (GA4) + Vercel Analytics
-- [x] Déployé sur Vercel + domaine nidlocal.com
-- [x] Vercel Blob pour upload d'images
-- [ ] Marketplace — alertes courriel (nouvelles annonces)
-- [ ] Notifications email (Resend/SendGrid)
-- [ ] Vérification courriel obligatoire
+- `User` — auth, tag pro, préférences email, niveau/points
+- `Post` — discussions forum avec sondages optionnels
+- `Comment` — commentaires avec réponses imbriquées
+- `Vote`, `CommentVote` — votes sur posts et commentaires
+- `Listing` — annonces marketplace (vente + location), champ MLS
+- `ListingImage`, `ListingDocument` — médias des annonces
+- `Notification` — tous types de notifications
+- `Conversation`, `Message` — messagerie privée
+- `Poll`, `PollOption`, `PollVote` — sondages
+- `QuartierReview` — avis sur les quartiers (5 critères)
+- `QuartierSubscription` — abonnement aux quartiers
+- `AlerteMarketplace` — alertes email marketplace
+- `SavedSearch` — recherches marketplace sauvegardées
+- `ProProfile`, `ProVote`, `ProComment` — répertoire professionnel
+- `SellerReview` — avis sur les vendeurs
+- `ViewHistory` — historique de navigation
+- `SavedReport` — rapports calculatrices sauvegardés
+
+---
+
+## Seed data
+
+- 15 utilisateurs avec tags professionnels
+- 20 posts avec commentaires détaillés et votes
+- Exécuter : `npx prisma db seed`
+
+---
+
+## Variables d'environnement (.env)
+
+```
+DATABASE_URL="postgresql://..."
+AUTH_SECRET="..."
+AUTH_GOOGLE_ID=""
+AUTH_GOOGLE_SECRET=""
+SENDGRID_API_KEY="SG.xxx"
+SENDGRID_FROM_EMAIL="noreply@nidlocal.com"
+NEXT_PUBLIC_SITE_URL="https://nidlocal.com"
+```
