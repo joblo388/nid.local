@@ -91,16 +91,9 @@ export default async function ProfilPage({ params }: Props) {
             {displayName[0].toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>
-                @{displayName}
-              </h1>
-              <UserLevel
-                levelName={userPoints.level.name}
-                levelColor={userPoints.level.color}
-                compact
-              />
-            </div>
+            <h1 className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>
+              @{displayName}
+            </h1>
             <p className="text-[12px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
               Membre depuis {memberSince}
             </p>
@@ -133,28 +126,6 @@ export default async function ProfilPage({ params }: Props) {
             </div>
           </div>
         </div>
-
-        {/* Actions profil */}
-        {isOwn && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <Link
-              href="/parametres"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-opacity hover:opacity-80"
-              style={{ background: "var(--bg-card)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><circle cx="12" cy="12" r="3" /></svg>
-              Paramètres
-            </Link>
-            <Link
-              href="/repertoire"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-opacity hover:opacity-80"
-              style={{ background: "var(--bg-card)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-              Profil professionnel
-            </Link>
-          </div>
-        )}
 
         {/* Badges */}
         {badges.length > 0 && (
@@ -199,6 +170,8 @@ export default async function ProfilPage({ params }: Props) {
           { id: "annonces", label: "Annonces", count: dbListings.length },
           ...(isOwn ? [{ id: "finance", label: "Finance", count: savedReports.length }] : []),
           { id: "reponses", label: "Réponses", count: dbComments.length },
+          ...(isOwn ? [{ id: "parametres", label: "Paramètres" }] : []),
+          ...(isOwn ? [{ id: "pro", label: "Profil pro" }] : []),
         ]}>
           {/* Tab: Discussions */}
           <div>
@@ -321,6 +294,30 @@ export default async function ProfilPage({ params }: Props) {
               </div>
             )}
           </div>
+
+          {/* Tab: Paramètres */}
+          {isOwn && (
+            <div>
+              <div className="rounded-xl p-6 text-center" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <p className="text-[13px] mb-3" style={{ color: "var(--text-tertiary)" }}>Modifier votre profil, mot de passe et préférences de notifications.</p>
+                <Link href="/parametres" className="inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg" style={{ background: "var(--green)" }}>
+                  Ouvrir les paramètres
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Tab: Profil pro */}
+          {isOwn && (
+            <div>
+              <div className="rounded-xl p-6 text-center" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <p className="text-[13px] mb-3" style={{ color: "var(--text-tertiary)" }}>Créez ou modifiez votre fiche dans le répertoire professionnel.</p>
+                <Link href="/repertoire" className="inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg" style={{ background: "var(--green)" }}>
+                  Gérer mon profil pro
+                </Link>
+              </div>
+            </div>
+          )}
         </ProfileTabs>
       </main>
     </div>
