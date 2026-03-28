@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
 import { BottomNav } from "@/components/BottomNav";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import "./globals.css";
 
 const geist = Geist({
@@ -61,6 +62,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={geist.variable}>
+      <head>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-C0LY69FTWR" strategy="afterInteractive" />
+        <Script id="gtag-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-C0LY69FTWR');
+        `}</Script>
+      </head>
       <body className="min-h-screen">
           <SessionProvider>{children}<BottomNav /></SessionProvider>
           <Analytics />
