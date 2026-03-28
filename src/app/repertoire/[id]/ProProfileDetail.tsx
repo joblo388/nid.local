@@ -75,6 +75,61 @@ function getInitials(name: string): string {
 
 const villeNomMap: Record<string, string> = Object.fromEntries(villes.map((v) => [v.slug, v.nom]));
 
+// ─── Contact DM Button ───────────────────────────────────────────────────
+
+function ContactDMButton({ recipientId, recipientName }: { recipientId: string; recipientName: string }) {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [sending, setSending] = useState(false);
+
+  async function handleDM() {
+    if (!session?.user) {
+      router.push("/auth/connexion?callbackUrl=" + encodeURIComponent(window.location.pathname));
+      return;
+    }
+    if (session.user.id === recipientId) {
+      toast({ message: "Vous ne pouvez pas vous écrire à vous-même.", type: "info" });
+      return;
+    }
+    setSending(true);
+    try {
+      const res = await fetch("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipientId,
+          message: `Bonjour, je vous contacte via votre profil professionnel sur nid.local. J'aimerais en savoir plus sur vos services.`,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.conversationId) {
+        toast({ message: "Message envoyé!", type: "success" });
+        router.push(`/messages/${data.conversationId}`);
+      } else {
+        toast({ message: data.error ?? "Erreur", type: "error" });
+      }
+    } catch {
+      toast({ message: "Erreur réseau", type: "error" });
+    }
+    setSending(false);
+  }
+
+  return (
+    <button
+      onClick={handleDM}
+      disabled={sending}
+      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-[13px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+      style={{ background: "var(--green)" }}
+    >
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+      {sending ? "Envoi..." : `Envoyer un message à ${recipientName}`}
+    </button>
+  );
+}
+
 // ─── Types ─────────────────────────────────────────────────────────────────
 
 type ProProfile = {
@@ -523,57 +578,56 @@ export function ProProfileDetail({ profileId }: { profileId: string }) {
           </p>
         </div>
 
-        {/* Contact info */}
-        {(profile.telephone || profile.courriel || profile.siteWeb) && (
-          <div
-            className="px-5 pb-5 pt-3 mx-5 mb-5 rounded-lg"
-            style={{ background: "var(--bg-secondary)" }}
-          >
-            <h2 className="text-[12px] font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
-              Coordonnees
-            </h2>
-            <div className="flex flex-col gap-2">
+        {/* Contact section */}
+        <div
+          className="px-5 pb-5 pt-3 mx-5 mb-5 rounded-lg"
+          style={{ background: "var(--bg-secondary)" }}
+        >
+          <h2 className="text-[12px] font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+            Contacter {profile.nomEntreprise}
+          </h2>
+
+          {/* DM + Email buttons */}
+          <div className="flex flex-col gap-2 mb-3">
+            <ContactDMButton recipientId={profile.userId} recipientName={profile.nomEntreprise} />
+            {profile.courriel && (
+              <a
+                href={`mailto:${profile.courriel}?subject=Contact via nid.local — ${profile.nomEntreprise}`}
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-[13px] font-medium transition-opacity hover:opacity-80"
+                style={{ background: "var(--bg-card)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Envoyer un courriel
+              </a>
+            )}
+          </div>
+
+          {/* Coordonnées */}
+          {(profile.telephone || profile.courriel || profile.siteWeb) && (
+            <div className="flex flex-col gap-2 pt-3" style={{ borderTop: "0.5px solid var(--border)" }}>
               {profile.telephone && (
-                <a
-                  href={`tel:${profile.telephone}`}
-                  className="flex items-center gap-2 text-[13px] hover:opacity-70 transition-opacity"
-                  style={{ color: "var(--green)" }}
-                >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
+                <a href={`tel:${profile.telephone}`} className="flex items-center gap-2 text-[13px] hover:opacity-70 transition-opacity" style={{ color: "var(--text-secondary)" }}>
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                   {profile.telephone}
                 </a>
               )}
               {profile.courriel && (
-                <a
-                  href={`mailto:${profile.courriel}`}
-                  className="flex items-center gap-2 text-[13px] hover:opacity-70 transition-opacity"
-                  style={{ color: "var(--green)" }}
-                >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
+                <span className="flex items-center gap-2 text-[13px]" style={{ color: "var(--text-tertiary)" }}>
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                   {profile.courriel}
-                </a>
+                </span>
               )}
               {profile.siteWeb && (
-                <a
-                  href={profile.siteWeb.startsWith("http") ? profile.siteWeb : `https://${profile.siteWeb}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[13px] hover:opacity-70 transition-opacity"
-                  style={{ color: "var(--green)" }}
-                >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
+                <a href={profile.siteWeb.startsWith("http") ? profile.siteWeb : `https://${profile.siteWeb}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[13px] hover:opacity-70 transition-opacity" style={{ color: "var(--text-secondary)" }}>
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                   {profile.siteWeb}
                 </a>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Comments section */}
