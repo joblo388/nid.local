@@ -305,7 +305,7 @@ export function AnnoncesListeView() {
             )}
           </div>
 
-          <div className="mp-sidebar">
+          <div className="mp-sidebar hidden md:block">
             <button className="mp-sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
               {sidebarOpen ? "Masquer le menu ▲" : "Marché, quartiers, ressources ▼"}
             </button>
