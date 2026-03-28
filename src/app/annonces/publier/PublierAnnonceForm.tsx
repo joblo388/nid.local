@@ -86,7 +86,7 @@ export function PublierAnnonceForm() {
     if (!files) return;
     setUploading(true);
     for (const file of Array.from(files)) {
-      if (images.length >= 14) break;
+      if (images.length >= 40) break;
       const preview = URL.createObjectURL(file);
       const fd = new FormData();
       fd.append("file", file);
@@ -443,7 +443,7 @@ export function PublierAnnonceForm() {
                   {i === 0 && <span className="mp-photo-main-tag">Principale</span>}
                 </div>
               ))}
-              {images.length < 14 && (
+              {images.length < 40 && (
                 <div className="mp-photo-slot" onClick={() => fileRef.current?.click()}>
                   {uploading ? (
                     <span style={{ fontSize: 11, color: "var(--text-tertiary)" }}>…</span>
@@ -452,7 +452,7 @@ export function PublierAnnonceForm() {
                   )}
                 </div>
               )}
-              {Array.from({ length: Math.max(0, 4 - images.length - 1) }, (_, i) => (
+              {Array.from({ length: Math.max(0, Math.min(4, 4 - images.length) - 1) }, (_, i) => (
                 <div key={`empty-${i}`} className="mp-photo-slot">
                   <svg viewBox="0 0 20 20"><rect x="1" y="4" width="18" height="13" rx="2" strokeDasharray="2 1" /></svg>
                 </div>
@@ -460,7 +460,7 @@ export function PublierAnnonceForm() {
             </div>
             <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
             <div style={{ fontSize: 12, color: "var(--text-tertiary)", marginBottom: 16 }}>
-              {images.length} / 14 photos · La première photo sera l&apos;image principale · Cliquer pour supprimer
+              {images.length} / 40 photos · La première photo sera l&apos;image principale · Cliquer pour supprimer
             </div>
 
             <div className="mp-divider" />
