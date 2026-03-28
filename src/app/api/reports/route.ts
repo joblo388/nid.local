@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { type, targetId, reason } = await req.json();
-  if (!["post", "comment"].includes(type) || !targetId || !reason?.trim()) {
+  if (!["post", "comment", "listing"].includes(type) || !targetId || !reason?.trim()) {
     return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   }
 

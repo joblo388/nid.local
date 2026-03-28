@@ -11,7 +11,7 @@ const RAISONS = [
   "Autre",
 ];
 
-export function ReportButton({ type, targetId }: { type: "post" | "comment"; targetId: string }) {
+export function ReportButton({ type, targetId }: { type: "post" | "comment" | "listing"; targetId: string }) {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");

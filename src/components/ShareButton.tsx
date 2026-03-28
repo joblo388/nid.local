@@ -5,15 +5,29 @@ import { useState } from "react";
 export function ShareButton() {
   const [copied, setCopied] = useState(false);
 
-  async function handleCopy() {
-    await navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  async function handleShare() {
+    const url = window.location.href;
+    const title = document.title;
+
+    // Native share on mobile
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch { /* user cancelled */ }
+    }
+
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* ignore */ }
   }
 
   return (
     <button
-      onClick={handleCopy}
+      onClick={handleShare}
       className="flex items-center gap-1.5 text-[12px] transition-opacity hover:opacity-70"
       style={{ color: copied ? "var(--green)" : "var(--text-tertiary)" }}
     >

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
 import { ListingActions } from "@/components/ListingActions";
+import { ReportButton } from "@/components/ReportButton";
 import { quartierBySlug } from "@/lib/data";
 import "../marketplace.css";
 
@@ -469,7 +470,10 @@ export function AnnonceDetailView() {
                   <svg viewBox="0 0 14 14" style={{ fill: isFav ? "#E24B4A" : "none" }}><path d="M7 12S1 8 1 4.5A3.5 3.5 0 017 2.6 3.5 3.5 0 0113 4.5C13 8 7 12 7 12z" /></svg>
                   Sauvegarder
                 </button>
-                <button className="mp-action-btn">
+                <button className="mp-action-btn" onClick={() => {
+                  if (navigator.share) { navigator.share({ title: listing.titre, url: window.location.href }).catch(() => {}); }
+                  else { navigator.clipboard.writeText(window.location.href); }
+                }}>
                   <svg viewBox="0 0 14 14"><path d="M10 1l3 3-3 3M1 9v-1a4 4 0 014-4h8" /></svg>
                   Partager
                 </button>
@@ -482,12 +486,16 @@ export function AnnonceDetailView() {
                 <span>{listing.nbCommentaires} commentaires</span>
               </div>
 
-              {/* Owner actions */}
-              {listing.isOwner && (
+              {/* Owner actions or Report */}
+              {listing.isOwner ? (
                 <ListingActions
                   listingId={listing.id}
                   statut={listing.statut}
                 />
+              ) : (
+                <div style={{ marginTop: 14, paddingTop: 14, borderTop: "0.5px solid var(--border)", display: "flex", justifyContent: "flex-end" }}>
+                  <ReportButton type="listing" targetId={listing.id} />
+                </div>
               )}
             </div>
           </div>

@@ -294,6 +294,30 @@ type Post = {
 - [x] Marketplace — filtres fonctionnels (quartier, type, prix max)
 - [x] Marketplace — favoris persistés en DB
 - [x] Marketplace — "Mes annonces" sur le profil utilisateur (statut, vues, gestion)
-- [ ] Marketplace — messagerie privée acheteur/vendeur
+- [x] Marketplace — messagerie privée acheteur/vendeur (conversations + messages temps réel)
+- [x] Marketplace — signalement d'annonces frauduleuses
+- [x] Marketplace — modifier annonce avec images/docs (PATCH API corrigé)
+- [x] Google OAuth (connexion Google + sync photo profil)
+- [x] Calculatrice hypothécaire avec SEO complet
+- [x] Calculateur plex (MRB, cashflow, rendement, projection 5 ans)
+- [x] Acheter ou louer (comparateur avec horizon ajustable)
+- [x] Capacité d'emprunt (GDS/TDS, scénarios)
+- [x] Données de marché immobilier Québec (80+ quartiers, filtres par ville)
+- [x] Sauvegarde de rapports financiers (PDF/CSV export, section Finance au profil)
+- [x] Page tendances (posts populaires de la semaine)
+- [x] Page favoris (/favoris)
+- [x] Recherche globale (posts + annonces)
+- [x] Page suggestions (/suggestions) avec notifications admin
+- [x] Profil avec onglets (Discussions, Annonces, Finance, Réponses)
+- [x] Bottom nav mobile
+- [x] Catégories étendues (construction, légal, financement, copropriété)
+- [x] 20 posts seed avec commentaires + 15 utilisateurs
+- [x] SEO complet (JSON-LD, sitemap, OpenGraph, FAQ)
+- [x] Partage fonctionnel (natif mobile + clipboard)
+- [x] Anti-bot (honeypot sur inscription, posts, annonces)
+- [x] Google Analytics (GA4) + Vercel Analytics
+- [x] Déployé sur Vercel + domaine nidlocal.com
+- [x] Vercel Blob pour upload d'images
 - [ ] Marketplace — alertes courriel (nouvelles annonces)
-- [ ] Google OAuth (clés non configurées)
+- [ ] Notifications email (Resend/SendGrid)
+- [ ] Vérification courriel obligatoire
