@@ -50,4 +50,11 @@
 .calc-table .neg{color:var(--red-text)}
 .calc-table tr:last-child{background:var(--bg-secondary)}
 .calc-footer-note{font-size:11px;color:var(--text-tertiary);line-height:1.6;text-align:center;margin-top:16px}
-@media(max-width:520px){.calc-grid{grid-template-columns:1fr}.calc-results-grid{grid-template-columns:1fr}.calc-table{font-size:11px;display:block;overflow-x:auto}.calc-table th,.calc-table td{padding:6px 4px;white-space:nowrap}}
+@media (max-width: 640px) {
+  .calc-grid { grid-template-columns: 1fr !important; }
+  .calc-results-grid { grid-template-columns: 1fr !important; }
+  .calc-field.full { grid-column: auto; }
+  .calc-table { font-size: 11px; display: block; overflow-x: auto; }
+  .calc-table th, .calc-table td { padding: 6px 4px; white-space: nowrap; }
+  .calc-rc-value { font-size: 22px; }
+}
