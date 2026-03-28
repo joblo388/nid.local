@@ -35,10 +35,14 @@ export async function GET(req: NextRequest) {
   }
   if (excludeId) where.id = { not: excludeId };
   if (search) {
+    // Match quartier slugs from search term (e.g. "Rosemont" → quartierSlug contains "rosemont")
+    const searchSlug = search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
     where.OR = [
       { titre: { contains: search, mode: "insensitive" } },
       { adresse: { contains: search, mode: "insensitive" } },
       { description: { contains: search, mode: "insensitive" } },
+      { quartierSlug: { contains: searchSlug, mode: "insensitive" } },
+      { villeSlug: { contains: searchSlug, mode: "insensitive" } },
     ];
   }
 

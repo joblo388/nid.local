@@ -3,18 +3,136 @@ import { Ville, Quartier, Post, Categorie } from "./types";
 // ─── Villes ───────────────────────────────────────────────────────────────────
 
 export const villes: Ville[] = [
-  { slug: "montreal",      nom: "Montréal",       region: "Grand Montréal" },
-  { slug: "quebec",        nom: "Québec",          region: "Capitale-Nationale" },
-  { slug: "laval",         nom: "Laval",           region: "Grand Montréal" },
-  { slug: "longueuil",     nom: "Longueuil",       region: "Grand Montréal" },
-  { slug: "sherbrooke",    nom: "Sherbrooke",      region: "Estrie" },
-  { slug: "gatineau",      nom: "Gatineau",        region: "Outaouais" },
-  { slug: "trois-rivieres",nom: "Trois-Rivières",  region: "Mauricie" },
-  { slug: "saguenay",      nom: "Saguenay",        region: "Saguenay–Lac-Saint-Jean" },
-  { slug: "levis",         nom: "Lévis",           region: "Chaudière-Appalaches" },
-  { slug: "terrebonne",    nom: "Terrebonne",      region: "Lanaudière" },
-  { slug: "rimouski",      nom: "Rimouski",        region: "Bas-Saint-Laurent" },
-  { slug: "drummondville", nom: "Drummondville",   region: "Centre-du-Québec" },
+  // ── Villes originales (12) ──────────────────────────────────────────────
+  { slug: "montreal",       nom: "Montréal",        region: "Grand Montréal" },
+  { slug: "quebec",         nom: "Québec",           region: "Capitale-Nationale" },
+  { slug: "laval",          nom: "Laval",            region: "Grand Montréal" },
+  { slug: "longueuil",      nom: "Longueuil",        region: "Grand Montréal" },
+  { slug: "sherbrooke",     nom: "Sherbrooke",       region: "Estrie" },
+  { slug: "gatineau",       nom: "Gatineau",         region: "Outaouais" },
+  { slug: "trois-rivieres", nom: "Trois-Rivières",   region: "Mauricie" },
+  { slug: "saguenay",       nom: "Saguenay",         region: "Saguenay–Lac-Saint-Jean" },
+  { slug: "levis",          nom: "Lévis",            region: "Chaudière-Appalaches" },
+  { slug: "terrebonne",     nom: "Terrebonne",       region: "Lanaudière" },
+  { slug: "rimouski",       nom: "Rimouski",         region: "Bas-Saint-Laurent" },
+  { slug: "drummondville",  nom: "Drummondville",    region: "Centre-du-Québec" },
+
+  // ── Grand Montréal ─────────────────────────────────────────────────────
+  { slug: "beloeil",                   nom: "Beloeil",                   region: "Grand Montréal" },
+  { slug: "blainville",               nom: "Blainville",               region: "Grand Montréal" },
+  { slug: "boisbriand",               nom: "Boisbriand",               region: "Grand Montréal" },
+  { slug: "boucherville",             nom: "Boucherville",             region: "Grand Montréal" },
+  { slug: "brossard",                 nom: "Brossard",                 region: "Grand Montréal" },
+  { slug: "candiac",                  nom: "Candiac",                  region: "Grand Montréal" },
+  { slug: "chambly",                  nom: "Chambly",                  region: "Grand Montréal" },
+  { slug: "chateauguay",              nom: "Châteauguay",              region: "Grand Montréal" },
+  { slug: "deux-montagnes",           nom: "Deux-Montagnes",           region: "Grand Montréal" },
+  { slug: "la-prairie",               nom: "La Prairie",               region: "Grand Montréal" },
+  { slug: "l-assomption",             nom: "L'Assomption",             region: "Grand Montréal" },
+  { slug: "mascouche",                nom: "Mascouche",                region: "Grand Montréal" },
+  { slug: "mirabel",                  nom: "Mirabel",                  region: "Grand Montréal" },
+  { slug: "mont-saint-hilaire",       nom: "Mont-Saint-Hilaire",       region: "Grand Montréal" },
+  { slug: "repentigny",               nom: "Repentigny",               region: "Grand Montréal" },
+  { slug: "saint-bruno-de-montarville", nom: "Saint-Bruno-de-Montarville", region: "Grand Montréal" },
+  { slug: "saint-constant",           nom: "Saint-Constant",           region: "Grand Montréal" },
+  { slug: "saint-eustache",           nom: "Saint-Eustache",           region: "Grand Montréal" },
+  { slug: "saint-hyacinthe",          nom: "Saint-Hyacinthe",          region: "Grand Montréal" },
+  { slug: "saint-jean-sur-richelieu", nom: "Saint-Jean-sur-Richelieu", region: "Grand Montréal" },
+  { slug: "saint-jerome",             nom: "Saint-Jérôme",             region: "Grand Montréal" },
+  { slug: "saint-lambert",            nom: "Saint-Lambert",            region: "Grand Montréal" },
+  { slug: "sainte-julie",             nom: "Sainte-Julie",             region: "Grand Montréal" },
+  { slug: "sainte-therese",           nom: "Sainte-Thérèse",           region: "Grand Montréal" },
+  { slug: "varennes",                 nom: "Varennes",                 region: "Grand Montréal" },
+  { slug: "vaudreuil-dorion",         nom: "Vaudreuil-Dorion",         region: "Grand Montréal" },
+
+  // ── Capitale-Nationale ──────────────────────────────────────────────────
+  { slug: "beauport",                    nom: "Beauport",                    region: "Capitale-Nationale" },
+  { slug: "charlesbourg",               nom: "Charlesbourg",               region: "Capitale-Nationale" },
+  { slug: "l-ancienne-lorette",          nom: "L'Ancienne-Lorette",          region: "Capitale-Nationale" },
+  { slug: "saint-augustin-de-desmaures", nom: "Saint-Augustin-de-Desmaures", region: "Capitale-Nationale" },
+  { slug: "sainte-foy",                 nom: "Sainte-Foy",                 region: "Capitale-Nationale" },
+  { slug: "stoneham",                   nom: "Stoneham",                   region: "Capitale-Nationale" },
+
+  // ── Chaudière-Appalaches ────────────────────────────────────────────────
+  { slug: "montmagny",      nom: "Montmagny",      region: "Chaudière-Appalaches" },
+  { slug: "saint-georges",  nom: "Saint-Georges",  region: "Chaudière-Appalaches" },
+  { slug: "sainte-marie",   nom: "Sainte-Marie",   region: "Chaudière-Appalaches" },
+  { slug: "thetford-mines", nom: "Thetford Mines", region: "Chaudière-Appalaches" },
+
+  // ── Estrie ──────────────────────────────────────────────────────────────
+  { slug: "coaticook",    nom: "Coaticook",    region: "Estrie" },
+  { slug: "lac-megantic", nom: "Lac-Mégantic", region: "Estrie" },
+  { slug: "magog",        nom: "Magog",        region: "Estrie" },
+
+  // ── Outaouais ───────────────────────────────────────────────────────────
+  { slug: "aylmer",     nom: "Aylmer",     region: "Outaouais" },
+  { slug: "buckingham", nom: "Buckingham", region: "Outaouais" },
+  { slug: "chelsea",    nom: "Chelsea",    region: "Outaouais" },
+  { slug: "hull",       nom: "Hull",       region: "Outaouais" },
+
+  // ── Mauricie ────────────────────────────────────────────────────────────
+  { slug: "la-tuque",    nom: "La Tuque",    region: "Mauricie" },
+  { slug: "louiseville", nom: "Louiseville", region: "Mauricie" },
+  { slug: "shawinigan",  nom: "Shawinigan",  region: "Mauricie" },
+
+  // ── Saguenay–Lac-Saint-Jean ─────────────────────────────────────────────
+  { slug: "alma",               nom: "Alma",               region: "Saguenay–Lac-Saint-Jean" },
+  { slug: "dolbeau-mistassini", nom: "Dolbeau-Mistassini", region: "Saguenay–Lac-Saint-Jean" },
+  { slug: "roberval",           nom: "Roberval",           region: "Saguenay–Lac-Saint-Jean" },
+
+  // ── Lanaudière ──────────────────────────────────────────────────────────
+  { slug: "joliette",              nom: "Joliette",              region: "Lanaudière" },
+  { slug: "rawdon",                nom: "Rawdon",                region: "Lanaudière" },
+  { slug: "saint-lin-laurentides", nom: "Saint-Lin-Laurentides", region: "Lanaudière" },
+
+  // ── Laurentides ─────────────────────────────────────────────────────────
+  { slug: "lachute",                  nom: "Lachute",                  region: "Laurentides" },
+  { slug: "mont-laurier",             nom: "Mont-Laurier",             region: "Laurentides" },
+  { slug: "mont-tremblant",           nom: "Mont-Tremblant",           region: "Laurentides" },
+  { slug: "prevost",                  nom: "Prévost",                  region: "Laurentides" },
+  { slug: "saint-sauveur",            nom: "Saint-Sauveur",            region: "Laurentides" },
+  { slug: "sainte-adele",             nom: "Sainte-Adèle",             region: "Laurentides" },
+  { slug: "sainte-agathe-des-monts",  nom: "Sainte-Agathe-des-Monts",  region: "Laurentides" },
+
+  // ── Montérégie ──────────────────────────────────────────────────────────
+  { slug: "cowansville",               nom: "Cowansville",               region: "Montérégie" },
+  { slug: "granby",                     nom: "Granby",                     region: "Montérégie" },
+  { slug: "saint-jean-sur-richelieu-m", nom: "Saint-Jean-sur-Richelieu", region: "Montérégie" },
+  { slug: "salaberry-de-valleyfield",   nom: "Salaberry-de-Valleyfield",   region: "Montérégie" },
+  { slug: "sorel-tracy",               nom: "Sorel-Tracy",               region: "Montérégie" },
+
+  // ── Centre-du-Québec ────────────────────────────────────────────────────
+  { slug: "becancour",     nom: "Bécancour",     region: "Centre-du-Québec" },
+  { slug: "plessisville",  nom: "Plessisville",  region: "Centre-du-Québec" },
+  { slug: "victoriaville", nom: "Victoriaville", region: "Centre-du-Québec" },
+
+  // ── Bas-Saint-Laurent ───────────────────────────────────────────────────
+  { slug: "amqui",            nom: "Amqui",            region: "Bas-Saint-Laurent" },
+  { slug: "matane",           nom: "Matane",           region: "Bas-Saint-Laurent" },
+  { slug: "riviere-du-loup",  nom: "Rivière-du-Loup",  region: "Bas-Saint-Laurent" },
+
+  // ── Gaspésie ────────────────────────────────────────────────────────────
+  { slug: "carleton-sur-mer", nom: "Carleton-sur-Mer", region: "Gaspésie" },
+  { slug: "gaspe",            nom: "Gaspé",            region: "Gaspésie" },
+  { slug: "new-richmond",     nom: "New Richmond",     region: "Gaspésie" },
+  { slug: "perce",            nom: "Percé",            region: "Gaspésie" },
+
+  // ── Côte-Nord ───────────────────────────────────────────────────────────
+  { slug: "baie-comeau",        nom: "Baie-Comeau",        region: "Côte-Nord" },
+  { slug: "havre-saint-pierre", nom: "Havre-Saint-Pierre", region: "Côte-Nord" },
+  { slug: "sept-iles",          nom: "Sept-Îles",          region: "Côte-Nord" },
+
+  // ── Abitibi-Témiscamingue ───────────────────────────────────────────────
+  { slug: "amos",           nom: "Amos",           region: "Abitibi-Témiscamingue" },
+  { slug: "la-sarre",       nom: "La Sarre",       region: "Abitibi-Témiscamingue" },
+  { slug: "rouyn-noranda",  nom: "Rouyn-Noranda",  region: "Abitibi-Témiscamingue" },
+  { slug: "val-d-or",       nom: "Val-d'Or",       region: "Abitibi-Témiscamingue" },
+
+  // ── Nord-du-Québec ──────────────────────────────────────────────────────
+  { slug: "chibougamau", nom: "Chibougamau", region: "Nord-du-Québec" },
+
+  // ── Îles-de-la-Madeleine ───────────────────────────────────────────────
+  { slug: "iles-de-la-madeleine", nom: "Îles-de-la-Madeleine", region: "Îles-de-la-Madeleine" },
 ];
 
 // ─── Quartiers ────────────────────────────────────────────────────────────────
