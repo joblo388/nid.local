@@ -12,6 +12,15 @@ const SPECIALITES = [
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
+
+  // Return own profile if ?own=1
+  if (searchParams.get("own") === "1") {
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ profile: null });
+    const profile = await prisma.proProfile.findUnique({ where: { userId: session.user.id } });
+    return NextResponse.json({ profile });
+  }
+
   const specialite = searchParams.get("specialite");
   const villeSlug = searchParams.get("villeSlug");
   const search = searchParams.get("search");

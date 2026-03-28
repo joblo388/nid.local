@@ -12,6 +12,8 @@ import { ProfileListingCard } from "@/components/ProfileListingCard";
 import { ProfileTabs } from "@/components/ProfileTabs";
 import { SellerRating } from "@/components/SellerRating";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
+import { ParametresForm } from "@/app/parametres/ParametresForm";
+import { ProProfileForm } from "@/components/ProProfileForm";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +30,11 @@ export default async function ProfilPage({ params }: Props) {
 
   const user = await prisma.user.findFirst({
     where: { OR: [{ username }, { name: username }] },
-    select: { id: true, username: true, name: true, email: true, createdAt: true },
+    select: {
+      id: true, username: true, name: true, email: true, image: true, tag: true, createdAt: true,
+      emailNotifComments: true, emailNotifReplies: true, emailNotifMentions: true,
+      emailNotifMessages: true, emailNotifAnnonces: true,
+    },
   });
 
   if (!user) notFound();
@@ -298,24 +304,26 @@ export default async function ProfilPage({ params }: Props) {
           {/* Tab: Paramètres */}
           {isOwn && (
             <div>
-              <div className="rounded-xl p-6 text-center" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <p className="text-[13px] mb-3" style={{ color: "var(--text-tertiary)" }}>Modifier votre profil, mot de passe et préférences de notifications.</p>
-                <Link href="/parametres" className="inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg" style={{ background: "var(--green)" }}>
-                  Ouvrir les paramètres
-                </Link>
-              </div>
+              <ParametresForm user={{
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+                tag: user.tag,
+                emailNotifComments: user.emailNotifComments,
+                emailNotifReplies: user.emailNotifReplies,
+                emailNotifMentions: user.emailNotifMentions,
+                emailNotifMessages: user.emailNotifMessages,
+                emailNotifAnnonces: user.emailNotifAnnonces,
+              }} />
             </div>
           )}
 
           {/* Tab: Profil pro */}
           {isOwn && (
             <div>
-              <div className="rounded-xl p-6 text-center" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <p className="text-[13px] mb-3" style={{ color: "var(--text-tertiary)" }}>Créez ou modifiez votre fiche dans le répertoire professionnel.</p>
-                <Link href="/repertoire" className="inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg" style={{ background: "var(--green)" }}>
-                  Gérer mon profil pro
-                </Link>
-              </div>
+              <ProProfileForm />
             </div>
           )}
         </ProfileTabs>
