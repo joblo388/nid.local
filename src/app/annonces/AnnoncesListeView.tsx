@@ -47,7 +47,7 @@ const TYPE_LABELS: Record<string, string> = {
   unifamiliale: "Unifamiliale", condo: "Condo", duplex: "Duplex", triplex: "Triplex", quadruplex: "Quadruplex",
   "5plex": "5-plex", maison_de_ville: "Maison de ville", terrain: "Terrain", commercial: "Commercial",
   "1_et_demi": "1\u00BD", "2_et_demi": "2\u00BD", "3_et_demi": "3\u00BD", "4_et_demi": "4\u00BD",
-  "5_et_demi": "5\u00BD", "6_et_demi": "6\u00BD", studio: "Studio", loft: "Loft", autre: "Autre",
+  "5_et_demi": "5\u00BD", "6_et_demi": "6\u00BD", studio: "Studio", loft: "Loft", autre: "Autre", autre_location: "Autre",
 };
 
 const TYPES_VENTE = [
@@ -72,7 +72,7 @@ const TYPES_LOCATION = [
   { value: "5_et_demi", label: "5\u00BD" },
   { value: "6_et_demi", label: "6\u00BD" },
   { value: "loft", label: "Loft" },
-  { value: "autre", label: "Autre" },
+  { value: "autre_location", label: "Autre" },
 ];
 
 export function AnnoncesListeView() {
