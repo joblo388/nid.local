@@ -18,7 +18,7 @@ function fmtInput(value: string): string {
 
 export function AcheterOuLouer() {
   const [vals, setVals] = useState({
-    prix: "500 000", mise: "100 000", taux: "4.64", taxes: "4 500", entret: "4 000", appre: "3",
+    prix: "500 000", mise: "100 000", taux: "4.64", taxes: "4 500", entret: "4 000", appre: "3", revLoc: "0",
     loyer: "2 200", hausse: "3", assurLoc: "300", rendEp: "4",
   });
   const [horizon, setHorizon] = useState(5);
@@ -44,6 +44,7 @@ export function AcheterOuLouer() {
 
   const prix = raw(vals.prix), mise = raw(vals.mise), taux = raw(vals.taux) / 100;
   const taxes = raw(vals.taxes), entret = raw(vals.entret), appre = raw(vals.appre) / 100;
+  const revLoc = raw(vals.revLoc);
   const loyer = raw(vals.loyer), hausse = raw(vals.hausse) / 100;
   const assurLoc = raw(vals.assurLoc), rendEp = raw(vals.rendEp) / 100;
 
@@ -52,7 +53,7 @@ export function AcheterOuLouer() {
   const r = Math.pow(1 + eff, 1 / 12) - 1;
   const n = 25 * 12;
   const hypoM = r > 0 && cap > 0 ? cap * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1) : 0;
-  const achatM = hypoM + (taxes + entret) / 12;
+  const achatM = hypoM + (taxes + entret) / 12 - revLoc;
   const loyerM = loyer + assurLoc / 12;
   const diffM = achatM - loyerM;
 
@@ -65,7 +66,8 @@ export function AcheterOuLouer() {
   const coutTaxes = taxes * horizon;
   const coutEntret = entret * horizon;
   const coutOpportunite = mise * (Math.pow(1 + rendEp, horizon) - 1);
-  const netAchat = totalInteret + coutTaxes + coutEntret + coutOpportunite - gainValeur;
+  const revLocTotal = revLoc * 12 * horizon;
+  const netAchat = totalInteret + coutTaxes + coutEntret + coutOpportunite - gainValeur - revLocTotal;
 
   let totalLoyer = 0, lc = loyer;
   for (let i = 0; i < horizon; i++) { totalLoyer += lc * 12; lc *= (1 + hausse); }
@@ -84,7 +86,8 @@ export function AcheterOuLouer() {
     for (let m = 0; m < yr * 12; m++) { const im = s * r; intI += im; s -= hypoM - im; }
     const gv = prix * Math.pow(1 + appre, yr) - prix;
     const opp = mise * (Math.pow(1 + rendEp, yr) - 1);
-    const cA = intI + taxes * yr + entret * yr + opp - gv;
+    const rl = revLoc * 12 * yr;
+    const cA = intI + taxes * yr + entret * yr + opp - gv - rl;
     let ly = 0, lt = loyer;
     for (let j = 0; j < yr; j++) { ly += lt * 12; lt *= (1 + hausse); }
     const ep = diffM > 50 ? fvAnnuity(diffM, rm, yr * 12) : 0;
@@ -101,6 +104,7 @@ export function AcheterOuLouer() {
     { label: "Taxes municipales", a: coutTaxes, l: null },
     { label: "Entretien + assurances", a: coutEntret, l: null },
     { label: "Coût d'opportunité mise de fonds", a: coutOpportunite, l: null },
+    ...(revLocTotal > 0 ? [{ label: "Revenu locatif", a: -revLocTotal, l: null }] : []),
     { label: "Gain en valeur propriété", a: -gainValeur, l: null },
     { label: "Loyers cumulés", a: null, l: totalLoyer },
     { label: "Assurances locataire", a: null, l: totalAssurLoc },
@@ -145,6 +149,8 @@ export function AcheterOuLouer() {
           {renderField("taxes", "Taxes municipales", "$ / an")}
           {renderField("entret", "Entretien + assurances", "$ / an")}
           {renderField("appre", "Appréciation annuelle", "%")}
+          {renderField("revLoc", "Revenu locatif", "$ / mois")}
+          <div className="aol-info-box">Loyer reçu d&apos;un locataire si duplex/plex ou chambre louée. Réduit le coût mensuel d&apos;achat.</div>
         </div>
         {/* Louer */}
         <div>
