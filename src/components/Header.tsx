@@ -9,6 +9,7 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { CommandPaletteTrigger } from "./CommandPalette";
 import { useLocale } from "@/lib/useLocale";
+import { ressourcesUtiles } from "@/lib/data";
 
 export function Header() {
   const { data: session, status } = useSession();
@@ -111,8 +112,8 @@ export function Header() {
 
             {mobileNavOpen && (
               <div
-                className="absolute right-0 top-full mt-2 w-[200px] rounded-xl overflow-hidden py-1 z-50"
-                style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
+                className="absolute right-0 top-full mt-2 w-[220px] rounded-xl overflow-y-auto py-1 z-50"
+                style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", maxHeight: "calc(100vh - 80px)" }}
               >
                 {navLinks.map((l) => (
                   <Link
@@ -132,6 +133,21 @@ export function Header() {
                   >
                     + {t("common.nouvelle_discussion")}
                   </Link>
+                </div>
+                <div style={{ borderTop: "0.5px solid var(--border)" }} className="mt-1 pt-1">
+                  <p className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
+                    Ressources
+                  </p>
+                  {ressourcesUtiles.map((r) => (
+                    <Link
+                      key={r.href}
+                      href={r.href}
+                      className="block px-4 py-2 text-[13px] transition-colors hover-bg"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      {r.label}
+                    </Link>
+                  ))}
                 </div>
                 {!session && status !== "loading" && (
                   <div style={{ borderTop: "0.5px solid var(--border)" }} className="mt-1 pt-1">
