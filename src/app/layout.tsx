@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
   manifest: "/manifest.json",
-  themeColor: "#1D9E75",
+  themeColor: "#D4742A",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

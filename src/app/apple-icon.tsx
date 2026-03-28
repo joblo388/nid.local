@@ -56,7 +56,7 @@ export default function AppleIcon() {
               style={{
                 width: "28px",
                 height: "42px",
-                background: "#1D9E75",
+                background: "#D4742A",
                 borderRadius: "14px 14px 0 0",
                 position: "absolute",
                 bottom: "0",
@@ -68,7 +68,7 @@ export default function AppleIcon() {
             style={{
               width: "16px",
               height: "16px",
-              background: "#1D9E75",
+              background: "#D4742A",
               borderRadius: "50%",
               position: "absolute",
               top: "6px",

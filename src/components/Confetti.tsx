@@ -4,7 +4,7 @@ import { createContext, useContext, useCallback, useRef, useState } from "react"
 import { createPortal } from "react-dom";
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
-const COLORS = ["#1D9E75", "#185FA5", "#854F0B", "#A32D2D", "#f5f4f0"];
+const COLORS = ["#D4742A", "#185FA5", "#854F0B", "#A32D2D", "#f5f4f0"];
 
 /* ── Types ───────────────────────────────────────────────────────────────── */
 type ConfettiPiece = {

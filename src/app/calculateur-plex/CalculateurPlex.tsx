@@ -56,7 +56,7 @@ export function CalculateurPlex() {
 
   const mrbClass = mrb > 0 && mrb < 12 ? "highlight" : mrb >= 18 ? "negative" : "";
   const mrbPct = Math.min(100, (mrb / 20) * 100);
-  const mrbColor = mrb < 12 ? "#1D9E75" : mrb < 15 ? "#BA7517" : "#E24B4A";
+  const mrbColor = mrb < 12 ? "#D4742A" : mrb < 15 ? "#BA7517" : "#E24B4A";
   const mrbVerdict = mrb > 0 ? (mrb < 12 ? "Excellent — marché favorable" : mrb < 15 ? "Acceptable — dans la moyenne" : "Élevé — rendement limité") : "";
   const mrbVerdictColor = mrb < 12 ? "var(--green-text)" : mrb < 15 ? "var(--amber-text)" : "var(--red-text)";
 

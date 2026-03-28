@@ -23,7 +23,7 @@ export function resetPasswordEmail(resetUrl: string): string {
   return wrapHtml(`
     <h2 style="color:#1a1a18;font-size:18px;margin:0 0 12px">Réinitialiser votre mot de passe</h2>
     <p>Cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe. Ce lien expire dans <strong>1 heure</strong>.</p>
-    <a href="${resetUrl}" style="display:inline-block;margin:16px 0;padding:12px 24px;background:#1D9E75;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">
+    <a href="${resetUrl}" style="display:inline-block;margin:16px 0;padding:12px 24px;background:#D4742A;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">
       Réinitialiser mon mot de passe
     </a>
     <p style="color:#6e6c67;font-size:13px">Si vous n'avez pas fait cette demande, ignorez ce courriel.</p>
@@ -34,7 +34,7 @@ export function verifyEmailContent(verifyUrl: string): string {
   return wrapHtml(`
     <h2 style="color:#1a1a18;font-size:18px;margin:0 0 12px">Vérifiez votre adresse courriel</h2>
     <p>Bienvenue sur <strong>nid.local</strong> ! Cliquez sur le lien ci-dessous pour confirmer votre adresse.</p>
-    <a href="${verifyUrl}" style="display:inline-block;margin:16px 0;padding:12px 24px;background:#1D9E75;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">
+    <a href="${verifyUrl}" style="display:inline-block;margin:16px 0;padding:12px 24px;background:#D4742A;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">
       Vérifier mon courriel
     </a>
     <p style="color:#6e6c67;font-size:13px">Ce lien expire dans 24 heures.</p>
@@ -190,7 +190,7 @@ export async function sendAlertEmail(data: AlertEmailData): Promise<void> {
     ${cta(`${SITE}/annonces/${data.listingId}`, "Voir l'annonce")}
     <p style="color:#6e6c67;font-size:12px;margin-top:20px">
       Vous recevez ce courriel car vous avez créé une alerte marketplace sur nid.local.
-      <a href="${SITE}/alertes" style="color:#1D9E75">Gérer mes alertes</a>
+      <a href="${SITE}/alertes" style="color:#D4742A">Gérer mes alertes</a>
     </p>
   `);
 
@@ -209,7 +209,7 @@ function wrapHtml(content: string): string {
 <body style="margin:0;padding:0;background:#f5f4f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
   <div style="max-width:520px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e8e7e2">
     <div style="padding:20px 24px;border-bottom:1px solid #e8e7e2">
-      <span style="font-size:18px;font-weight:900;color:#1a1a18">nid</span><span style="font-size:18px;font-weight:900;color:#1D9E75">.local</span>
+      <span style="font-size:18px;font-weight:900;color:#1a1a18">nid</span><span style="font-size:18px;font-weight:900;color:#D4742A">.local</span>
     </div>
     <div style="padding:24px;font-size:14px;line-height:1.6;color:#1a1a18">
       ${content}
@@ -222,7 +222,7 @@ function wrapHtml(content: string): string {
 }
 
 function cta(href: string, label: string): string {
-  return `<a href="${href}" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#1D9E75;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px">${label}</a>`;
+  return `<a href="${href}" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#D4742A;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px">${label}</a>`;
 }
 
 function esc(s: string): string {

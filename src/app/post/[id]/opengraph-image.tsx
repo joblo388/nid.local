@@ -39,14 +39,14 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
         <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "52px 56px", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <span style={{ fontSize: 26, fontWeight: 900, color: "#1a1a18" }}>nid</span>
-            <span style={{ fontSize: 26, fontWeight: 900, color: "#1D9E75" }}>.local</span>
+            <span style={{ fontSize: 26, fontWeight: 900, color: "#D4742A" }}>.local</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ background: badge.bg, color: badge.fg, fontSize: 13, fontWeight: 700, padding: "4px 12px", borderRadius: 6 }}>
                 {label.toUpperCase()}
               </span>
-              <span style={{ fontSize: 14, color: "#1D9E75", fontWeight: 600 }}>{post.quartier.nom}</span>
+              <span style={{ fontSize: 14, color: "#D4742A", fontWeight: 600 }}>{post.quartier.nom}</span>
             </div>
             <div style={{ fontSize: hasImage ? 36 : 44, fontWeight: 800, color: "#1a1a18", lineHeight: 1.15, letterSpacing: "-0.5px" }}>
               {titre}
@@ -57,7 +57,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 20, borderTop: "1px solid #e8e7e2" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 14, background: "#1D9E75", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>
+              <div style={{ width: 28, height: 28, borderRadius: 14, background: "#D4742A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>
                 {(post.auteur?.[0] ?? "?").toUpperCase()}
               </div>
               <span style={{ fontSize: 14, color: "#6e6c67", fontWeight: 500 }}>@{post.auteur}</span>

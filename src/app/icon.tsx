@@ -57,7 +57,7 @@ export default function Icon() {
               style={{
                 width: "80px",
                 height: "120px",
-                background: "#1D9E75",
+                background: "#D4742A",
                 borderRadius: "40px 40px 0 0",
                 position: "absolute",
                 bottom: "0",
@@ -69,7 +69,7 @@ export default function Icon() {
             style={{
               width: "48px",
               height: "48px",
-              background: "#1D9E75",
+              background: "#D4742A",
               borderRadius: "50%",
               position: "absolute",
               top: "20px",
