@@ -7,7 +7,7 @@ import { sendAlertEmail } from "@/lib/email";
 import { quartierBySlug } from "@/lib/data";
 
 const PAGE_SIZE = 20;
-const TYPES_VALIDES = ["unifamiliale", "condo", "duplex", "triplex", "quadruplex", "5plex", "maison_de_ville", "terrain", "commercial", "1_et_demi", "2_et_demi", "3_et_demi", "4_et_demi", "5_et_demi", "6_et_demi", "studio", "loft"];
+const TYPES_VALIDES = ["unifamiliale", "condo", "duplex", "triplex", "quadruplex", "5plex", "maison_de_ville", "terrain", "commercial", "1_et_demi", "2_et_demi", "3_et_demi", "4_et_demi", "5_et_demi", "6_et_demi", "studio", "loft", "autre"];
 const TRIS_VALIDES = ["recent", "prix_asc", "prix_desc", "populaire"];
 
 export async function GET(req: NextRequest) {
