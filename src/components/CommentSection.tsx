@@ -16,9 +16,16 @@ type Comment = {
   imageUrl?: string | null;
   auteurNom: string;
   auteurId: string | null;
+  auteurTag?: string | null;
   creeLe: string;
   nbVotes: number;
   replies?: Comment[];
+};
+
+const tagLabels: Record<string, string> = {
+  courtier: "Courtier", notaire: "Notaire", finance: "Finance",
+  entrepreneur: "Entrepreneur", electricien: "Électricien", plombier: "Plombier",
+  charpentier: "Charpentier", proprietaire: "Propriétaire", locataire: "Locataire",
 };
 
 // ─── CommentVoteButton ──────────────────────────────────────────────────────
@@ -203,6 +210,14 @@ function CommentItem({
           <span className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
             {comment.auteurNom}
           </span>
+          {comment.auteurTag && (
+            <span
+              className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none"
+              style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)" }}
+            >
+              {tagLabels[comment.auteurTag] ?? comment.auteurTag}
+            </span>
+          )}
           <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{dateStr}</span>
           {mode === "view" && (
             <div className="flex items-center gap-2 ml-auto">

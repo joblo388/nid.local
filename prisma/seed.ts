@@ -4,11 +4,22 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 const PASS = bcrypt.hashSync("nidlocal2026", 10);
 
-const USERS = [
-  "proprio_rosemont", "investisseur_plex", "premier_achat_mtl", "locataire_plateau",
-  "gestion_villeray", "triplex_hochelaga", "acheteur_banlieue", "condo_snowdon",
-  "nouveau_proprio_rive_sud", "chercheur_duplex", "proprio_multilogement",
-  "reno_plateau", "flip_mtl", "locatif_laurentides", "acheteur_anx",
+const USERS: { username: string; tag?: string }[] = [
+  { username: "proprio_rosemont", tag: "proprietaire" },
+  { username: "investisseur_plex", tag: "finance" },
+  { username: "premier_achat_mtl" },
+  { username: "locataire_plateau", tag: "locataire" },
+  { username: "gestion_villeray", tag: "proprietaire" },
+  { username: "triplex_hochelaga", tag: "proprietaire" },
+  { username: "acheteur_banlieue", tag: "courtier" },
+  { username: "condo_snowdon" },
+  { username: "nouveau_proprio_rive_sud", tag: "proprietaire" },
+  { username: "chercheur_duplex", tag: "courtier" },
+  { username: "proprio_multilogement", tag: "proprietaire" },
+  { username: "reno_plateau", tag: "entrepreneur" },
+  { username: "flip_mtl", tag: "entrepreneur" },
+  { username: "locatif_laurentides", tag: "locataire" },
+  { username: "acheteur_anx", tag: "finance" },
 ];
 
 const CAT: Record<string, string> = {
@@ -152,11 +163,11 @@ async function main() {
   console.log("Creating users...");
   const map: Record<string, string> = {};
   for (const u of USERS) {
-    const ex = await prisma.user.findUnique({ where: { username: u } });
-    if (ex) { map[u] = ex.id; continue; }
-    const user = await prisma.user.create({ data: { username: u, name: u, email: `${u}@nid.local`, password: PASS } });
-    map[u] = user.id;
-    console.log(`  + ${u}`);
+    const ex = await prisma.user.findUnique({ where: { username: u.username } });
+    if (ex) { map[u.username] = ex.id; continue; }
+    const user = await prisma.user.create({ data: { username: u.username, name: u.username, email: `${u.username}@nid.local`, password: PASS, tag: u.tag ?? null } });
+    map[u.username] = user.id;
+    console.log(`  + ${u.username}`);
   }
 
   console.log("Creating posts...");

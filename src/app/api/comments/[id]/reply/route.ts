@@ -27,6 +27,8 @@ export async function POST(req: NextRequest, { params }: Params) {
 
   const auteurNom = session.user.username ?? session.user.name ?? session.user.email ?? "anonyme";
   const auteurId = session.user.id ?? null;
+  const dbUser = auteurId ? await prisma.user.findUnique({ where: { id: auteurId }, select: { tag: true } }) : null;
+  const auteurTag = dbUser?.tag ?? null;
 
   const [reply] = await prisma.$transaction([
     prisma.comment.create({
@@ -60,5 +62,5 @@ export async function POST(req: NextRequest, { params }: Params) {
     sendNotifEmail({ type: "reply", recipientUserId: rootComment.auteurId, acteurNom: auteurNom, postTitre: post?.titre ?? "", postId: parent.postId }).catch(() => {});
   }
 
-  return NextResponse.json({ ...reply, creeLe: reply.creeLe.toISOString(), auteurId: reply.auteurId ?? null }, { status: 201 });
+  return NextResponse.json({ ...reply, creeLe: reply.creeLe.toISOString(), auteurId: reply.auteurId ?? null, auteurTag }, { status: 201 });
 }

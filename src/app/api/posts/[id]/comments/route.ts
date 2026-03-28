@@ -30,9 +30,10 @@ export async function POST(req: NextRequest, { params }: Params) {
   const auteurNom = session.user.username ?? session.user.name ?? session.user.email ?? "anonyme";
   const sessionUserId = session.user.id ?? null;
   const userExists = sessionUserId
-    ? await prisma.user.findUnique({ where: { id: sessionUserId }, select: { id: true } })
+    ? await prisma.user.findUnique({ where: { id: sessionUserId }, select: { id: true, tag: true } })
     : null;
   const auteurId = userExists ? sessionUserId : null;
+  const auteurTag = userExists?.tag ?? null;
 
   const [comment] = await prisma.$transaction([
     prisma.comment.create({
@@ -81,5 +82,5 @@ export async function POST(req: NextRequest, { params }: Params) {
     }
   }
 
-  return NextResponse.json(comment, { status: 201 });
+  return NextResponse.json({ ...comment, auteurTag }, { status: 201 });
 }

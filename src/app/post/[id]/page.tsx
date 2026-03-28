@@ -63,9 +63,10 @@ export default async function PostPage({ params }: Props) {
       orderBy: { creeLe: "asc" },
       select: {
         id: true, contenu: true, imageUrl: true, auteurNom: true, auteurId: true, creeLe: true, nbVotes: true,
+        auteur: { select: { tag: true } },
         replies: {
           orderBy: { creeLe: "asc" },
-          select: { id: true, contenu: true, imageUrl: true, auteurNom: true, auteurId: true, creeLe: true, nbVotes: true },
+          select: { id: true, contenu: true, imageUrl: true, auteurNom: true, auteurId: true, creeLe: true, nbVotes: true, auteur: { select: { tag: true } } },
         },
       },
     }),
@@ -82,12 +83,14 @@ export default async function PostPage({ params }: Props) {
     ...c,
     creeLe: c.creeLe.toISOString(),
     auteurId: c.auteurId ?? null,
+    auteurTag: c.auteur?.tag ?? null,
     imageUrl: c.imageUrl ?? null,
     nbVotes: c.nbVotes,
     replies: c.replies.map((r) => ({
       ...r,
       creeLe: r.creeLe.toISOString(),
       auteurId: r.auteurId ?? null,
+      auteurTag: r.auteur?.tag ?? null,
       imageUrl: r.imageUrl ?? null,
       nbVotes: r.nbVotes,
     })),
