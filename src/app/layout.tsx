@@ -75,7 +75,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={geist.variable}>
+    <html lang="fr" className={geist.variable} suppressHydrationWarning>
       <head>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-C0LY69FTWR" strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive">{`
@@ -85,7 +85,7 @@ export default function RootLayout({
           gtag('config', 'G-C0LY69FTWR');
         `}</Script>
       </head>
-      <body className="min-h-screen">
+      <body className="min-h-screen" suppressHydrationWarning>
           <SessionProvider><ThemeProvider><ToastProvider><LightboxProvider><ConfettiProvider><PageTransition>{children}</PageTransition><BottomNav /><CommandPalette /></ConfettiProvider></LightboxProvider></ToastProvider></ThemeProvider></SessionProvider>
           <ServiceWorkerRegister />
           <Analytics />
