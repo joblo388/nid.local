@@ -77,16 +77,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               },
               select: { id: true, username: true },
             });
-          } else if (!dbUser.username) {
-            const base = (user.email).split("@")[0].toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 20);
-            let candidate = base || "user";
-            let suffix = 0;
-            while (await prisma.user.findFirst({ where: { username: candidate } })) {
-              suffix++;
-              candidate = `${base}${suffix}`;
+          } else {
+            // Update photo from Google on every login
+            if (user.image) {
+              await prisma.user.update({ where: { id: dbUser.id }, data: { image: user.image } });
             }
-            await prisma.user.update({ where: { id: dbUser.id }, data: { username: candidate } });
-            dbUser.username = candidate;
+            if (!dbUser.username) {
+              const base = (user.email).split("@")[0].toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 20);
+              let candidate = base || "user";
+              let suffix = 0;
+              while (await prisma.user.findFirst({ where: { username: candidate } })) {
+                suffix++;
+                candidate = `${base}${suffix}`;
+              }
+              await prisma.user.update({ where: { id: dbUser.id }, data: { username: candidate } });
+              dbUser.username = candidate;
+            }
           }
 
           token.id = dbUser.id;
