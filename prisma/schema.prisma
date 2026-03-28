@@ -31,6 +31,9 @@ model User {
   listingFavorites ListingFavorite[]
   listingComments  ListingComment[]
   savedReports     SavedReport[]
+  conversationsAsUser1 Conversation[] @relation("ConvUser1")
+  conversationsAsUser2 Conversation[] @relation("ConvUser2")
+  messagesSent     Message[]
 }
 
 model Post {
@@ -188,6 +191,7 @@ model Listing {
   favoris   ListingFavorite[]
   commentaires   ListingComment[]
   prixHistorique ListingPriceHistory[]
+  conversations  Conversation[]
 
   @@index([villeSlug])
   @@index([quartierSlug])
@@ -259,6 +263,41 @@ model ListingComment {
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 
   @@index([listingId])
+}
+
+model Conversation {
+  id         String   @id @default(cuid())
+  user1Id    String
+  user2Id    String
+  listingId  String?  // optionnel — si la conversation est liée à une annonce
+  lastMsg    String?  // aperçu du dernier message
+  lastMsgAt  DateTime @default(now())
+  creeLe     DateTime @default(now())
+
+  user1    User      @relation("ConvUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2    User      @relation("ConvUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+  listing  Listing?  @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  messages Message[]
+
+  @@unique([user1Id, user2Id, listingId])
+  @@index([user1Id])
+  @@index([user2Id])
+  @@index([lastMsgAt])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  auteurId       String
+  contenu        String
+  lu             Boolean  @default(false)
+  creeLe         DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  auteur       User         @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([auteurId])
 }
 
 model SavedReport {

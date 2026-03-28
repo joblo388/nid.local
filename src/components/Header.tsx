@@ -193,6 +193,14 @@ export function Header() {
                       Mon profil
                     </Link>
                     <Link
+                      href="/messages"
+                      onClick={() => setMenuOpen(false)}
+                      className="block px-4 py-2.5 text-[13px] transition-colors hover-bg"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Messages
+                    </Link>
+                    <Link
                       href="/favoris"
                       onClick={() => setMenuOpen(false)}
                       className="block px-4 py-2.5 text-[13px] transition-colors hover-bg"

@@ -83,6 +83,8 @@ export function AnnonceDetailView() {
   const [loading, setLoading] = useState(true);
   const [isFav, setIsFav] = useState(false);
   const [sent, setSent] = useState(false);
+  const [contactMsg, setContactMsg] = useState("Bonjour, je suis intéressé par votre propriété. Serait-il possible de planifier une visite?");
+  const [sending, setSending] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [comments, setComments] = useState<CommentItem[]>([]);
@@ -435,13 +437,31 @@ export function AnnonceDetailView() {
 
               {!sent ? (
                 <div className="mp-contact-form">
-                  <textarea placeholder="Bonjour, je suis intéressé par votre propriété. Serait-il possible de planifier une visite?" />
-                  <input type="text" placeholder="Votre nom" />
-                  <input type="email" placeholder="Votre courriel" />
-                  <button className="mp-send-btn" onClick={() => setSent(true)}>Envoyer le message</button>
+                  <textarea
+                    value={contactMsg}
+                    onChange={(e) => setContactMsg(e.target.value)}
+                    placeholder="Bonjour, je suis intéressé par votre propriété. Serait-il possible de planifier une visite?"
+                  />
+                  <button className="mp-send-btn" onClick={async () => {
+                    if (!contactMsg.trim()) return;
+                    setSending(true);
+                    try {
+                      const res = await fetch("/api/conversations", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ recipientId: listing.auteur.id, listingId: listing.id, message: contactMsg }),
+                      });
+                      if (res.ok) setSent(true);
+                    } catch { /* ignore */ }
+                    setSending(false);
+                  }} disabled={sending}>
+                    {sending ? "Envoi..." : "Envoyer le message"}
+                  </button>
                 </div>
               ) : (
-                <div className="mp-sent-msg">Message envoyé. Le propriétaire vous répondra par courriel sous 24–48h.</div>
+                <div className="mp-sent-msg">
+                  Message envoyé. <Link href="/messages" style={{ color: "var(--green-text)", textDecoration: "underline" }}>Voir mes messages</Link>
+                </div>
               )}
 
               <div className="mp-action-row">

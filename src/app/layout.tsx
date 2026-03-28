@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
 import { BottomNav } from "@/components/BottomNav";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const geist = Geist({
@@ -62,6 +63,7 @@ export default function RootLayout({
     <html lang="fr" className={geist.variable}>
       <body className="min-h-screen">
           <SessionProvider>{children}<BottomNav /></SessionProvider>
+          <Analytics />
         </body>
     </html>
   );
