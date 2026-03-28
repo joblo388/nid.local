@@ -189,9 +189,11 @@ export const PostCard = React.memo(function PostCard({ post, searchQuery = "", h
               {post.quartier.nom}
             </Link>
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
-            <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{post.auteur}</span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{post.auteur}</span>
+              {post.auteurTag && <span className="hidden md:inline"><AuthorTag tag={post.auteurTag} /></span>}
+            </span>
             {authorLevel && <span className="hidden md:inline"><UserLevel levelName={authorLevel.name} levelColor={authorLevel.color} compact /></span>}
-            {post.auteurTag && <span className="hidden md:inline"><AuthorTag tag={post.auteurTag} /></span>}
             {authorBadges && authorBadges.length > 0 && <span className="hidden md:inline"><BadgeDisplay badges={authorBadges} compact /></span>}
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
             <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tempsRelatif(post.creeLe)}</span>
