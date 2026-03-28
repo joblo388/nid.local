@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { villes, quartiersDeVille } from "@/lib/data";
+import { PriceHistoryChart, getPriceHistory } from "./PriceHistoryChart";
 import "./donnees-marche.css";
 
 type MarketData = { uni: string; condo: string; plex: string; delai: string; tendance: string; marche: string };
@@ -87,6 +88,7 @@ function badgeLabel(m: string) {
 export function DonneesMarche() {
   const [villeSlug, setVilleSlug] = useState("montreal");
   const [search, setSearch] = useState("");
+  const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
   const q = search.toLowerCase().trim();
 
   const isAll = villeSlug === "tous";
@@ -153,26 +155,46 @@ export function DonneesMarche() {
               <span className="dm-region-count">{g.cards.length} quartier{g.cards.length > 1 ? "s" : ""}</span>
             </div>
             <div className="dm-cards-grid">
-              {g.cards.map((c) => (
-                <div key={c.slug} className="dm-market-card">
-                  <div className="dm-card-header">
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <span className={`w-2 h-2 rounded-full shrink-0 ${c.couleur}`} />
-                      <span className="dm-card-name">{c.nom}</span>
+              {g.cards.map((c) => {
+                const hasHistory = !!getPriceHistory(c.slug);
+                const isExpanded = expandedSlug === c.slug;
+                return (
+                  <div
+                    key={c.slug}
+                    className="dm-market-card"
+                    onClick={() => hasHistory && setExpandedSlug(isExpanded ? null : c.slug)}
+                    style={{ cursor: hasHistory ? "pointer" : "default" }}
+                  >
+                    <div className="dm-card-header">
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span className={`w-2 h-2 rounded-full shrink-0 ${c.couleur}`} />
+                        <span className="dm-card-name">{c.nom}</span>
+                      </div>
+                      <span className={`dm-card-trend ${trendClass(c.tendance)}`}>{c.tendance}</span>
                     </div>
-                    <span className={`dm-card-trend ${trendClass(c.tendance)}`}>{c.tendance}</span>
+                    <div className="dm-card-stats">
+                      <div className="dm-stat"><div className="dm-stat-val">{c.uni}</div><div className="dm-stat-lbl">Unifamiliale</div></div>
+                      <div className="dm-stat"><div className="dm-stat-val">{c.condo}</div><div className="dm-stat-lbl">Condo</div></div>
+                      <div className="dm-stat"><div className="dm-stat-val">{c.plex}</div><div className="dm-stat-lbl">Plex</div></div>
+                    </div>
+                    <div className="dm-card-footer">
+                      <span>Délai moyen : {c.delai}</span>
+                      <span className={`dm-market-badge ${badgeClass(c.marche)}`}>{badgeLabel(c.marche)}</span>
+                    </div>
+                    {hasHistory && (
+                      <div className="dm-card-expand-hint">
+                        <svg className={`dm-card-expand-icon${isExpanded ? " open" : ""}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 6l4 4 4-4" />
+                        </svg>
+                        {isExpanded ? "Masquer l\u2019historique" : "Voir l\u2019historique des prix"}
+                      </div>
+                    )}
+                    <div className={`dm-chart-wrapper${isExpanded ? " open" : ""}`} onClick={(e) => e.stopPropagation()}>
+                      {isExpanded && <PriceHistoryChart slug={c.slug} nom={c.nom} />}
+                    </div>
                   </div>
-                  <div className="dm-card-stats">
-                    <div className="dm-stat"><div className="dm-stat-val">{c.uni}</div><div className="dm-stat-lbl">Unifamiliale</div></div>
-                    <div className="dm-stat"><div className="dm-stat-val">{c.condo}</div><div className="dm-stat-lbl">Condo</div></div>
-                    <div className="dm-stat"><div className="dm-stat-val">{c.plex}</div><div className="dm-stat-lbl">Plex</div></div>
-                  </div>
-                  <div className="dm-card-footer">
-                    <span>Délai moyen : {c.delai}</span>
-                    <span className={`dm-market-badge ${badgeClass(c.marche)}`}>{badgeLabel(c.marche)}</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))

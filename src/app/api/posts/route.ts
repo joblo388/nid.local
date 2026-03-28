@@ -13,12 +13,19 @@ export async function GET(req: NextRequest) {
   const categorie = searchParams.get("categorie");
   const tri = searchParams.get("tri") ?? "populaire";
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
+  const subscribedQuartiers = searchParams.get("subscribedQuartiers");
 
-  const where = {
-    villeSlug,
-    ...(quartierSlug && quartierSlug !== "tous" ? { quartierSlug } : {}),
-    ...(categorie && categorie !== "tous" ? { categorie } : {}),
-  };
+  // When subscribedQuartiers is provided, filter by those quartier slugs instead of villeSlug
+  const where = subscribedQuartiers
+    ? {
+        quartierSlug: { in: subscribedQuartiers.split(",").filter(Boolean) },
+        ...(categorie && categorie !== "tous" ? { categorie } : {}),
+      }
+    : {
+        villeSlug,
+        ...(quartierSlug && quartierSlug !== "tous" ? { quartierSlug } : {}),
+        ...(categorie && categorie !== "tous" ? { categorie } : {}),
+      };
 
   const orderBy =
     tri === "recent" ? [{ epingle: "desc" as const }, { creeLe: "desc" as const }] :
@@ -62,7 +69,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { titre, contenu, quartierSlug, villeSlug, categorie, imageUrl, _hp } = body;
+  const { titre, contenu, quartierSlug, villeSlug, categorie, imageUrl, _hp, poll } = body;
 
   // Honeypot check
   if (_hp) {
@@ -100,6 +107,25 @@ export async function POST(req: NextRequest) {
       imageUrl: typeof imageUrl === "string" && (imageUrl.startsWith("data:image/") || imageUrl.startsWith("https://")) ? imageUrl : null,
     },
   });
+
+  // Create poll if provided
+  if (poll && Array.isArray(poll.options)) {
+    const options = poll.options
+      .filter((o: unknown) => typeof o === "string" && o.trim())
+      .map((o: string) => o.trim())
+      .slice(0, 5);
+
+    if (options.length >= 2) {
+      await prisma.poll.create({
+        data: {
+          postId: post.id,
+          options: {
+            create: options.map((label: string) => ({ label })),
+          },
+        },
+      });
+    }
+  }
 
   return NextResponse.json({ id: post.id }, { status: 201 });
 }

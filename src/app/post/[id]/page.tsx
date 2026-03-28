@@ -9,6 +9,7 @@ import { ShareButton } from "@/components/ShareButton";
 import { VoteButton } from "@/components/VoteButton";
 import { ViewTracker } from "@/components/ViewTracker";
 import { MarkdownContent } from "@/components/MarkdownContent";
+import { PollDisplay } from "@/components/PollDisplay";
 import { dbPostToAppPost } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { Categorie } from "@/lib/types";
@@ -52,7 +53,7 @@ const badgeLabels: Record<string, string> = {
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
 
-  const [dbPost, dbComments, byVille, byQuartier, totaux] = await Promise.all([
+  const [dbPost, dbComments, byVille, byQuartier, totaux, dbPoll] = await Promise.all([
     prisma.post.findUnique({ where: { id } }),
     prisma.comment.findMany({
       where: { postId: id, parentId: null },
@@ -68,6 +69,7 @@ export default async function PostPage({ params }: Props) {
     prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
     prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
     prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
+    prisma.poll.findUnique({ where: { postId: id }, select: { id: true } }),
   ]);
 
   if (!dbPost) notFound();
@@ -197,6 +199,8 @@ export default async function PostPage({ params }: Props) {
                 <VoteButton postId={post.id} initialVotes={post.nbVotes} initialHasVoted={false} hydrateVote />
               </div>
             </article>
+
+            {dbPoll && <PollDisplay pollId={dbPoll.id} />}
 
             <CommentSection postId={post.id} initial={comments} />
           </div>

@@ -18,6 +18,13 @@ model User {
   createdAt     DateTime  @default(now())
   role          String    @default("user")
 
+  // Email notification preferences
+  emailNotifComments Boolean @default(true)
+  emailNotifReplies  Boolean @default(true)
+  emailNotifMentions Boolean @default(true)
+  emailNotifMessages Boolean @default(true)
+  emailNotifAnnonces Boolean @default(true)
+
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
@@ -34,6 +41,10 @@ model User {
   conversationsAsUser1 Conversation[] @relation("ConvUser1")
   conversationsAsUser2 Conversation[] @relation("ConvUser2")
   messagesSent     Message[]
+  alertesMarketplace  AlerteMarketplace[]
+  quartierSubs        QuartierSubscription[]
+  pollVotes           PollVote[]
+  quartierReviews     QuartierReview[]
 }
 
 model Post {
@@ -56,6 +67,7 @@ model Post {
   comments  Comment[]
   votes     Vote[]
   bookmarks Bookmark[]
+  poll      Poll?
 
   @@index([villeSlug])
   @@index([quartierSlug])
@@ -329,6 +341,91 @@ model EmailVerificationToken {
   token     String   @unique
   expiresAt DateTime
   creeLe    DateTime @default(now())
+}
+
+model AlerteMarketplace {
+  id            String   @id @default(cuid())
+  userId        String
+  villeSlug     String?
+  quartierSlug  String?
+  type          String?  // "unifamiliale" | "condo" | "duplex" etc.
+  prixMax       Int?
+  prixMin       Int?
+  chambresMin   Int?
+  active        Boolean  @default(true)
+  creeLe        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([active])
+}
+
+model QuartierSubscription {
+  id           String   @id @default(cuid())
+  userId       String
+  quartierSlug String
+  creeLe       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, quartierSlug])
+  @@index([userId])
+  @@index([quartierSlug])
+}
+
+model Poll {
+  id      String   @id @default(cuid())
+  postId  String   @unique
+  creeLe  DateTime @default(now())
+
+  post    Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  options PollOption[]
+  votes   PollVote[]
+}
+
+model PollOption {
+  id     String @id @default(cuid())
+  pollId String
+  label  String
+
+  poll  Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+
+  @@index([pollId])
+}
+
+model PollVote {
+  id       String   @id @default(cuid())
+  pollId   String
+  optionId String
+  userId   String
+  creeLe   DateTime @default(now())
+
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId])
+  @@index([optionId])
+}
+
+model QuartierReview {
+  id           String   @id @default(cuid())
+  userId       String
+  quartierSlug String
+  securite     Int      // 1-5
+  transport    Int      // 1-5
+  commerces    Int      // 1-5
+  ecoles       Int      // 1-5
+  ambiance     Int      // 1-5
+  commentaire  String?
+  creeLe       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, quartierSlug])
+  @@index([quartierSlug])
 }
 
 model Account {

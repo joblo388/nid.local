@@ -7,8 +7,11 @@ export async function GET(req: NextRequest) {
 
   const record = await prisma.emailVerificationToken.findUnique({ where: { token } });
   if (!record || record.expiresAt < new Date()) {
+    const expiredEmail = record?.email ?? "";
     if (record) await prisma.emailVerificationToken.delete({ where: { token } });
-    return NextResponse.redirect(new URL("/auth/verifier-courriel?error=expire", req.url));
+    const params = new URLSearchParams({ error: "expire" });
+    if (expiredEmail) params.set("email", expiredEmail);
+    return NextResponse.redirect(new URL(`/auth/verifier-courriel?${params.toString()}`, req.url));
   }
 
   await prisma.$transaction([

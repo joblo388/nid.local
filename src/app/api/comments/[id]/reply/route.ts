@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getIp } from "@/lib/rateLimit";
+import { sendNotifEmail } from "@/lib/email";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest, { params }: Params) {
         acteurNom: auteurNom,
       },
     }).catch(() => {});
+    sendNotifEmail({ type: "reply", recipientUserId: rootComment.auteurId, acteurNom: auteurNom, postTitre: post?.titre ?? "", postId: parent.postId }).catch(() => {});
   }
 
   return NextResponse.json({ ...reply, creeLe: reply.creeLe.toISOString(), auteurId: reply.auteurId ?? null }, { status: 201 });

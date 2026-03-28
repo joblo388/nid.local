@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getIp } from "@/lib/rateLimit";
+import { sendNotifEmail } from "@/lib/email";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -34,15 +35,17 @@ export async function POST(req: NextRequest, ctx: Ctx) {
   // Notify listing owner
   const listingFull = await prisma.listing.findUnique({ where: { id }, select: { auteurId: true, titre: true } });
   if (listingFull && listingFull.auteurId !== session.user.id) {
+    const acteur = session.user.username ?? session.user.name ?? session.user.email ?? "quelqu'un";
     await prisma.notification.create({
       data: {
         userId: listingFull.auteurId,
         type: "listing_comment",
         postId: id,
         postTitre: listingFull.titre,
-        acteurNom: session.user.username ?? session.user.name ?? session.user.email ?? "quelqu'un",
+        acteurNom: acteur,
       },
     }).catch(() => {});
+    sendNotifEmail({ type: "listing_comment", recipientUserId: listingFull.auteurId, acteurNom: acteur, postTitre: listingFull.titre, postId: id }).catch(() => {});
   }
 
   const comment = await prisma.listingComment.create({

@@ -10,6 +10,11 @@ type UserData = {
   name: string | null;
   email: string | null;
   image: string | null;
+  emailNotifComments: boolean;
+  emailNotifReplies: boolean;
+  emailNotifMentions: boolean;
+  emailNotifMessages: boolean;
+  emailNotifAnnonces: boolean;
 };
 
 export function ParametresForm({ user }: { user: UserData }) {
@@ -20,6 +25,14 @@ export function ParametresForm({ user }: { user: UserData }) {
   const [name, setName] = useState(user.name ?? "");
   const [imagePreview, setImagePreview] = useState<string | null>(user.image);
   const [imageData, setImageData] = useState<string | null | undefined>(undefined);
+
+  const [emailNotifComments, setEmailNotifComments] = useState(user.emailNotifComments);
+  const [emailNotifReplies, setEmailNotifReplies] = useState(user.emailNotifReplies);
+  const [emailNotifMentions, setEmailNotifMentions] = useState(user.emailNotifMentions);
+  const [emailNotifMessages, setEmailNotifMessages] = useState(user.emailNotifMessages);
+  const [emailNotifAnnonces, setEmailNotifAnnonces] = useState(user.emailNotifAnnonces);
+  const [emailSuccess, setEmailSuccess] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -260,6 +273,70 @@ export function ParametresForm({ user }: { user: UserData }) {
             {imageUploading ? "Téléversement…" : loadingProfile ? "Enregistrement…" : "Enregistrer les changements"}
           </button>
         </form>
+      </section>
+
+      {/* Email notifications section */}
+      <section
+        className="rounded-xl p-6"
+        style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+      >
+        <h2 className="text-[15px] font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+          Notifications par courriel
+        </h2>
+        <p className="text-[12px] mb-5" style={{ color: "var(--text-tertiary)" }}>
+          Choisissez quels courriels vous souhaitez recevoir.
+        </p>
+
+        <div className="space-y-3">
+          {([
+            { key: "comments", label: "Commentaires sur mes posts", value: emailNotifComments, set: setEmailNotifComments },
+            { key: "replies", label: "Réponses à mes commentaires", value: emailNotifReplies, set: setEmailNotifReplies },
+            { key: "mentions", label: "Mentions (@monnom)", value: emailNotifMentions, set: setEmailNotifMentions },
+            { key: "messages", label: "Messages privés", value: emailNotifMessages, set: setEmailNotifMessages },
+            { key: "annonces", label: "Commentaires sur mes annonces", value: emailNotifAnnonces, set: setEmailNotifAnnonces },
+          ] as const).map((item) => (
+            <label key={item.key} className="flex items-center justify-between cursor-pointer py-1">
+              <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>{item.label}</span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={item.value}
+                onClick={() => item.set(!item.value)}
+                className="relative w-9 h-5 rounded-full transition-colors"
+                style={{ background: item.value ? "var(--green)" : "var(--border-secondary)" }}
+              >
+                <span
+                  className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+                  style={{ transform: item.value ? "translateX(16px)" : "translateX(0)" }}
+                />
+              </button>
+            </label>
+          ))}
+        </div>
+
+        {emailSuccess && (
+          <p className="text-[12px] mt-3" style={{ color: "var(--green)" }}>{emailSuccess}</p>
+        )}
+
+        <button
+          type="button"
+          disabled={emailLoading}
+          onClick={async () => {
+            setEmailSuccess("");
+            setEmailLoading(true);
+            const res = await fetch("/api/user/settings", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ emailNotifComments, emailNotifReplies, emailNotifMentions, emailNotifMessages, emailNotifAnnonces }),
+            });
+            setEmailLoading(false);
+            if (res.ok) setEmailSuccess("Préférences mises à jour.");
+          }}
+          className="mt-4 px-4 py-2 text-[13px] font-semibold text-white rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
+          style={{ background: "var(--green)" }}
+        >
+          {emailLoading ? "Enregistrement…" : "Enregistrer les préférences"}
+        </button>
       </section>
 
       {/* Password section */}

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { Post } from "@/lib/types";
 import { VoteButton } from "./VoteButton";
 import { BookmarkButton } from "./BookmarkButton";
+import { BadgeDisplay } from "./BadgeDisplay";
+import type { Badge } from "@/lib/badges";
 
 const badgeBg: Record<string, string> = {
   question:     "var(--blue-bg)",
@@ -86,7 +88,7 @@ function PostImage({ src }: { src: string }) {
   );
 }
 
-export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean }) {
+export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false, authorBadges }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean; authorBadges?: Badge[] }) {
   return (
     <article
       className="rounded-xl transition-colors hover-bg"
@@ -99,12 +101,14 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
       }}
     >
       <div className="flex gap-0">
-        {/* Colonne vote — style Reddit */}
-        <div
-          className="flex flex-col items-center justify-start gap-1 py-3 px-3 rounded-l-xl shrink-0"
-          style={{ background: "var(--bg-secondary)", minWidth: "52px" }}
-        >
-          <VoteButton postId={post.id} initialVotes={post.nbVotes} initialHasVoted={hasVoted} />
+        {/* Colonne vote — style Reddit (desktop only) */}
+        <div className="hidden md:flex">
+          <div
+            className="flex flex-col items-center justify-start gap-1 py-3 px-3 rounded-l-xl shrink-0"
+            style={{ background: "var(--bg-secondary)", minWidth: "52px" }}
+          >
+            <VoteButton postId={post.id} initialVotes={post.nbVotes} initialHasVoted={hasVoted} />
+          </div>
         </div>
 
         {/* Contenu */}
@@ -127,6 +131,7 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
             </Link>
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
             <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{post.auteur}</span>
+            {authorBadges && authorBadges.length > 0 && <BadgeDisplay badges={authorBadges} compact />}
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
             <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tempsRelatif(post.creeLe)}</span>
           </div>
@@ -148,6 +153,13 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
 
           {/* Footer */}
           <div className="flex items-center gap-4">
+            {/* Vote count — mobile only (inline in footer) */}
+            <span className="flex md:hidden items-center gap-1 text-[12px] font-medium" style={{ color: "var(--text-tertiary)" }}>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+              </svg>
+              {post.nbVotes}
+            </span>
             <Link href={`/post/${post.id}`}
               className="flex items-center gap-1.5 text-[12px] transition-opacity hover:opacity-60"
               style={{ color: "var(--text-tertiary)" }}>

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { PostsFiltres } from "@/components/PostsFiltres";
 import { Sidebar } from "@/components/Sidebar";
+import { SubscribeButton } from "@/components/SubscribeButton";
+import { QuartierReviews } from "@/components/QuartierReviews";
 import { quartiers, villeBySlug, dbPostToAppPost } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
@@ -40,7 +42,7 @@ export default async function QuartierPage({ params }: Props) {
   const whereQuartier = { quartierSlug: slug };
   const orderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
 
-  const [dbPostsQuartier, totalQuartier, userVotes, userBookmarks, byVille, byQuartier, totaux] = await Promise.all([
+  const [dbPostsQuartier, totalQuartier, userVotes, userBookmarks, byVille, byQuartier, totaux, quartierSub] = await Promise.all([
     prisma.post.findMany({ where: whereQuartier, orderBy, take: PAGE_SIZE }),
     prisma.post.count({ where: whereQuartier }),
     userId ? prisma.vote.findMany({ where: { userId }, select: { postId: true } }) : [],
@@ -48,6 +50,7 @@ export default async function QuartierPage({ params }: Props) {
     prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
     prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
     prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
+    userId ? prisma.quartierSubscription.findUnique({ where: { userId_quartierSlug: { userId, quartierSlug: slug } } }) : null,
   ]);
 
   const postsQuartier = dbPostsQuartier.map(dbPostToAppPost);
@@ -86,15 +89,22 @@ export default async function QuartierPage({ params }: Props) {
             {/* En-tête */}
             <div className="flex items-center gap-2.5">
               <span className={`w-3 h-3 rounded-full ${quartier.couleur}`} />
-              <div>
-                <h1 className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>
-                  {quartier.nom}
-                </h1>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2.5">
+                  <h1 className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>
+                    {quartier.nom}
+                  </h1>
+                  {userId && (
+                    <SubscribeButton quartierSlug={slug} initialSubscribed={!!quartierSub} />
+                  )}
+                </div>
                 {ville && (
                   <p className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>{ville.nom}</p>
                 )}
               </div>
             </div>
+
+            <QuartierReviews quartierSlug={slug} />
 
             {postsQuartier.length === 0 ? (
               <div

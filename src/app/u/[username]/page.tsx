@@ -5,6 +5,7 @@ import { PostCard } from "@/components/PostCard";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { dbPostToAppPost, quartierBySlug, villeBySlug } from "@/lib/data";
+import { getUserBadges, badgeCouleurs } from "@/lib/badges";
 import { ProfileListingCard } from "@/components/ProfileListingCard";
 import { ProfileTabs } from "@/components/ProfileTabs";
 
@@ -31,7 +32,7 @@ export default async function ProfilPage({ params }: Props) {
   const displayName = user.username ?? user.name ?? username;
   const isOwn = session?.user?.id === user.id;
 
-  const [dbPosts, dbComments, userVotes, postVotesAgg, commentVotesAgg, dbListings, savedReports] = await Promise.all([
+  const [dbPosts, dbComments, userVotes, postVotesAgg, commentVotesAgg, dbListings, savedReports, badges] = await Promise.all([
     prisma.post.findMany({
       where: { auteurId: user.id },
       orderBy: { creeLe: "desc" },
@@ -55,6 +56,7 @@ export default async function ProfilPage({ params }: Props) {
     isOwn
       ? prisma.savedReport.findMany({ where: { userId: user.id }, orderBy: { creeLe: "desc" } })
       : [],
+    getUserBadges(user.id),
   ]);
 
   const karma = (postVotesAgg._sum.nbVotes ?? 0) + (commentVotesAgg._sum.nbVotes ?? 0);
@@ -110,6 +112,36 @@ export default async function ProfilPage({ params }: Props) {
           </div>
         </div>
 
+        {/* Badges */}
+        {badges.length > 0 && (
+          <div
+            className="rounded-xl p-4 md:p-5"
+            style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+          >
+            <h2 className="text-[13px] font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+              Badges
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {badges.map((badge) => {
+                const c = badgeCouleurs[badge.couleur];
+                return (
+                  <div
+                    key={badge.id}
+                    className="flex items-center gap-1.5 px-2 py-1 rounded-lg"
+                    style={{ background: c.bg, border: "0.5px solid var(--border)" }}
+                  >
+                    <span className="text-[13px]">{badge.icon}</span>
+                    <div>
+                      <p className="text-[11px] font-semibold leading-tight" style={{ color: c.text }}>{badge.nom}</p>
+                      <p className="text-[10px] leading-tight" style={{ color: "var(--text-tertiary)" }}>{badge.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <ProfileTabs tabs={[
           { id: "discussions", label: "Discussions", count: posts.length },
           { id: "annonces", label: "Annonces", count: dbListings.length },
@@ -132,7 +164,7 @@ export default async function ProfilPage({ params }: Props) {
             ) : (
               <div className="space-y-2">
                 {posts.map((post) => (
-                  <PostCard key={post.id} post={post} hasVoted={votedPostIds.has(post.id)} />
+                  <PostCard key={post.id} post={post} hasVoted={votedPostIds.has(post.id)} authorBadges={badges} />
                 ))}
               </div>
             )}

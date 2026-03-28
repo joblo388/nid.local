@@ -10,12 +10,20 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { username, name, image, currentPassword, newPassword } = body;
+  const { username, name, image, currentPassword, newPassword,
+    emailNotifComments, emailNotifReplies, emailNotifMentions, emailNotifMessages, emailNotifAnnonces } = body;
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (!user) return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
 
-  const updates: Record<string, string | null> = {};
+  const updates: Record<string, string | null | boolean> = {};
+
+  // Email notification preferences
+  if (typeof emailNotifComments === "boolean") updates.emailNotifComments = emailNotifComments;
+  if (typeof emailNotifReplies === "boolean") updates.emailNotifReplies = emailNotifReplies;
+  if (typeof emailNotifMentions === "boolean") updates.emailNotifMentions = emailNotifMentions;
+  if (typeof emailNotifMessages === "boolean") updates.emailNotifMessages = emailNotifMessages;
+  if (typeof emailNotifAnnonces === "boolean") updates.emailNotifAnnonces = emailNotifAnnonces;
 
   // Username change
   if (username !== undefined) {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
 import { BottomNav } from "@/components/BottomNav";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import "./globals.css";
@@ -52,6 +53,13 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
+  manifest: "/manifest.json",
+  themeColor: "#1D9E75",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "nid.local",
+  },
   verification: {},
 };
 
@@ -73,6 +81,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen">
           <SessionProvider>{children}<BottomNav /></SessionProvider>
+          <ServiceWorkerRegister />
           <Analytics />
         </body>
     </html>

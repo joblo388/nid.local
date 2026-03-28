@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getIp } from "@/lib/rateLimit";
+import { sendNotifEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   if (!rateLimit(getIp(req), 3, 60_000)) {
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
         acteurNom: auteurNom,
       },
     });
+    sendNotifEmail({ type: "suggestion", recipientUserId: admin.id, acteurNom: auteurNom, postTitre: `[Suggestion] ${sujet.trim()}`, postId: "suggestion" }).catch(() => {});
   }
 
   return NextResponse.json({ ok: true }, { status: 201 });

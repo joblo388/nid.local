@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+// signIn is still used for Google OAuth button
 import Link from "next/link";
 
 export default function InscriptionPage() {
@@ -44,19 +45,8 @@ export default function InscriptionPage() {
         return;
       }
 
-      // Auto sign-in après inscription
-      const signInRes = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (signInRes?.ok) {
-        router.push("/");
-        router.refresh();
-      } else {
-        router.push("/auth/connexion");
-      }
+      // Rediriger vers la page de vérification courriel
+      router.push(`/auth/verifier-courriel?email=${encodeURIComponent(email)}`);
     } catch {
       setError("Impossible de contacter le serveur.");
       setLoading(false);

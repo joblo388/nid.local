@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
 import { quartierBySlug, ressourcesUtiles } from "@/lib/data";
+import { AnnonceMapView } from "./AnnonceMapView";
 import "./marketplace.css";
 
 type ListingItem = {
@@ -52,6 +53,8 @@ export function AnnoncesListeView() {
   const [searchInput, setSearchInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"liste" | "carte">("liste");
+  const [compareIds, setCompareIds] = useState<string[]>([]);
 
   const fetchListings = useCallback(async (p = 1, append = false) => {
     if (!append) setLoading(true);
@@ -94,6 +97,16 @@ export function AnnoncesListeView() {
       return next;
     });
     await fetch(`/api/annonces/${id}/favorite`, { method: "POST" });
+  }
+
+  function toggleCompare(id: string, e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setCompareIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 3) return prev;
+      return [...prev, id];
+    });
   }
 
   const quartierCounts: Record<string, number> = {};
@@ -167,8 +180,27 @@ export function AnnoncesListeView() {
             <option value="populaire">Plus vu</option>
           </select>
           <span className="mp-results-count">{total} annonce{total !== 1 ? "s" : ""}</span>
+          <div className="mp-view-toggle">
+            <button className={`mp-view-toggle-btn${viewMode === "liste" ? " active" : ""}`} onClick={() => setViewMode("liste")}>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="1" y1="3" x2="15" y2="3" /><line x1="1" y1="8" x2="15" y2="8" /><line x1="1" y1="13" x2="15" y2="13" /></svg>
+              Liste
+            </button>
+            <button className={`mp-view-toggle-btn${viewMode === "carte" ? " active" : ""}`} onClick={() => setViewMode("carte")}>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 3l5-2 4 2 5-2v12l-5 2-4-2-5 2V3z" /><line x1="6" y1="1" x2="6" y2="13" /><line x1="10" y1="3" x2="10" y2="15" /></svg>
+              Carte
+            </button>
+          </div>
         </div>
 
+        {viewMode === "carte" ? (
+          <AnnonceMapView
+            listings={listings}
+            favs={favs}
+            onToggleFav={toggleFav}
+            onTrackClick={trackClick}
+            quartierFilter={filters.quartierSlug}
+          />
+        ) : (
         <div className="mp-layout">
           <div className="mp-listings">
             {loading && listings.length === 0 ? (
@@ -199,6 +231,20 @@ export function AnnoncesListeView() {
                           <svg viewBox="0 0 32 32"><rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" /><rect x="12" y="20" width="8" height="10" /></svg>
                         )}
                         {l.lienVisite && <div className="mp-listing-badge mp-badge-virtual">Visite virtuelle</div>}
+                        <div className="cmp-checkbox-wrapper">
+                          <label
+                            className={`cmp-checkbox-label${compareIds.includes(l.id) ? " checked" : ""}`}
+                            title={compareIds.includes(l.id) ? "Retirer de la comparaison" : compareIds.length >= 3 ? "Maximum 3 annonces" : "Ajouter à la comparaison"}
+                            onClick={(e) => toggleCompare(l.id, e)}
+                          >
+                            <input type="checkbox" checked={compareIds.includes(l.id)} readOnly />
+                            {compareIds.includes(l.id) ? (
+                              <svg viewBox="0 0 14 14"><polyline points="3 7 6 10 11 4" /></svg>
+                            ) : (
+                              <svg viewBox="0 0 14 14"><line x1="4" y1="4" x2="10" y2="4" /><line x1="4" y1="7" x2="10" y2="7" /><line x1="4" y1="10" x2="8" y2="10" /></svg>
+                            )}
+                          </label>
+                        </div>
                       </div>
                       <div className="mp-listing-body">
                         <div>
@@ -309,7 +355,28 @@ export function AnnoncesListeView() {
             </div>
           </div>
         </div>
+        )}
       </div>
+
+      {/* Floating compare bar */}
+      {compareIds.length >= 2 && (
+        <Link
+          href={`/annonces/comparer?ids=${compareIds.join(",")}`}
+          className="cmp-floating-bar"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="1" y="1" width="5" height="14" rx="1" />
+            <rect x="10" y="1" width="5" height="14" rx="1" />
+          </svg>
+          Comparer ({compareIds.length})
+          <button
+            className="cmp-floating-clear"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCompareIds([]); }}
+          >
+            Effacer
+          </button>
+        </Link>
+      )}
     </>
   );
 }

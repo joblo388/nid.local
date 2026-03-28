@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getIp } from "@/lib/rateLimit";
+import { sendNotifEmail, sendNotifEmailBulk } from "@/lib/email";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     prisma.notification.create({
       data: { userId: post.auteurId, type: "comment", postId, postTitre: post.titre, acteurNom: auteurNom },
     }).catch(() => {});
+    sendNotifEmail({ type: "comment", recipientUserId: post.auteurId, acteurNom: auteurNom, postTitre: post.titre, postId }).catch(() => {});
   }
 
   // Notify @mentioned users
@@ -75,6 +77,7 @@ export async function POST(req: NextRequest, { params }: Params) {
           acteurNom: auteurNom,
         })),
       }).catch(() => {});
+      sendNotifEmailBulk(notifyIds, { type: "mention", acteurNom: auteurNom, postTitre: post.titre, postId }).catch(() => {});
     }
   }
 

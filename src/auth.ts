@@ -1,8 +1,13 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { CredentialsSignin } from "@auth/core/errors";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+
+class EmailNotVerified extends CredentialsSignin {
+  code = "email_not_verified";
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -38,6 +43,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
 
         if (!valid) return null;
+
+        if (!user.emailVerified) {
+          throw new EmailNotVerified();
+        }
 
         return {
           id: user.id,

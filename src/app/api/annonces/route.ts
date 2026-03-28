@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getIp } from "@/lib/rateLimit";
 import { Prisma } from "@prisma/client";
+import { sendAlertEmail } from "@/lib/email";
+import { quartierBySlug } from "@/lib/data";
 
 const PAGE_SIZE = 20;
 const TYPES_VALIDES = ["unifamiliale", "condo", "duplex", "triplex", "quadruplex"];
@@ -169,6 +171,46 @@ export async function POST(req: NextRequest) {
   await prisma.listingPriceHistory.create({
     data: { listingId: listing.id, prix, evenement: "mise_en_vente" },
   });
+
+  // ─── Send marketplace alert emails (fire-and-forget) ───────────────────────
+  (async () => {
+    try {
+      const where: Prisma.AlerteMarketplaceWhereInput = {
+        active: true,
+        userId: { not: session.user!.id }, // Don't alert the listing author
+      };
+
+      const matchingAlertes = await prisma.alerteMarketplace.findMany({
+        where,
+        include: { user: { select: { email: true } } },
+      });
+
+      for (const alerte of matchingAlertes) {
+        // Check each criterion — alert matches if ALL its non-null criteria match the listing
+        if (alerte.villeSlug && alerte.villeSlug !== (villeSlug || "montreal")) continue;
+        if (alerte.quartierSlug && alerte.quartierSlug !== quartierSlug) continue;
+        if (alerte.type && alerte.type !== type) continue;
+        if (alerte.prixMax != null && prix > alerte.prixMax) continue;
+        if (alerte.prixMin != null && prix < alerte.prixMin) continue;
+        if (alerte.chambresMin != null && (chambres || 0) < alerte.chambresMin) continue;
+
+        if (!alerte.user.email) continue;
+
+        const qNom = quartierBySlug[quartierSlug]?.nom ?? quartierSlug;
+
+        sendAlertEmail({
+          recipientEmail: alerte.user.email,
+          listingTitre: titre.trim(),
+          listingId: listing.id,
+          listingPrix: prix,
+          listingType: type,
+          listingQuartier: qNom,
+        }).catch((err) => console.error("[alert-email]", err));
+      }
+    } catch (err) {
+      console.error("[alert-email] Error matching alerts:", err);
+    }
+  })();
 
   return NextResponse.json({ id: listing.id }, { status: 201 });
 }

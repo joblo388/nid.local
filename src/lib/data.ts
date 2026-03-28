@@ -119,13 +119,14 @@ type DbPost = {
 // ─── Ressources utiles (source unique pour tout le site) ──────────────────────
 
 export const ressourcesUtiles = [
-  { label: "Marketplace immobilier", href: "/annonces" },
-  { label: "Données de marché", href: "/donnees-marche" },
-  { label: "Calculatrice hypothécaire", href: "/calculatrice-hypothecaire" },
-  { label: "Capacité d'emprunt", href: "/capacite-emprunt" },
-  { label: "Calculateur plex", href: "/calculateur-plex" },
-  { label: "Acheter ou louer?", href: "/acheter-ou-louer" },
-  { label: "Suggestions", href: "/suggestions" },
+  { label: "Marketplace immobilier", href: "/annonces", description: "Vendez ou achetez une maison" },
+  { label: "Données de marché", href: "/donnees-marche", description: "Prix médians et tendances par quartier" },
+  { label: "Calculatrice hypothécaire", href: "/calculatrice-hypothecaire", description: "Estimez vos paiements mensuels" },
+  { label: "Capacité d'emprunt", href: "/capacite-emprunt", description: "Calculez votre budget maximal" },
+  { label: "Calculateur plex", href: "/calculateur-plex", description: "Analysez la rentabilité d'un plex" },
+  { label: "Acheter ou louer?", href: "/acheter-ou-louer", description: "Comparez les deux scénarios" },
+  { label: "Estimation de valeur", href: "/estimation", description: "Estimez la valeur de votre propriété" },
+  { label: "Suggestions", href: "/suggestions", description: "Proposez des améliorations" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

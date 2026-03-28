@@ -120,4 +120,7 @@ body {
   body {
     padding-bottom: 60px;
   }
+  main {
+    padding-bottom: 70px;
+  }
 }

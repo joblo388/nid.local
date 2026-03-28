@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Post, Categorie } from "@/lib/types";
-import { villes, quartiers, quartiersDeVille, villeBySlug } from "@/lib/data";
+import { villes, quartiers, quartiersDeVille, villeBySlug, ressourcesUtiles } from "@/lib/data";
 import { PostCard } from "./PostCard";
 import { Sidebar, SidebarStats } from "./Sidebar";
 
@@ -51,7 +51,7 @@ function Pagination({ page, total, onPage }: { page: number; total: number; onPa
           <button
             key={p}
             onClick={() => onPage(p as number)}
-            className="w-8 h-8 rounded-lg text-[12px] font-medium transition-colors"
+            className="w-10 h-10 rounded-lg text-[13px] font-medium transition-colors"
             style={
               p === page
                 ? { background: "var(--green)", color: "#fff" }
@@ -281,6 +281,21 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstRender = useRef(true);
 
+  // Mes quartiers (subscriptions)
+  const [mesQuartiersActive, setMesQuartiersActive] = useState(false);
+  const [subscribedSlugs, setSubscribedSlugs] = useState<string[]>([]);
+  const [subsLoaded, setSubsLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/quartiers/subscribe")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.quartierSlugs) setSubscribedSlugs(data.quartierSlugs);
+        setSubsLoaded(true);
+      })
+      .catch(() => setSubsLoaded(true));
+  }, []);
+
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -293,16 +308,21 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
   async function fetchPosts(params: {
     villeSlug: string; quartierSlug: string; categorie: string; tri: string; page: number;
+    subscribedQuartiers?: string;
   }) {
     setLoading(true);
     try {
-      const qs = new URLSearchParams({
+      const qsObj: Record<string, string> = {
         villeSlug: params.villeSlug,
         quartierSlug: params.quartierSlug,
         categorie: params.categorie,
         tri: params.tri,
         page: String(params.page),
-      });
+      };
+      if (params.subscribedQuartiers) {
+        qsObj.subscribedQuartiers = params.subscribedQuartiers;
+      }
+      const qs = new URLSearchParams(qsObj);
       const res = await fetch(`/api/posts?${qs}`);
       if (!res.ok) return;
       const data = await res.json();
@@ -326,18 +346,30 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     setPage(1);
-    fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: 1 });
+    const subQ = mesQuartiersActive && subscribedSlugs.length > 0
+      ? subscribedSlugs.join(",")
+      : undefined;
+    fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: 1, subscribedQuartiers: subQ });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [villeSlug, quartierSlug, categorie, tri]);
+  }, [villeSlug, quartierSlug, categorie, tri, mesQuartiersActive]);
 
   function selectVille(slug: string) {
+    setMesQuartiersActive(false);
     setVilleSlug(slug);
     setQuartierSlug("tous");
   }
 
+  function toggleMesQuartiers() {
+    if (!mesQuartiersActive && subscribedSlugs.length === 0) return;
+    setMesQuartiersActive((prev) => !prev);
+  }
+
   function goToPage(p: number) {
     setPage(p);
-    fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: p });
+    const subQ = mesQuartiersActive && subscribedSlugs.length > 0
+      ? subscribedSlugs.join(",")
+      : undefined;
+    fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: p, subscribedQuartiers: subQ });
     listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -361,32 +393,74 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
     <>
       {/* Barres de navigation — sticky sous le header */}
       <div className="sticky z-40" style={{ top: "52px" }}>
-        <VilleBar selected={villeSlug} onSelect={selectVille} />
-        {hasQuartiers && (
+        <VilleBar selected={mesQuartiersActive ? "" : villeSlug} onSelect={selectVille} />
+        {!mesQuartiersActive && hasQuartiers && (
           <QuartierBar villeSlug={villeSlug} selected={quartierSlug} onSelect={(s) => setQuartierSlug(s)} />
+        )}
+        {mesQuartiersActive && (
+          <div style={{ background: "var(--bg-secondary)", borderBottom: "0.5px solid var(--border)" }}>
+            <div className="max-w-[1100px] mx-auto px-5">
+              <div className="flex gap-1.5 overflow-x-auto py-1.5" style={{ scrollbarWidth: "none" }}>
+                {subscribedSlugs.map((slug) => {
+                  const q = quartiers.find((qq) => qq.slug === slug);
+                  if (!q) return null;
+                  return (
+                    <span
+                      key={slug}
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium whitespace-nowrap shrink-0"
+                      style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${q.couleur}`} />
+                      {q.nom}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
       {/* Breadcrumb */}
       <div style={{ borderBottom: "0.5px solid var(--border)" }}>
         <div
-          className="max-w-[1100px] mx-auto px-5 py-2 flex items-center gap-1.5 text-[12px]"
-          style={{ color: "var(--text-tertiary)" }}
+          className="max-w-[1100px] mx-auto px-5 py-2 flex items-center justify-between"
         >
-          <span>Province de Québec</span>
-          <span>/</span>
-          <button
-            onClick={() => setQuartierSlug("tous")}
-            className="transition-opacity hover:opacity-70"
-            style={{ color: quartierActif ? "var(--text-secondary)" : "var(--green-text)" }}
-          >
-            {villeActive?.nom}
-          </button>
-          {quartierActif && (
-            <>
-              <span>/</span>
-              <span className="font-medium" style={{ color: "var(--green-text)" }}>{quartierActif.nom}</span>
-            </>
+          <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+            {mesQuartiersActive ? (
+              <span className="font-medium" style={{ color: "var(--green-text)" }}>Mes quartiers</span>
+            ) : (
+              <>
+                <span>Province de Qu{"\u00e9"}bec</span>
+                <span>/</span>
+                <button
+                  onClick={() => setQuartierSlug("tous")}
+                  className="transition-opacity hover:opacity-70"
+                  style={{ color: quartierActif ? "var(--text-secondary)" : "var(--green-text)" }}
+                >
+                  {villeActive?.nom}
+                </button>
+                {quartierActif && (
+                  <>
+                    <span>/</span>
+                    <span className="font-medium" style={{ color: "var(--green-text)" }}>{quartierActif.nom}</span>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+          {subsLoaded && subscribedSlugs.length > 0 && (
+            <button
+              onClick={toggleMesQuartiers}
+              className="px-3 py-1 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap"
+              style={
+                mesQuartiersActive
+                  ? { background: "var(--green)", color: "#fff" }
+                  : { background: "var(--bg-card)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
+              }
+            >
+              {mesQuartiersActive ? "Mes quartiers \u2713" : "Mes quartiers"}
+            </button>
           )}
         </div>
       </div>
@@ -418,7 +492,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                 <button
                   key={cat.value}
                   onClick={() => setCategorie(cat.value)}
-                  className="px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap"
+                  className="px-2 py-1 text-[11px] md:px-3 md:py-1.5 md:text-[12px] rounded-lg font-medium transition-colors whitespace-nowrap"
                   style={
                     categorie === cat.value
                       ? { background: "var(--green)", color: "#fff" }
@@ -466,13 +540,15 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
               >
                 + Publier
               </Link>
-              <Link
-                href={`/ville/${villeSlug}`}
-                className="hidden md:block text-[11px] font-medium transition-opacity hover:opacity-70"
-                style={{ color: "var(--green)" }}
-              >
-                Voir la page de {villeActive?.nom} →
-              </Link>
+              {!mesQuartiersActive && (
+                <Link
+                  href={`/ville/${villeSlug}`}
+                  className="hidden md:block text-[11px] font-medium transition-opacity hover:opacity-70"
+                  style={{ color: "var(--green)" }}
+                >
+                  Voir la page de {villeActive?.nom} →
+                </Link>
+              )}
             </div>
 
             {/* Posts */}
@@ -513,6 +589,43 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
           {/* Sidebar — desktop uniquement */}
           <Sidebar villeSlug={villeSlug} stats={sidebarStats} />
+        </div>
+
+        {/* Ressources utiles — mobile uniquement */}
+        <div className="md:hidden mt-5">
+          <div
+            className="rounded-xl overflow-hidden"
+            style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+          >
+            <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider"
+                style={{ color: "var(--text-tertiary)" }}>
+                Ressources utiles
+              </h3>
+            </div>
+            <div className="grid grid-cols-2">
+              {ressourcesUtiles.map((r, i) => (
+                <Link
+                  key={r.href}
+                  href={r.href}
+                  className="flex flex-col gap-0.5 px-4 py-3 transition-colors hover-bg"
+                  style={{
+                    borderRight: i % 2 === 0 ? "0.5px solid var(--border)" : "none",
+                    borderBottom: i < ressourcesUtiles.length - 2 ? "0.5px solid var(--border)" : "none",
+                  }}
+                >
+                  <span className="text-[12px] font-medium" style={{ color: "var(--text-primary)" }}>
+                    {r.label}
+                  </span>
+                  {"description" in r && r.description && (
+                    <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
+                      {r.description}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </main>
     </>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { villes, quartiersDeVille, ressourcesUtiles } from "@/lib/data";
+import { useLocale } from "@/lib/useLocale";
 
 export type SidebarStats = {
   countsByVille: Record<string, number>;
@@ -12,6 +13,7 @@ export type SidebarStats = {
 };
 
 export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: SidebarStats }) {
+  const { t } = useLocale();
   const villesActives = villes
     .map((v) => ({ ...v, nb: stats.countsByVille[v.slug] ?? 0 }))
     .filter((v) => v.nb > 0)
@@ -32,7 +34,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
         className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90 flex items-center justify-center"
         style={{ background: "var(--green)" }}
       >
-        + Nouvelle discussion
+        + {t("common.nouvelle_discussion")}
       </Link>
 
       {/* Villes actives */}
@@ -43,7 +45,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
         <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
           <h3 className="text-[11px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--text-tertiary)" }}>
-            Villes actives
+            {t("sidebar.villes_actives")}
           </h3>
         </div>
         <ul>
@@ -77,7 +79,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
             className="text-[12px] font-medium transition-opacity hover:opacity-70"
             style={{ color: "var(--green)" }}
           >
-            Toutes les villes →
+            {t("common.toutes_villes")} →
           </Link>
         </div>
       </div>
@@ -91,7 +93,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
           <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
             <h3 className="text-[11px] font-semibold uppercase tracking-wider"
               style={{ color: "var(--text-tertiary)" }}>
-              Quartiers actifs
+              {t("sidebar.quartiers_actifs")}
             </h3>
           </div>
           <ul>
@@ -128,15 +130,15 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
         <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
           <h3 className="text-[11px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--text-tertiary)" }}>
-            Communauté
+            {t("sidebar.communaute")}
           </h3>
         </div>
         <div className="grid grid-cols-2">
           {[
-            { label: "Membres", valeur: "3 241" },
-            { label: "Discussions", valeur: stats.totalPosts.toLocaleString("fr-CA") },
-            { label: "Vues totales", valeur: stats.totalVues.toLocaleString("fr-CA") },
-            { label: "Réponses", valeur: stats.totalReponses.toLocaleString("fr-CA") },
+            { label: t("sidebar.membres"), valeur: "3 241" },
+            { label: t("sidebar.discussions"), valeur: stats.totalPosts.toLocaleString("fr-CA") },
+            { label: t("sidebar.vues_totales"), valeur: stats.totalVues.toLocaleString("fr-CA") },
+            { label: t("sidebar.reponses"), valeur: stats.totalReponses.toLocaleString("fr-CA") },
           ].map((stat, i) => (
             <div
               key={stat.label}
@@ -165,7 +167,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
         <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
           <h3 className="text-[11px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--text-tertiary)" }}>
-            Ressources utiles
+            {t("sidebar.ressources")}
           </h3>
         </div>
         <ul>
@@ -176,10 +178,17 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
                 href={r.href}
                 className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg"
               >
-                <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
-                  {r.label}
-                </span>
-                <svg className="w-3 h-3 shrink-0" style={{ color: "var(--text-tertiary)" }}
+                <div className="min-w-0">
+                  <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
+                    {r.label}
+                  </span>
+                  {"description" in r && r.description && (
+                    <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+                      {r.description}
+                    </p>
+                  )}
+                </div>
+                <svg className="w-3 h-3 shrink-0 ml-2" style={{ color: "var(--text-tertiary)" }}
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -190,7 +199,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
       </div>
 
       <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>
-        © 2026 nid.local — Fait au Québec
+        {t("footer.copyright")}
       </p>
     </aside>
   );

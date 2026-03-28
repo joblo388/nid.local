@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { sendNotifEmail } from "@/lib/email";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -92,15 +93,17 @@ export async function POST(req: NextRequest, ctx: Ctx) {
 
   // Notify the other person
   const recipientId = conversation.user1Id === session.user.id ? conversation.user2Id : conversation.user1Id;
+  const acteurNomMsg = session.user.username ?? session.user.name ?? "quelqu'un";
   await prisma.notification.create({
     data: {
       userId: recipientId,
       type: "message",
       postId: id,
       postTitre: "Nouveau message",
-      acteurNom: session.user.username ?? session.user.name ?? "quelqu'un",
+      acteurNom: acteurNomMsg,
     },
   }).catch(() => {});
+  sendNotifEmail({ type: "message", recipientUserId: recipientId, acteurNom: acteurNomMsg, postTitre: "Nouveau message", postId: id }).catch(() => {});
 
   return NextResponse.json({
     id: message.id,

@@ -35,3 +35,27 @@
 .dm-badge-vendeur{background:var(--red-bg);color:var(--red-text)}
 .dm-badge-equilibre{background:var(--green-light-bg);color:var(--green-text)}
 .dm-badge-acheteur{background:var(--blue-bg);color:var(--blue-text)}
+
+/* Card expand toggle */
+.dm-market-card{cursor:pointer;position:relative}
+.dm-card-expand-hint{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-tertiary);margin-top:8px;transition:color 0.15s}
+.dm-market-card:hover .dm-card-expand-hint{color:var(--text-secondary)}
+.dm-card-expand-icon{width:12px;height:12px;transition:transform 0.2s ease}
+.dm-card-expand-icon.open{transform:rotate(180deg)}
+
+/* Chart container */
+.dm-chart-wrapper{overflow:hidden;max-height:0;opacity:0;transition:max-height 0.35s ease,opacity 0.25s ease,margin 0.35s ease;margin-top:0}
+.dm-chart-wrapper.open{max-height:400px;opacity:1;margin-top:12px}
+.dm-chart-container{position:relative;width:100%;background:var(--bg-card);border:0.5px solid var(--border);border-radius:12px;padding:14px 14px 8px;user-select:none}
+.dm-chart-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.dm-chart-title{font-size:12px;font-weight:600;color:var(--text-primary)}
+.dm-chart-legend{display:flex;align-items:center;gap:12px}
+.dm-chart-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-secondary)}
+.dm-chart-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Tooltip */
+.dm-chart-tooltip{position:absolute;top:40px;z-index:10;background:var(--bg-card);border:0.5px solid var(--border);border-radius:8px;padding:8px 10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);pointer-events:none;white-space:nowrap;max-width:calc(100vw - 32px)}
+.dm-chart-tooltip-year{font-size:11px;font-weight:600;color:var(--text-primary);margin-bottom:4px}
+.dm-chart-tooltip-row{display:flex;align-items:center;gap:5px;font-size:11px;margin-top:2px}
+.dm-chart-tooltip-label{color:var(--text-secondary);min-width:75px}
+.dm-chart-tooltip-val{font-weight:600;color:var(--text-primary)}

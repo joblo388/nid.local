@@ -413,7 +413,7 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
               required
               minLength={2}
               rows={3}
-              className="w-full px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all resize-none"
+              className="w-full box-border px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all resize-none"
               style={{
                 background: "var(--bg-secondary)",
                 border: "1.5px solid var(--border)",

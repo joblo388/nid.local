@@ -33,6 +33,8 @@ export function NouveauPostForm() {
   const [erreur, setErreur] = useState("");
   const [loading, setLoading] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [showPoll, setShowPoll] = useState(false);
+  const [pollOptions, setPollOptions] = useState(["", ""]);
   const fileRef = useRef<HTMLInputElement>(null);
   const contenuRef = useRef<HTMLTextAreaElement>(null);
 
@@ -114,12 +116,28 @@ export function NouveauPostForm() {
       return;
     }
 
+    // Validate poll options if poll is active
+    if (showPoll) {
+      const filledOptions = pollOptions.filter((o) => o.trim());
+      if (filledOptions.length < 2) {
+        setErreur("Le sondage doit avoir au moins 2 options.");
+        return;
+      }
+    }
+
     setLoading(true);
     try {
+      const payload: Record<string, unknown> = { titre, contenu, villeSlug, quartierSlug, categorie, imageUrl: imageData, _hp: hp };
+      if (showPoll) {
+        const filledOptions = pollOptions.filter((o) => o.trim()).map((o) => o.trim());
+        if (filledOptions.length >= 2) {
+          payload.poll = { options: filledOptions };
+        }
+      }
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titre, contenu, villeSlug, quartierSlug, categorie, imageUrl: imageData, _hp: hp }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -288,6 +306,81 @@ export function NouveauPostForm() {
           </button>
         )}
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageFile} />
+      </div>
+
+      {/* Sondage */}
+      <div>
+        <button
+          type="button"
+          onClick={() => {
+            setShowPoll(!showPoll);
+            if (!showPoll) setPollOptions(["", ""]);
+          }}
+          className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-[13px] transition-opacity hover:opacity-80"
+          style={{
+            background: showPoll ? "var(--green-light-bg)" : "var(--bg-secondary)",
+            color: showPoll ? "var(--green-text)" : "var(--text-secondary)",
+            border: showPoll ? "1.5px solid var(--green)" : "0.5px solid var(--border)",
+          }}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          {showPoll ? "Retirer le sondage" : "Ajouter un sondage"}
+        </button>
+
+        {showPoll && (
+          <div className="mt-3 space-y-2">
+            <label className="block text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+              Options du sondage <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>(2 à 5 options)</span>
+            </label>
+            {pollOptions.map((opt, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={opt}
+                  onChange={(e) => {
+                    const next = [...pollOptions];
+                    next[idx] = e.target.value;
+                    setPollOptions(next);
+                  }}
+                  placeholder={`Option ${idx + 1}`}
+                  maxLength={100}
+                  className="flex-1 px-3 py-2 rounded-lg text-[13px] outline-none transition-all"
+                  style={{ background: "var(--bg-secondary)", border: "1.5px solid var(--border)", color: "var(--text-primary)" }}
+                  onFocus={(e) => (e.target.style.borderColor = "var(--green)")}
+                  onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+                />
+                {pollOptions.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
+                    className="p-1.5 rounded-lg transition-opacity hover:opacity-70"
+                    style={{ color: "var(--text-tertiary)" }}
+                    title="Supprimer cette option"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            ))}
+            {pollOptions.length < 5 && (
+              <button
+                type="button"
+                onClick={() => setPollOptions([...pollOptions, ""])}
+                className="flex items-center gap-1.5 text-[12px] font-medium transition-opacity hover:opacity-70 mt-1"
+                style={{ color: "var(--green)" }}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Ajouter une option
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Honeypot */}

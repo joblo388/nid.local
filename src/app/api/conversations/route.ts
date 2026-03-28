@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { sendNotifEmail } from "@/lib/email";
 
 // GET — list conversations for current user
 export async function GET() {
@@ -93,15 +94,17 @@ export async function POST(req: NextRequest) {
   });
 
   // Notify recipient
+  const acteurNomMsg = session.user.username ?? session.user.name ?? "quelqu'un";
   await prisma.notification.create({
     data: {
       userId: recipientId,
       type: "message",
       postId: conversation.id,
       postTitre: "Nouveau message privé",
-      acteurNom: session.user.username ?? session.user.name ?? "quelqu'un",
+      acteurNom: acteurNomMsg,
     },
   }).catch(() => {});
+  sendNotifEmail({ type: "message", recipientUserId: recipientId, acteurNom: acteurNomMsg, postTitre: "Nouveau message privé", postId: conversation.id }).catch(() => {});
 
   return NextResponse.json({ conversationId: conversation.id }, { status: 201 });
 }

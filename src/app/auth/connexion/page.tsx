@@ -28,6 +28,11 @@ function ConnexionForm() {
         redirect: false,
       });
 
+      if (res?.code === "email_not_verified") {
+        router.push(`/auth/verifier-courriel?email=${encodeURIComponent(email)}`);
+        return;
+      }
+
       if (res?.error) {
         setError("Courriel ou mot de passe incorrect.");
         setLoading(false);

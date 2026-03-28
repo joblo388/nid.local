@@ -5,6 +5,8 @@ import { useSession, signOut } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { NotificationBell } from "./NotificationBell";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useLocale } from "@/lib/useLocale";
 
 export function Header() {
   const { data: session, status } = useSession();
@@ -33,19 +35,21 @@ export function Header() {
   const username = session?.user?.username ?? session?.user?.name ?? session?.user?.email;
   const initial = username?.[0]?.toUpperCase() ?? "?";
 
+  const { t } = useLocale();
+
   const isMarketplace = pathname.startsWith("/annonces");
 
   const navLinks = isMarketplace
     ? [
-        { href: "/annonces", label: "Annonces" },
-        { href: "/annonces/publier", label: "Publier" },
-        { href: "/", label: "Forum" },
+        { href: "/annonces", label: t("nav.annonces") },
+        { href: "/annonces/publier", label: t("nav.publier") },
+        { href: "/", label: t("nav.communaute") },
       ]
     : [
-        { href: "/", label: "Fil" },
-        { href: "/tendances", label: "Tendances" },
-        { href: "/villes", label: "Villes" },
-        { href: "/annonces", label: "Annonces" },
+        { href: "/", label: t("nav.fil") },
+        { href: "/tendances", label: t("nav.tendances") },
+        { href: "/villes", label: t("nav.villes") },
+        { href: "/annonces", label: t("nav.annonces") },
       ];
 
   return (
@@ -60,14 +64,12 @@ export function Header() {
             <span style={{ color: "var(--text-primary)" }}>nid</span>
             <span style={{ color: "var(--green)" }}>.local</span>
           </span>
-          {isMarketplace && (
-            <span
-              className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md"
-              style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
-            >
-              Marketplace
-            </span>
-          )}
+          <span
+            className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md"
+            style={{ background: isMarketplace ? "var(--green-light-bg)" : "var(--blue-bg)", color: isMarketplace ? "var(--green-text)" : "var(--blue-text)" }}
+          >
+            {isMarketplace ? t("nav.marketplace") : t("nav.communaute")}
+          </span>
         </Link>
 
         {/* Nav desktop */}
@@ -107,7 +109,7 @@ export function Header() {
 
             {mobileNavOpen && (
               <div
-                className="absolute left-0 top-full mt-2 w-[200px] rounded-xl overflow-hidden py-1 z-50"
+                className="absolute left-0 top-full mt-2 w-[calc(100vw-40px)] rounded-xl overflow-hidden py-1 z-50"
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
               >
                 {navLinks.map((l) => (
@@ -126,7 +128,7 @@ export function Header() {
                     className="block px-4 py-2.5 text-[14px] font-semibold transition-colors hover-bg"
                     style={{ color: "var(--green)" }}
                   >
-                    + Nouvelle discussion
+                    + {t("common.nouvelle_discussion")}
                   </Link>
                 </div>
                 {!session && status !== "loading" && (
@@ -136,7 +138,7 @@ export function Header() {
                       className="block px-4 py-2.5 text-[14px] font-medium transition-colors hover-bg"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      Se connecter
+                      {t("auth.connexion")}
                     </Link>
                   </div>
                 )}
@@ -148,6 +150,7 @@ export function Header() {
             <div className="w-8 h-8 rounded-full animate-pulse" style={{ background: "var(--bg-secondary)" }} />
           ) : session ? (
             <>
+              <LanguageSwitcher />
               <NotificationBell />
               <div className="relative" ref={menuRef}>
                 <button
@@ -190,7 +193,7 @@ export function Header() {
                       className="block px-4 py-2.5 text-[13px] transition-colors hover-bg"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      Mon profil
+                      {t("common.profil")}
                     </Link>
                     <Link
                       href="/messages"
@@ -198,7 +201,7 @@ export function Header() {
                       className="block px-4 py-2.5 text-[13px] transition-colors hover-bg"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      Messages
+                      {t("common.messages")}
                     </Link>
                     <Link
                       href="/favoris"
@@ -206,7 +209,7 @@ export function Header() {
                       className="block px-4 py-2.5 text-[13px] transition-colors hover-bg"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      Mes favoris
+                      {t("common.favoris")}
                     </Link>
                     <Link
                       href="/parametres"
@@ -214,7 +217,7 @@ export function Header() {
                       className="block px-4 py-2.5 text-[13px] transition-colors hover-bg"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      Paramètres
+                      {t("common.parametres")}
                     </Link>
                     <div style={{ borderTop: "0.5px solid var(--border)" }} className="my-1" />
                     <button
@@ -222,7 +225,7 @@ export function Header() {
                       className="w-full text-left px-4 py-2.5 text-[13px] transition-colors hover-bg"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      Se déconnecter
+                      {t("auth.deconnexion")}
                     </button>
                   </div>
                 )}
@@ -230,19 +233,20 @@ export function Header() {
             </>
           ) : (
             <>
+              <LanguageSwitcher />
               <Link
                 href={`/auth/connexion?callbackUrl=${encodeURIComponent(pathname)}`}
                 className="hidden md:block text-[13px] font-medium transition-opacity hover:opacity-60"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Se connecter
+                {t("auth.connexion")}
               </Link>
               <Link
                 href="/auth/inscription"
                 className="text-[13px] font-semibold text-white px-3.5 py-1.5 rounded-lg transition-opacity hover:opacity-90"
                 style={{ background: "var(--green)" }}
               >
-                S&apos;inscrire
+                {t("auth.inscription")}
               </Link>
             </>
           )}
