@@ -54,6 +54,10 @@ export async function GET(req: NextRequest) {
     hasMore: total > page * PAGE_SIZE,
     votedPostIds: userVotes.map((v) => v.postId),
     bookmarkedPostIds: userBookmarks.map((b) => b.postId),
+  }, {
+    headers: {
+      "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+    },
   });
 }
 

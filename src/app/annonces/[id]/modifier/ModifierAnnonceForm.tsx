@@ -382,7 +382,7 @@ export function ModifierAnnonceForm() {
             <div className="mp-photo-grid">
               {images.map((img, i) => (
                 <div key={i} className="mp-photo-slot filled" style={{ position: "relative" }} onClick={() => removeImage(i)}>
-                  <Image src={img.preview || img.url} alt="" fill sizes="100px" style={{ objectFit: "cover", borderRadius: 8 }} />
+                  <Image src={img.preview || img.url} alt="" fill sizes="100px" style={{ objectFit: "cover", borderRadius: 8 }} loading="lazy" />
                   {i === 0 && <span className="mp-photo-main-tag">Principale</span>}
                 </div>
               ))}

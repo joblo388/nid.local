@@ -84,7 +84,7 @@ export default async function FavorisPage() {
                 >
                   <div style={{ height: 140, background: "var(--bg-secondary)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {imgUrl ? (
-                      <Image src={imgUrl} alt={listing.titre} fill sizes="300px" style={{ objectFit: "cover" }} />
+                      <Image src={imgUrl} alt={listing.titre} fill sizes="300px" style={{ objectFit: "cover" }} loading="lazy" />
                     ) : (
                       <svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="var(--text-tertiary)" strokeWidth="1">
                         <rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" />

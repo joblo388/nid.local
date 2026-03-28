@@ -10,7 +10,7 @@ export function PinButton({ postId, initialEpingle }: { postId: string; initialE
 
   async function toggle() {
     setLoading(true);
-    const res = await fetch(`/api/admin/posts/${postId}/pin`, { method: "POST" });
+    const res = await fetch(`/api/posts/${postId}/pin`, { method: "POST" });
     if (res.ok) {
       const data = await res.json();
       setEpingle(data.epingle);

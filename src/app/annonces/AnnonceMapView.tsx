@@ -143,7 +143,7 @@ export function AnnonceMapView({ listings, favs, onToggleFav, onTrackClick, quar
                   >
                     <div className="mp-map-card-img">
                       {l.imageUrl ? (
-                        <Image src={l.imageUrl} alt={l.titre} fill sizes="80px" style={{ objectFit: "cover" }} />
+                        <Image src={l.imageUrl} alt={l.titre} fill sizes="80px" style={{ objectFit: "cover" }} loading="lazy" />
                       ) : (
                         <svg viewBox="0 0 32 32"><rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" /><rect x="12" y="20" width="8" height="10" /></svg>
                       )}

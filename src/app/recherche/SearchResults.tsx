@@ -88,7 +88,7 @@ export async function SearchResults({ q }: { q: string }) {
                     style={{ background: "var(--bg-secondary)", position: "relative" }}
                   >
                     {imgUrl ? (
-                      <Image src={imgUrl} alt="" fill sizes="64px" style={{ objectFit: "cover" }} />
+                      <Image src={imgUrl} alt="" fill sizes="64px" style={{ objectFit: "cover" }} loading="lazy" />
                     ) : (
                       <svg width="20" height="20" viewBox="0 0 32 32" fill="none" stroke="var(--text-tertiary)" strokeWidth="1">
                         <rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" />

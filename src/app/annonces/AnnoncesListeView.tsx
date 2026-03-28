@@ -403,7 +403,7 @@ export function AnnoncesListeView() {
                     <Link key={l.id} className="mp-listing-card" href={`/annonces/${l.id}`} onClick={() => trackClick(l.id)}>
                       <div className="mp-listing-img">
                         {l.imageUrl ? (
-                          <Image src={l.imageUrl} alt={l.titre} fill sizes="200px" style={{ objectFit: "cover" }} />
+                          <Image src={l.imageUrl} alt={l.titre} fill sizes="200px" style={{ objectFit: "cover" }} loading="lazy" />
                         ) : (
                           <svg viewBox="0 0 32 32"><rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" /><rect x="12" y="20" width="8" height="10" /></svg>
                         )}

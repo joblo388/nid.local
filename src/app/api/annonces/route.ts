@@ -103,6 +103,10 @@ export async function GET(req: NextRequest) {
     page,
     hasMore: total > page * limit,
     favoritedIds: userFavorites.map((f) => f.listingId),
+  }, {
+    headers: {
+      "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+    },
   });
 }
 

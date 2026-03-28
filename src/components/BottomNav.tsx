@@ -9,7 +9,7 @@ export function BottomNav() {
   const { data: session } = useSession();
   const isForum = !pathname.startsWith("/annonces") && !pathname.startsWith("/auth") && !pathname.startsWith("/parametres") && !pathname.startsWith("/ressources");
   const isPublier = pathname === "/nouveau-post" || pathname === "/annonces/publier";
-  const isOutils = pathname === "/ressources" || pathname.startsWith("/calculatrice") || pathname.startsWith("/capacite") || pathname.startsWith("/calculateur") || pathname.startsWith("/acheter") || pathname.startsWith("/donnees") || pathname.startsWith("/estimation");
+  const isOutils = pathname === "/ressources" || pathname.startsWith("/calculatrice") || pathname.startsWith("/capacite") || pathname.startsWith("/calculateur") || pathname.startsWith("/acheter") || pathname.startsWith("/donnees") || pathname.startsWith("/estimation") || pathname === "/repertoire";
   const isProfile = pathname.startsWith("/u/") || pathname === "/parametres" || pathname === "/notifications" || pathname === "/messages" || pathname === "/favoris";
 
   const username = session?.user?.username ?? session?.user?.name;

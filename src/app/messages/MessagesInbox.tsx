@@ -64,7 +64,7 @@ export function MessagesInbox() {
                 style={{ borderBottom: i < conversations.length - 1 ? "0.5px solid var(--border)" : "none" }}
               >
                 {c.other.image ? (
-                  <Image src={c.other.image} alt="" width={40} height={40} className="rounded-full object-cover shrink-0" />
+                  <Image src={c.other.image} alt="" width={40} height={40} className="rounded-full object-cover shrink-0" loading="lazy" />
                 ) : (
                   <div className="w-10 h-10 rounded-full flex items-center justify-center text-[14px] font-bold text-white shrink-0" style={{ background: "var(--green)" }}>
                     {c.other.username[0]?.toUpperCase() ?? "?"}

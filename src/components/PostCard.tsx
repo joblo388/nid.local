@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Post } from "@/lib/types";
 import { VoteButton } from "./VoteButton";
 import { BookmarkButton } from "./BookmarkButton";
 import { BadgeDisplay } from "./BadgeDisplay";
+import { PinButton } from "./PinButton";
 import type { Badge } from "@/lib/badges";
+
+const BLUR_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8+P9/PQAJhAN5fMoBGgAAAABJRU5ErkJggg==";
 
 const badgeBg: Record<string, string> = {
   question:     "var(--blue-bg)",
@@ -129,12 +132,15 @@ function PostImage({ src }: { src: string }) {
     <div className="relative w-full mb-3 rounded-lg overflow-hidden" style={{ maxHeight: "180px", border: "0.5px solid var(--border)" }}>
       <Image src={src} alt="" width={700} height={180}
         className="w-full object-cover" style={{ maxHeight: "180px" }}
-        sizes="(max-width: 768px) 100vw, 700px" />
+        sizes="(max-width: 768px) 100vw, 700px"
+        loading="lazy"
+        placeholder="blur"
+        blurDataURL={BLUR_PLACEHOLDER} />
     </div>
   );
 }
 
-export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false, authorBadges }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean; authorBadges?: Badge[] }) {
+export const PostCard = React.memo(function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false, authorBadges, isAdmin = false }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean; authorBadges?: Badge[]; isAdmin?: boolean }) {
   return (
     <article
       className="rounded-xl transition-colors hover-bg card-hover-lift"
@@ -169,6 +175,9 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
             </span>
             {post.epingle && (
               <span className="text-[11px] font-semibold" style={{ color: "var(--green)" }}>📌 Épinglé</span>
+            )}
+            {isAdmin && (
+              <PinButton postId={post.id} initialPinned={!!post.epingle} isAdmin={isAdmin} />
             )}
             <Link href={`/quartier/${post.quartier.slug}`}
               className="text-[11px] font-medium transition-opacity hover:opacity-70"
@@ -222,4 +231,4 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
       </div>
     </article>
   );
-}
+});

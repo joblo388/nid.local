@@ -118,6 +118,7 @@ export function ImageCarousel({ images, onImageClick }: ImageCarouselProps) {
               sizes="(max-width: 900px) 100vw, 600px"
               style={{ objectFit: "cover" }}
               priority={i === 0}
+              loading={i === 0 ? "eager" : "lazy"}
             />
           </div>
         ))}

@@ -103,6 +103,7 @@ type Props = {
   initialBookmarkedPostIds?: string[];
   villeSlug?: string;
   quartierSlug?: string;
+  isAdmin?: boolean;
 };
 
 export function PostsFiltres({
@@ -112,6 +113,7 @@ export function PostsFiltres({
   initialBookmarkedPostIds = [],
   villeSlug,
   quartierSlug,
+  isAdmin = false,
 }: Props) {
   const [categorie, setCategorie] = useState<string>("tous");
   const [tri, setTri] = useState<"populaire" | "recent" | "actif">("populaire");
@@ -271,7 +273,7 @@ export function PostsFiltres({
         ) : (
           <div className="space-y-2">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} hasVoted={votedPostIds.has(post.id)} isBookmarked={bookmarkedPostIds.has(post.id)} />
+              <PostCard key={post.id} post={post} hasVoted={votedPostIds.has(post.id)} isBookmarked={bookmarkedPostIds.has(post.id)} isAdmin={isAdmin} />
             ))}
             <Pagination page={page} total={total} onPage={goToPage} />
           </div>

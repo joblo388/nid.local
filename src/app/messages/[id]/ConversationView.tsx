@@ -351,7 +351,7 @@ export function ConversationView() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M15 19l-7-7 7-7" /></svg>
           </Link>
           {conv.other.image ? (
-            <Image src={conv.other.image} alt="" width={36} height={36} className="rounded-full object-cover shrink-0" />
+            <Image src={conv.other.image} alt="" width={36} height={36} className="rounded-full object-cover shrink-0" loading="lazy" />
           ) : (
             <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white shrink-0" style={{ background: "var(--green)" }}>
               {conv.other.username[0]?.toUpperCase()}

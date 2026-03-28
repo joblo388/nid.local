@@ -337,7 +337,7 @@ export function SellerRating({ sellerId, compact = false }: Props) {
                 }}
               >
                 {review.reviewer.image ? (
-                  <Image src={review.reviewer.image} alt="" width={30} height={30} className="rounded-full object-cover" />
+                  <Image src={review.reviewer.image} alt="" width={30} height={30} className="rounded-full object-cover" loading="lazy" />
                 ) : (
                   review.reviewer.username[0]?.toUpperCase() ?? "?"
                 )}

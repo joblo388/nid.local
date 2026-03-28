@@ -330,7 +330,7 @@ export function AnnonceDetailView() {
                         style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--green-light-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 600, color: "var(--green-text)", flexShrink: 0 }}
                       >
                         {c.auteurImage ? (
-                          <Image src={c.auteurImage} alt="" width={32} height={32} className="rounded-full object-cover" />
+                          <Image src={c.auteurImage} alt="" width={32} height={32} className="rounded-full object-cover" loading="lazy" />
                         ) : (
                           c.auteurUsername[0]?.toUpperCase() ?? "?"
                         )}
@@ -354,7 +354,7 @@ export function AnnonceDetailView() {
             <div className="mp-contact-card">
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, paddingBottom: 14, borderBottom: "0.5px solid var(--border)" }}>
                 {listing.auteur.image && !listing.auteur.anonyme ? (
-                  <Image src={listing.auteur.image} alt="" width={40} height={40} className="rounded-full object-cover" />
+                  <Image src={listing.auteur.image} alt="" width={40} height={40} className="rounded-full object-cover" loading="lazy" />
                 ) : (
                   <div className="mp-seller-av">{initials}</div>
                 )}
@@ -464,7 +464,7 @@ export function AnnonceDetailView() {
                   >
                     <div style={{ height: 120, background: "var(--bg-secondary)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       {s.imageUrl ? (
-                        <Image src={s.imageUrl} alt={s.titre} fill sizes="280px" style={{ objectFit: "cover" }} />
+                        <Image src={s.imageUrl} alt={s.titre} fill sizes="280px" style={{ objectFit: "cover" }} loading="lazy" />
                       ) : (
                         <svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="var(--text-tertiary)" strokeWidth="1"><rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" /></svg>
                       )}

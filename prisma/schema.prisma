@@ -49,6 +49,8 @@ model User {
   savedSearches       SavedSearch[]
   sellerReviews       SellerReview[]   @relation("SellerReviews")
   reviewerReviews     SellerReview[]   @relation("ReviewerReviews")
+  proProfile          ProProfile?
+  proVotes            ProVote[]
 }
 
 model Post {
@@ -500,4 +502,37 @@ model SellerReview {
 
   @@unique([sellerId, reviewerId, listingId])
   @@index([sellerId])
+}
+
+model ProProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  nomEntreprise String
+  specialite    String   // "courtier", "notaire", "finance", "entrepreneur", "electricien", "plombier", "charpentier", "inspecteur", "architecte", "designer", "demenagement", "nettoyage", "autre"
+  description   String
+  telephone     String?
+  courriel      String?
+  siteWeb       String?
+  villeSlug     String
+  imageUrl      String?
+  nbVotes       Int      @default(0)
+  creeLe        DateTime @default(now())
+
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votes ProVote[]
+
+  @@index([specialite])
+  @@index([villeSlug])
+  @@index([nbVotes])
+}
+
+model ProVote {
+  id           String @id @default(cuid())
+  userId       String
+  proProfileId String
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, proProfileId])
 }

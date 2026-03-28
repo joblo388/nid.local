@@ -168,7 +168,10 @@ export default async function PostPage({ params }: Props) {
                   ) : (
                     <div className="relative w-full mb-6 rounded-xl overflow-hidden" style={{ maxHeight: "500px", border: "0.5px solid var(--border)" }}>
                       <Image src={dbPost.imageUrl} alt="" width={1100} height={500}
-                        className="w-full object-contain" sizes="(max-width: 1100px) 100vw, 1100px" />
+                        className="w-full object-contain" sizes="(max-width: 1100px) 100vw, 1100px"
+                        loading="lazy"
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8+P9/PQAJhAN5fMoBGgAAAABJRU5ErkJggg==" />
                     </div>
                   )}
                 </LightboxImage>

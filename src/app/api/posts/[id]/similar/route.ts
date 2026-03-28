@@ -105,5 +105,9 @@ export async function GET(_req: Request, { params }: Params) {
     };
   });
 
-  return NextResponse.json(payload);
+  return NextResponse.json(payload, {
+    headers: {
+      "Cache-Control": "public, s-maxage=300",
+    },
+  });
 }

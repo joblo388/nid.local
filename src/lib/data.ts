@@ -246,6 +246,7 @@ export const ressourcesUtiles = [
   { label: "Acheter ou louer?", href: "/acheter-ou-louer", description: "Comparez les deux scénarios" },
   { label: "Estimation de valeur", href: "/estimation", description: "Estimez la valeur de votre propriété" },
   { label: "Suggestions", href: "/suggestions", description: "Proposez des améliorations" },
+  { label: "Répertoire professionnel", href: "/repertoire", description: "Trouvez un professionnel de confiance" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

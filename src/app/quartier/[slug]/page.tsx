@@ -38,6 +38,11 @@ export default async function QuartierPage({ params }: Props) {
   const session = await auth();
   const userId = session?.user?.id;
 
+  const userRecord = userId
+    ? await prisma.user.findUnique({ where: { id: userId }, select: { role: true } })
+    : null;
+  const isAdmin = userRecord?.role === "admin";
+
   const PAGE_SIZE = 20;
   const whereQuartier = { quartierSlug: slug };
   const orderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
@@ -129,6 +134,7 @@ export default async function QuartierPage({ params }: Props) {
                 initialVotedPostIds={initialVotedPostIds}
                 initialBookmarkedPostIds={initialBookmarkedPostIds}
                 quartierSlug={slug}
+                isAdmin={isAdmin}
               />
             )}
           </div>
