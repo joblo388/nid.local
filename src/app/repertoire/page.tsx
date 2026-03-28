@@ -195,11 +195,14 @@ function ProCard({
   const color = getAvatarColor(profile.nomEntreprise);
 
   return (
-    <div
-      className="rounded-xl overflow-hidden flex flex-col"
+    <Link
+      href={`/repertoire/${profile.id}`}
+      className="rounded-xl overflow-hidden flex flex-col transition-shadow hover:shadow-md"
       style={{
         background: "var(--bg-card)",
         border: "0.5px solid var(--border)",
+        textDecoration: "none",
+        color: "inherit",
       }}
     >
       {/* Image / Avatar placeholder */}
@@ -332,7 +335,7 @@ function ProCard({
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

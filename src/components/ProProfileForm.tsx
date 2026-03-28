@@ -4,6 +4,79 @@ import { useState, useEffect } from "react";
 import { villes } from "@/lib/data";
 import { useToast } from "./Toast";
 
+type ProStats = {
+  nbVotes: number;
+  nbVues: number;
+  nbCommentaires: number;
+  creeLe: string;
+};
+
+function ProStatsDashboard() {
+  const [stats, setStats] = useState<ProStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/repertoire/stats")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data && !data.error) setStats(data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="rounded-xl p-5 mt-4" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+        <p className="text-[12px] text-center" style={{ color: "var(--text-tertiary)" }}>Chargement des statistiques...</p>
+      </div>
+    );
+  }
+
+  if (!stats) return null;
+
+  function formatDate(iso: string) {
+    const d = new Date(iso);
+    return d.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
+  }
+
+  const cards = [
+    { value: stats.nbVotes, label: "Votes recus" },
+    { value: stats.nbVues, label: "Vues du profil" },
+    { value: stats.nbCommentaires, label: "Commentaires" },
+    { value: formatDate(stats.creeLe), label: "Membre depuis" },
+  ];
+
+  return (
+    <div className="mt-4">
+      <h4 className="text-[13px] font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+        Statistiques de mon profil
+      </h4>
+      <div className="grid grid-cols-2 gap-3">
+        {cards.map((card) => (
+          <div
+            key={card.label}
+            className="rounded-lg p-[14px]"
+            style={{ background: "var(--bg-secondary)" }}
+          >
+            <div
+              style={{
+                fontSize: typeof card.value === "number" ? "22px" : "14px",
+                fontWeight: 700,
+                color: "var(--green)",
+                lineHeight: "1.2",
+              }}
+            >
+              {card.value}
+            </div>
+            <div style={{ fontSize: "11px", color: "var(--text-tertiary)", marginTop: "4px" }}>
+              {card.label}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const SPECIALITES = [
   { value: "courtier", label: "Courtier immobilier" },
   { value: "notaire", label: "Notaire" },
@@ -190,6 +263,8 @@ export function ProProfileForm() {
           {saving ? "Enregistrement..." : hasProfile ? "Mettre à jour" : "Créer mon profil"}
         </button>
       </form>
+
+      {hasProfile && <ProStatsDashboard />}
     </div>
   );
 }

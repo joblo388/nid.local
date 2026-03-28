@@ -51,6 +51,7 @@ model User {
   reviewerReviews     SellerReview[]   @relation("ReviewerReviews")
   proProfile          ProProfile?
   proVotes            ProVote[]
+  proComments         ProComment[]
   viewHistory         ViewHistory[]
 }
 
@@ -518,14 +519,31 @@ model ProProfile {
   villeSlug     String
   imageUrl      String?
   nbVotes       Int      @default(0)
+  nbVues        Int      @default(0)
   creeLe        DateTime @default(now())
 
-  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  votes ProVote[]
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votes    ProVote[]
+  comments ProComment[]
 
   @@index([specialite])
   @@index([villeSlug])
   @@index([nbVotes])
+}
+
+model ProComment {
+  id           String   @id @default(cuid())
+  proProfileId String
+  auteurNom    String
+  auteurId     String?
+  contenu      String
+  nbVotes      Int      @default(0)
+  creeLe       DateTime @default(now())
+
+  proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
+  auteur     User?      @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+
+  @@index([proProfileId])
 }
 
 model ProVote {
