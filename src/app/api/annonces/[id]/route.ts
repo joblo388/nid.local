@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -105,7 +106,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   }
 
-  const listing = await prisma.listing.findUnique({ where: { id }, select: { auteurId: true, prix: true } });
+  const listing = await prisma.listing.findUnique({ where: { id }, select: { auteurId: true, prix: true, titre: true } });
   if (!listing) {
     return NextResponse.json({ error: "Annonce introuvable." }, { status: 404 });
   }
@@ -122,6 +123,76 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     await prisma.listingPriceHistory.create({
       data: { listingId: id, prix, evenement },
     });
+
+    // Price drop alert — notify users who favorited this listing
+    if (prix < listing.prix) {
+      const listingTitre = titre ?? listing.titre;
+      const oldPrix = listing.prix;
+      const newPrix = prix;
+
+      // Fire-and-forget: don't block the response
+      (async () => {
+        try {
+          const favorites = await prisma.listingFavorite.findMany({
+            where: { listingId: id },
+            select: { userId: true, user: { select: { email: true } } },
+          });
+
+          const userIds = favorites.map((f) => f.userId).filter((uid) => uid !== session!.user!.id);
+          if (userIds.length === 0) return;
+
+          // Create in-app notifications
+          await prisma.notification.createMany({
+            data: userIds.map((uid) => ({
+              userId: uid,
+              type: "price_drop",
+              postId: id,
+              postTitre: listingTitre,
+              acteurNom: "Prix réduit",
+            })),
+          });
+
+          // Send email notifications
+          const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://nidlocal.com";
+          const oldFormatted = oldPrix.toLocaleString("fr-CA");
+          const newFormatted = newPrix.toLocaleString("fr-CA");
+          for (const fav of favorites) {
+            if (fav.userId === session!.user!.id) continue;
+            if (!fav.user.email) continue;
+            sendEmail({
+              to: fav.user.email,
+              subject: `Baisse de prix : ${listingTitre}`,
+              html: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f5f4f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <div style="max-width:520px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e8e7e2">
+    <div style="padding:20px 24px;border-bottom:1px solid #e8e7e2">
+      <span style="font-size:18px;font-weight:900;color:#1a1a18">nid</span><span style="font-size:18px;font-weight:900;color:#D4742A">.local</span>
+    </div>
+    <div style="padding:24px;font-size:14px;line-height:1.6;color:#1a1a18">
+      <h2 style="color:#1a1a18;font-size:18px;margin:0 0 12px">Le prix a baisse!</h2>
+      <p>Une annonce dans vos favoris vient de baisser de prix :</p>
+      <div style="margin:16px 0;padding:16px;background:#f5f4f0;border-radius:8px">
+        <p style="margin:0 0 6px;font-weight:600;font-size:15px">${listingTitre.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+        <p style="margin:0;color:#6e6c67;font-size:13px">
+          <span style="text-decoration:line-through">${oldFormatted}&nbsp;$</span>
+          &rarr; <strong style="color:#1D9E75">${newFormatted}&nbsp;$</strong>
+        </p>
+      </div>
+      <a href="${SITE}/annonces/${id}" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#D4742A;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px">Voir l'annonce</a>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid #e8e7e2;text-align:center">
+      <p style="margin:0;font-size:11px;color:#6e6c67">&copy; 2026 nid.local — Fait au Quebec</p>
+    </div>
+  </div>
+</body></html>`,
+            }).catch(() => {});
+          }
+        } catch (err) {
+          console.error("[price_drop] notification error:", err);
+        }
+      })();
+    }
   }
 
   // Update images if provided — delete old ones and create new

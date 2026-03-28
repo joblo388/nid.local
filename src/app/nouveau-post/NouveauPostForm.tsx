@@ -18,6 +18,7 @@ const CATEGORIES = [
   { value: "legal", label: "Légal" },
   { value: "financement", label: "Financement" },
   { value: "copropriete", label: "Co-propriété" },
+  { value: "ama", label: "AMA — Posez vos questions" },
 ];
 
 export function NouveauPostForm() {

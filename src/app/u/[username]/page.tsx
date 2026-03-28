@@ -6,9 +6,12 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { dbPostToAppPost, quartierBySlug, villeBySlug } from "@/lib/data";
 import { getUserBadges, badgeCouleurs } from "@/lib/badges";
+import { getUserPoints } from "@/lib/points";
+import { UserLevel } from "@/components/UserLevel";
 import { ProfileListingCard } from "@/components/ProfileListingCard";
 import { ProfileTabs } from "@/components/ProfileTabs";
 import { SellerRating } from "@/components/SellerRating";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +36,7 @@ export default async function ProfilPage({ params }: Props) {
   const displayName = user.username ?? user.name ?? username;
   const isOwn = session?.user?.id === user.id;
 
-  const [dbPosts, dbComments, userVotes, postVotesAgg, commentVotesAgg, dbListings, savedReports, badges] = await Promise.all([
+  const [dbPosts, dbComments, userVotes, postVotesAgg, commentVotesAgg, dbListings, savedReports, badges, userPoints] = await Promise.all([
     prisma.post.findMany({
       where: { auteurId: user.id },
       orderBy: { creeLe: "desc" },
@@ -59,6 +62,7 @@ export default async function ProfilPage({ params }: Props) {
       ? prisma.savedReport.findMany({ where: { userId: user.id }, orderBy: { creeLe: "desc" } })
       : [],
     getUserBadges(user.id),
+    getUserPoints(user.id),
   ]);
 
   const karma = (postVotesAgg._sum.nbVotes ?? 0) + (commentVotesAgg._sum.nbVotes ?? 0);
@@ -87,12 +91,28 @@ export default async function ProfilPage({ params }: Props) {
             {displayName[0].toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>
-              @{displayName}
-            </h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>
+                @{displayName}
+              </h1>
+              <UserLevel
+                levelName={userPoints.level.name}
+                levelColor={userPoints.level.color}
+                compact
+              />
+            </div>
             <p className="text-[12px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
               Membre depuis {memberSince}
             </p>
+            <div className="mt-1.5">
+              <UserLevel
+                levelName={userPoints.level.name}
+                levelColor={userPoints.level.color}
+                points={userPoints.points}
+                progress={userPoints.progress}
+                nextLevelName={userPoints.nextLevel?.name}
+              />
+            </div>
           </div>
           <div className="flex gap-3 md:gap-5 text-center flex-wrap">
             <div>
@@ -149,6 +169,9 @@ export default async function ProfilPage({ params }: Props) {
           <SellerRating sellerId={user.id} />
         )}
 
+        {/* Consulté récemment — visible seulement par le propriétaire du profil */}
+        {isOwn && <RecentlyViewed />}
+
         <ProfileTabs tabs={[
           { id: "discussions", label: "Discussions", count: posts.length },
           { id: "annonces", label: "Annonces", count: dbListings.length },
@@ -171,7 +194,7 @@ export default async function ProfilPage({ params }: Props) {
             ) : (
               <div className="space-y-2">
                 {posts.map((post) => (
-                  <PostCard key={post.id} post={post} hasVoted={votedPostIds.has(post.id)} authorBadges={badges} />
+                  <PostCard key={post.id} post={post} hasVoted={votedPostIds.has(post.id)} authorBadges={badges} authorLevel={{ name: userPoints.level.name, color: userPoints.level.color }} />
                 ))}
               </div>
             )}

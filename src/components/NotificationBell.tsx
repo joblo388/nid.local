@@ -42,8 +42,12 @@ export function NotificationBell() {
       const latestUnread = notifications.find((n) => !n.lu);
       if (latestUnread) {
         const body =
-          latestUnread.type === "comment"
-            ? `${latestUnread.acteurNom} a commenté votre post`
+          latestUnread.type === "price_drop"
+            ? `Le prix a baisse sur : ${latestUnread.postTitre}`
+            : latestUnread.type === "comment"
+            ? `${latestUnread.acteurNom} a commente votre post`
+            : latestUnread.type === "expert_request"
+            ? `Quelqu'un a besoin de votre expertise`
             : `${latestUnread.acteurNom} a interagi avec votre post`;
         try {
           new window.Notification("nid.local", {
@@ -113,11 +117,12 @@ export function NotificationBell() {
     }
   }
 
-  async function handleNotifClick(id: string, postId: string) {
+  async function handleNotifClick(id: string, postId: string, type: string) {
     setOpen(false);
     await fetch("/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, lu: true } : n));
-    window.location.href = `/post/${postId}`;
+    const url = type === "price_drop" || type === "listing_comment" ? `/annonces/${postId}` : `/post/${postId}`;
+    window.location.href = url;
   }
 
   return (
@@ -177,7 +182,7 @@ export function NotificationBell() {
               notifications.map((n) => (
                 <button
                   key={n.id}
-                  onClick={() => handleNotifClick(n.id, n.postId)}
+                  onClick={() => handleNotifClick(n.id, n.postId, n.type)}
                   className="w-full text-left px-4 py-3 transition-colors hover-bg"
                   style={{
                     background: n.lu ? "transparent" : "var(--green-light-bg)",
@@ -185,8 +190,13 @@ export function NotificationBell() {
                   }}
                 >
                   <p className="text-[12px] leading-snug" style={{ color: "var(--text-primary)" }}>
-                    <span className="font-semibold">{n.acteurNom}</span>
-                    {n.type === "comment" ? " a commenté votre post" : " a interagi avec votre post"}
+                    {n.type === "price_drop" ? (
+                      <>Le prix a baisse sur :</>
+                    ) : n.type === "expert_request" ? (
+                      <>Quelqu&apos;un a besoin de votre expertise sur :</>
+                    ) : (
+                      <><span className="font-semibold">{n.acteurNom}</span>{n.type === "comment" ? " a commente votre post" : " a interagi avec votre post"}</>
+                    )}
                   </p>
                   <p className="text-[11px] mt-0.5 truncate" style={{ color: "var(--text-tertiary)" }}>
                     {n.postTitre}

@@ -23,6 +23,7 @@ const badgeBg: Record<string, string> = {
   legal:        "var(--red-bg)",
   financement:  "var(--blue-bg)",
   copropriete:  "var(--green-light-bg)",
+  ama:          "#EEE9FB",
 };
 
 const badgeFg: Record<string, string> = {
@@ -35,6 +36,7 @@ const badgeFg: Record<string, string> = {
   legal:        "var(--red-text)",
   financement:  "var(--blue-text)",
   copropriete:  "var(--green-text)",
+  ama:          "#5B31B3",
 };
 
 const badgeLabels: Record<string, string> = {
@@ -42,6 +44,7 @@ const badgeLabels: Record<string, string> = {
   renovation: "Conseil", voisinage: "Voisinage",
   construction: "Construction", legal: "Légal",
   financement: "Financement", copropriete: "Co-propriété",
+  ama: "AMA",
 };
 
 export function SimilarPosts({ postId }: { postId: string }) {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
@@ -11,7 +12,9 @@ import { useLightbox } from "@/components/LightboxProvider";
 import { SellerRating } from "@/components/SellerRating";
 import { SellerDashboard } from "@/components/SellerDashboard";
 import { ImageCarousel } from "@/components/ImageCarousel";
+import { PriceBadge } from "@/components/PriceBadge";
 import { quartierBySlug } from "@/lib/data";
+import { getMarketEstimate } from "@/lib/marketEstimate";
 import "../marketplace.css";
 
 type CommentItem = {
@@ -85,6 +88,7 @@ export function AnnonceDetailView() {
   const params = useParams();
   const id = params.id as string;
   const { openLightbox } = useLightbox();
+  const { data: session } = useSession();
 
   const [listing, setListing] = useState<ListingDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -111,6 +115,17 @@ export function AnnonceDetailView() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  // Record in browsing history for logged-in users
+  useEffect(() => {
+    if (session?.user) {
+      fetch("/api/history", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetType: "listing", targetId: id }),
+      }).catch(() => {});
+    }
+  }, [id, session?.user]);
 
   async function toggleFav() {
     setIsFav(!isFav);
@@ -197,9 +212,10 @@ export function AnnonceDetailView() {
             </div>
 
             {/* Price + type */}
-            <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
               <div className="mp-detail-price">{fmtPrice(listing.prix)}</div>
               <div className="mp-detail-type">{TYPE_LABELS[listing.type] ?? listing.type} · {quartierNom}</div>
+              <PriceBadge prix={listing.prix} estimatedValue={getMarketEstimate(listing.quartierSlug, listing.type)} />
             </div>
             <div className="mp-detail-title">{listing.titre}</div>
             <div className="mp-detail-address">{listing.adresse}</div>

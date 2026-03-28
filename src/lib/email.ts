@@ -86,7 +86,7 @@ export function welcomeEmailContent(): string {
 
 // ─── Notification emails ─────────────────────────────────────────────────────
 
-type NotifType = "comment" | "reply" | "mention" | "listing_comment" | "message" | "suggestion";
+type NotifType = "comment" | "reply" | "mention" | "listing_comment" | "message" | "suggestion" | "expert_request";
 
 const prefField: Record<NotifType, string> = {
   comment: "emailNotifComments",
@@ -95,6 +95,7 @@ const prefField: Record<NotifType, string> = {
   listing_comment: "emailNotifAnnonces",
   message: "emailNotifMessages",
   suggestion: "emailNotifMessages", // admins always get suggestions
+  expert_request: "emailNotifComments", // reuse comments pref for expert requests
 };
 
 interface NotifEmailData {
@@ -151,6 +152,14 @@ const templates: Record<NotifType, { subject: (d: NotifEmailData) => string; bod
       <p><strong>${esc(d.acteurNom)}</strong> a soumis une suggestion :</p>
       <p style="color:#6e6c67;font-style:italic">${esc(d.postTitre)}</p>
       ${cta(`${SITE}/admin`, "Voir dans l'admin")}
+    `,
+  },
+  expert_request: {
+    subject: (d) => `Quelqu'un a besoin de votre expertise`,
+    body: (d) => `
+      <p><strong>${esc(d.acteurNom)}</strong> a publié une discussion qui pourrait bénéficier de votre expertise :</p>
+      <p style="color:#6e6c67;font-style:italic">${esc(d.postTitre)}</p>
+      ${cta(`${SITE}/post/${d.postId}`, "Voir la discussion")}
     `,
   },
 };

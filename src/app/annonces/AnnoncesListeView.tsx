@@ -7,6 +7,8 @@ import { useSession } from "next-auth/react";
 import { Header } from "@/components/Header";
 import { villes, quartierBySlug, ressourcesUtiles } from "@/lib/data";
 import { SkeletonListingCard } from "@/components/Skeleton";
+import { PriceBadge } from "@/components/PriceBadge";
+import { getMarketEstimate } from "@/lib/marketEstimate";
 import { AnnonceMapView } from "./AnnonceMapView";
 import "./marketplace.css";
 
@@ -430,7 +432,10 @@ export function AnnoncesListeView() {
                       </div>
                       <div className="mp-listing-body">
                         <div>
-                          <div className="mp-listing-price">{fmtPrice(l.prix, l.mode)}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <div className="mp-listing-price">{fmtPrice(l.prix, l.mode)}</div>
+                            {l.mode !== "location" && <PriceBadge prix={l.prix} estimatedValue={getMarketEstimate(l.quartierSlug, l.type)} compact />}
+                          </div>
                           <div className="mp-listing-price-sub">{TYPE_LABELS[l.type] ?? l.type} · {quartierNom}</div>
                         </div>
                         <div className="mp-listing-title">{l.titre}</div>

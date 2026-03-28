@@ -89,6 +89,7 @@ const CATEGORIES: { value: Categorie | "tous"; label: string }[] = [
   { value: "legal", label: "Légal" },
   { value: "financement", label: "Financement" },
   { value: "copropriete", label: "Co-propriété" },
+  { value: "ama", label: "AMA" },
 ];
 
 const TRIS = [
@@ -286,6 +287,11 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstRender = useRef(true);
 
+  // New posts indicator
+  const [knownTotal, setKnownTotal] = useState(initialTotal);
+  const [newPostsCount, setNewPostsCount] = useState(0);
+  const newPostsDismissRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Mes quartiers (subscriptions)
   const [mesQuartiersActive, setMesQuartiersActive] = useState(false);
   const [subscribedSlugs, setSubscribedSlugs] = useState<string[]>([]);
@@ -300,6 +306,42 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
       })
       .catch(() => setSubsLoaded(true));
   }, []);
+
+  // Poll for new posts every 30s
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const subQ = mesQuartiersActive && subscribedSlugs.length > 0
+          ? subscribedSlugs.join(",")
+          : undefined;
+        const qsObj: Record<string, string> = {
+          villeSlug,
+          quartierSlug,
+          categorie,
+          tri,
+          page: "1",
+        };
+        if (subQ) qsObj.subscribedQuartiers = subQ;
+        const qs = new URLSearchParams(qsObj);
+        const res = await fetch(`/api/posts?${qs}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const serverTotal = data.total as number;
+        if (serverTotal > knownTotal) {
+          setNewPostsCount(serverTotal - knownTotal);
+          // Auto-dismiss after 10 seconds
+          if (newPostsDismissRef.current) clearTimeout(newPostsDismissRef.current);
+          newPostsDismissRef.current = setTimeout(() => setNewPostsCount(0), 10000);
+        }
+      } catch {
+        // ignore polling errors
+      }
+    }, 30000);
+    return () => {
+      clearInterval(interval);
+      if (newPostsDismissRef.current) clearTimeout(newPostsDismissRef.current);
+    };
+  }, [villeSlug, quartierSlug, categorie, tri, mesQuartiersActive, subscribedSlugs, knownTotal]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -346,6 +388,8 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
         setPosts(data.posts);
       }
       setTotal(data.total);
+      setKnownTotal(data.total);
+      setNewPostsCount(0);
       setHasMore(data.posts.length >= PAGE_SIZE);
       setVotedPostIds((prev) => {
         const next = new Set(prev);
@@ -440,6 +484,19 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
       ? subscribedSlugs.join(",")
       : undefined;
     await fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: 1, subscribedQuartiers: subQ });
+  }, [villeSlug, quartierSlug, categorie, tri, mesQuartiersActive, subscribedSlugs, fetchPosts]);
+
+  const handleNewPostsClick = useCallback(() => {
+    setNewPostsCount(0);
+    setPage(1);
+    setPosts([]);
+    setHasMore(true);
+    if (newPostsDismissRef.current) clearTimeout(newPostsDismissRef.current);
+    const subQ = mesQuartiersActive && subscribedSlugs.length > 0
+      ? subscribedSlugs.join(",")
+      : undefined;
+    fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: 1, subscribedQuartiers: subQ });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [villeSlug, quartierSlug, categorie, tri, mesQuartiersActive, subscribedSlugs, fetchPosts]);
 
   const searchResults = searchQuery.trim().length >= 2 ? dbResults : [];
@@ -602,6 +659,19 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                 </Link>
               )}
             </div>
+
+            {/* New posts indicator pill */}
+            {newPostsCount > 0 && (
+              <div className="flex justify-center">
+                <button
+                  onClick={handleNewPostsClick}
+                  className="px-4 py-2 rounded-full text-[13px] font-semibold text-white transition-transform hover:scale-105"
+                  style={{ background: "var(--green)", boxShadow: "0 2px 8px rgba(29,158,117,0.3)" }}
+                >
+                  {newPostsCount} nouvelle{newPostsCount > 1 ? "s" : ""} discussion{newPostsCount > 1 ? "s" : ""}
+                </button>
+              </div>
+            )}
 
             {/* Posts */}
             <div ref={listRef} data-tour="posts">

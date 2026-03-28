@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { quartierBySlug, villeBySlug, dbPostToAppPost } from "@/lib/data";
 import { rateLimit, getIp } from "@/lib/rateLimit";
+import { sendNotifEmail } from "@/lib/email";
 
 const PAGE_SIZE = 20;
 
@@ -129,6 +130,55 @@ export async function POST(req: NextRequest) {
         },
       });
     }
+  }
+
+  // ─── Expert proximity notifications ──────────────────────────────────────
+  // Map post categories to relevant ProProfile specialities
+  const CATEGORY_TO_SPECIALITIES: Record<string, string[]> = {
+    question: [], // empty = all pros
+    legal: ["notaire"],
+    financement: ["finance", "courtier"],
+    renovation: ["entrepreneur", "electricien", "plombier", "charpentier"],
+    construction: ["entrepreneur", "architecte", "charpentier"],
+  };
+
+  if (categorie in CATEGORY_TO_SPECIALITIES) {
+    const specialities = CATEGORY_TO_SPECIALITIES[categorie];
+    const where_pro: Record<string, unknown> = { villeSlug };
+    if (specialities.length > 0) {
+      where_pro.specialite = { in: specialities };
+    }
+
+    prisma.proProfile.findMany({
+      where: where_pro,
+      select: { userId: true, nomEntreprise: true },
+    }).then((pros) => {
+      // Filter out the post author
+      const targets = pros.filter((p) => p.userId !== auteurId);
+      if (targets.length === 0) return;
+
+      // Create notifications in bulk
+      prisma.notification.createMany({
+        data: targets.map((pro) => ({
+          userId: pro.userId,
+          type: "expert_request",
+          postId: post.id,
+          postTitre: post.titre,
+          acteurNom: auteurNom,
+        })),
+      }).catch(() => {});
+
+      // Send notification emails (fire-and-forget)
+      for (const pro of targets) {
+        sendNotifEmail({
+          type: "expert_request" as Parameters<typeof sendNotifEmail>[0]["type"],
+          recipientUserId: pro.userId,
+          acteurNom: auteurNom,
+          postTitre: post.titre,
+          postId: post.id,
+        }).catch(() => {});
+      }
+    }).catch(() => {});
   }
 
   return NextResponse.json({ id: post.id }, { status: 201 });

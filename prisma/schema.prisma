@@ -51,6 +51,7 @@ model User {
   reviewerReviews     SellerReview[]   @relation("ReviewerReviews")
   proProfile          ProProfile?
   proVotes            ProVote[]
+  viewHistory         ViewHistory[]
 }
 
 model Post {
@@ -536,4 +537,18 @@ model ProVote {
   proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
 
   @@unique([userId, proProfileId])
+}
+
+model ViewHistory {
+  id         String   @id @default(cuid())
+  userId     String
+  targetType String   // "post" | "listing"
+  targetId   String
+  creeLe     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, targetType])
+  @@unique([userId, targetType, targetId])
 }

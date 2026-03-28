@@ -9,6 +9,7 @@ import { BookmarkButton } from "./BookmarkButton";
 import { BadgeDisplay } from "./BadgeDisplay";
 import { PinButton } from "./PinButton";
 import type { Badge } from "@/lib/badges";
+import { UserLevel } from "./UserLevel";
 
 const BLUR_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8+P9/PQAJhAN5fMoBGgAAAABJRU5ErkJggg==";
 
@@ -22,6 +23,7 @@ const badgeBg: Record<string, string> = {
   legal:        "var(--red-bg)",
   financement:  "var(--blue-bg)",
   copropriete:  "var(--green-light-bg)",
+  ama:          "#EEE9FB",
 };
 
 const badgeFg: Record<string, string> = {
@@ -34,6 +36,7 @@ const badgeFg: Record<string, string> = {
   legal:        "var(--red-text)",
   financement:  "var(--blue-text)",
   copropriete:  "var(--green-text)",
+  ama:          "#5B31B3",
 };
 
 const badgeLabels: Record<string, string> = {
@@ -41,6 +44,7 @@ const badgeLabels: Record<string, string> = {
   renovation: "Conseil", voisinage: "Voisinage",
   construction: "Construction", legal: "Légal",
   financement: "Financement", copropriete: "Co-propriété",
+  ama: "AMA",
 };
 
 const tagLabels: Record<string, string> = {
@@ -140,7 +144,7 @@ function PostImage({ src }: { src: string }) {
   );
 }
 
-export const PostCard = React.memo(function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false, authorBadges, isAdmin = false }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean; authorBadges?: Badge[]; isAdmin?: boolean }) {
+export const PostCard = React.memo(function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false, authorBadges, isAdmin = false, authorLevel }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean; authorBadges?: Badge[]; isAdmin?: boolean; authorLevel?: { name: string; color: string } }) {
   return (
     <article
       className="rounded-xl transition-colors hover-bg card-hover-lift"
@@ -186,6 +190,7 @@ export const PostCard = React.memo(function PostCard({ post, searchQuery = "", h
             </Link>
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
             <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{post.auteur}</span>
+            {authorLevel && <span className="hidden md:inline"><UserLevel levelName={authorLevel.name} levelColor={authorLevel.color} compact /></span>}
             {post.auteurTag && <span className="hidden md:inline"><AuthorTag tag={post.auteurTag} /></span>}
             {authorBadges && authorBadges.length > 0 && <span className="hidden md:inline"><BadgeDisplay badges={authorBadges} compact /></span>}
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>

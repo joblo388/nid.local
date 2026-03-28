@@ -15,6 +15,7 @@ const categories: { value: Categorie | "tous"; label: string }[] = [
   { value: "legal", label: "Légal" },
   { value: "financement", label: "Financement" },
   { value: "copropriete", label: "Co-propriété" },
+  { value: "ama", label: "AMA" },
 ];
 
 const tris = [
