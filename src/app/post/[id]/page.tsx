@@ -175,10 +175,11 @@ export default async function PostPage({ params }: Props) {
               )}
 
               <div
-                className="flex items-center justify-between pt-4"
+                className="pt-4 space-y-3"
                 style={{ borderTop: "0.5px solid var(--border)" }}
               >
-                <div className="flex items-center gap-3 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+                {/* Author + date */}
+                <div className="flex items-center gap-2 text-[12px] flex-wrap" style={{ color: "var(--text-tertiary)" }}>
                   <span>
                     par{" "}
                     <Link
@@ -188,32 +189,35 @@ export default async function PostPage({ params }: Props) {
                     >
                       {post.auteur}
                     </Link>
-                    {post.auteurTag && (
-                      <span
-                        className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none ml-1"
-                        style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)" }}
-                      >
-                        {post.auteurTag === "courtier" ? "Courtier" : post.auteurTag === "notaire" ? "Notaire" : post.auteurTag === "finance" ? "Finance" : post.auteurTag === "entrepreneur" ? "Entrepreneur" : post.auteurTag === "electricien" ? "Électricien" : post.auteurTag === "plombier" ? "Plombier" : post.auteurTag === "charpentier" ? "Charpentier" : post.auteurTag === "proprietaire" ? "Propriétaire" : post.auteurTag === "locataire" ? "Locataire" : post.auteurTag}
-                      </span>
-                    )}
                   </span>
+                  {post.auteurTag && (
+                    <span
+                      className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none"
+                      style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)" }}
+                    >
+                      {post.auteurTag === "courtier" ? "Courtier" : post.auteurTag === "notaire" ? "Notaire" : post.auteurTag === "finance" ? "Finance" : post.auteurTag === "entrepreneur" ? "Entrepreneur" : post.auteurTag === "electricien" ? "Électricien" : post.auteurTag === "plombier" ? "Plombier" : post.auteurTag === "charpentier" ? "Charpentier" : post.auteurTag === "proprietaire" ? "Propriétaire" : post.auteurTag === "locataire" ? "Locataire" : post.auteurTag}
+                    </span>
+                  )}
                   <span>·</span>
-                  <span>{dateStr}</span>
+                  <span className="hidden md:inline">{dateStr}</span>
+                  <span className="md:hidden">{new Date(post.creeLe).toLocaleDateString("fr-CA", { day: "numeric", month: "short" })}</span>
                   <span>·</span>
                   <span>{post.nbVues.toLocaleString("fr-CA")} vues</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <ShareButton />
-                  {/* PostActions shows edit/delete for author, ReportButton for others — resolved client-side */}
-                  <PostActions
-                    postId={post.id}
-                    auteurId={dbPost.auteurId}
-                    initialTitre={post.titre}
-                    initialContenu={post.contenu}
-                    initialCategorie={post.categorie as Categorie}
-                  />
+                {/* Actions row */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <ShareButton />
+                    <PostActions
+                      postId={post.id}
+                      auteurId={dbPost.auteurId}
+                      initialTitre={post.titre}
+                      initialContenu={post.contenu}
+                      initialCategorie={post.categorie as Categorie}
+                    />
+                  </div>
+                  <VoteButton postId={post.id} initialVotes={post.nbVotes} initialHasVoted={false} hydrateVote />
                 </div>
-                <VoteButton postId={post.id} initialVotes={post.nbVotes} initialHasVoted={false} hydrateVote />
               </div>
             </article>
 

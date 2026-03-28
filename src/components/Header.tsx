@@ -111,7 +111,7 @@ export function Header() {
 
             {mobileNavOpen && (
               <div
-                className="absolute left-0 top-full mt-2 w-[calc(100vw-40px)] rounded-xl overflow-hidden py-1 z-50"
+                className="absolute right-0 top-full mt-2 w-[200px] rounded-xl overflow-hidden py-1 z-50"
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
               >
                 {navLinks.map((l) => (
