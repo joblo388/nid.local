@@ -1,5 +1,5 @@
 /// Service Worker — nid.local PWA
-const CACHE_NAME = "nidlocal-v2";
+const CACHE_NAME = "nidlocal-v3";
 const OFFLINE_URL = "/offline.html";
 
 // Ressources statiques a mettre en cache lors de l'installation
