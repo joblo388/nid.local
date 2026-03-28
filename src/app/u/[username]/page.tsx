@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { dbPostToAppPost, quartierBySlug, villeBySlug } from "@/lib/data";
 import { ProfileListingCard } from "@/components/ProfileListingCard";
+import { ProfileTabs } from "@/components/ProfileTabs";
 
 export const dynamic = "force-dynamic";
 
@@ -109,138 +110,82 @@ export default async function ProfilPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="flex gap-5 items-start">
-          <div className="flex-1 min-w-0 space-y-4">
-
-            {/* Annonces marketplace */}
-            {dbListings.length > 0 && (
-              <div>
-                <h2 className="text-[12px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-tertiary)" }}>
-                  Annonces immobilières
-                </h2>
-                <div className="space-y-2">
-                  {dbListings.map((listing) => (
-                    <ProfileListingCard
-                      key={listing.id}
-                      listing={{
-                        id: listing.id,
-                        titre: listing.titre,
-                        prix: listing.prix,
-                        adresse: listing.adresse,
-                        statut: listing.statut,
-                        nbVues: listing.nbVues,
-                        nbClics: listing.nbClics,
-                        imageUrl: listing.images[0]?.url ?? null,
-                      }}
-                      isOwn={isOwn}
-                    />
-                  ))}
-                </div>
+        <ProfileTabs tabs={[
+          { id: "discussions", label: "Discussions", count: posts.length },
+          { id: "annonces", label: "Annonces", count: dbListings.length },
+          ...(isOwn ? [{ id: "finance", label: "Finance", count: savedReports.length }] : []),
+          { id: "reponses", label: "Réponses", count: dbComments.length },
+        ]}>
+          {/* Tab: Discussions */}
+          <div>
+            {posts.length === 0 ? (
+              <div className="rounded-xl p-8 text-center" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
+                  {isOwn ? "Vous n'avez pas encore publié de discussion." : "Aucune discussion pour l'instant."}
+                </p>
                 {isOwn && (
-                  <Link
-                    href="/annonces/publier"
-                    className="mt-2 inline-block text-[12px] font-medium transition-opacity hover:opacity-70"
-                    style={{ color: "var(--green)" }}
-                  >
+                  <Link href="/nouveau-post" className="mt-3 inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg" style={{ background: "var(--green)" }}>
+                    Créer une discussion
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {posts.map((post) => (
+                  <PostCard key={post.id} post={post} hasVoted={votedPostIds.has(post.id)} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tab: Annonces */}
+          <div>
+            {dbListings.length === 0 ? (
+              <div className="rounded-xl p-6 text-center" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <p className="text-[13px] mb-3" style={{ color: "var(--text-tertiary)" }}>
+                  {isOwn ? "Tu n'as pas encore publié d'annonce immobilière." : "Aucune annonce pour l'instant."}
+                </p>
+                {isOwn && (
+                  <Link href="/annonces/publier" className="inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg" style={{ background: "var(--green)" }}>
+                    Publier une annonce
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {dbListings.map((listing) => (
+                  <ProfileListingCard
+                    key={listing.id}
+                    listing={{
+                      id: listing.id, titre: listing.titre, prix: listing.prix,
+                      adresse: listing.adresse, statut: listing.statut,
+                      nbVues: listing.nbVues, nbClics: listing.nbClics,
+                      imageUrl: listing.images[0]?.url ?? null,
+                    }}
+                    isOwn={isOwn}
+                  />
+                ))}
+                {isOwn && (
+                  <Link href="/annonces/publier" className="mt-2 inline-block text-[12px] font-medium transition-opacity hover:opacity-70" style={{ color: "var(--green)" }}>
                     + Publier une nouvelle annonce
                   </Link>
                 )}
               </div>
             )}
+          </div>
 
-            {isOwn && dbListings.length === 0 && (
-              <div
-                className="rounded-xl p-6 text-center"
-                style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-              >
-                <p className="text-[13px] mb-3" style={{ color: "var(--text-tertiary)" }}>
-                  Tu n&apos;as pas encore publié d&apos;annonce immobilière.
-                </p>
-                <Link
-                  href="/annonces/publier"
-                  className="inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg"
-                  style={{ background: "var(--green)" }}
-                >
-                  Publier une annonce
-                </Link>
-              </div>
-            )}
-
-            {/* Posts */}
+          {/* Tab: Finance (only if isOwn) */}
+          {isOwn && (
             <div>
-              <h2 className="text-[12px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-tertiary)" }}>
-                Discussions
-              </h2>
-              {posts.length === 0 ? (
-                <div
-                  className="rounded-xl p-8 text-center"
-                  style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-                >
-                  <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-                    {isOwn ? "Vous n'avez pas encore publié de discussion." : "Aucune discussion pour l'instant."}
+              {savedReports.length === 0 ? (
+                <div className="rounded-xl p-6 text-center" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                  <p className="text-[13px] mb-3" style={{ color: "var(--text-tertiary)" }}>Aucun rapport sauvegardé.</p>
+                  <p className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+                    Utilise les calculatrices et clique &quot;Sauvegarder ce rapport&quot; pour les retrouver ici.
                   </p>
-                  {isOwn && (
-                    <Link
-                      href="/nouveau-post"
-                      className="mt-3 inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg"
-                      style={{ background: "var(--green)" }}
-                    >
-                      Créer une discussion
-                    </Link>
-                  )}
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {posts.map((post) => (
-                    <PostCard key={post.id} post={post} hasVoted={votedPostIds.has(post.id)} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Commentaires récents */}
-            {dbComments.length > 0 && (
-              <div>
-                <h2 className="text-[12px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-tertiary)" }}>
-                  Réponses récentes
-                </h2>
-                <div
-                  className="rounded-xl overflow-hidden"
-                  style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-                >
-                  {dbComments.map((c, i) => (
-                    <Link
-                      key={c.id}
-                      href={`/post/${c.post.id}`}
-                      className="flex gap-3 px-4 py-3 transition-colors hover-bg"
-                      style={{ borderBottom: i < dbComments.length - 1 ? "0.5px solid var(--border)" : "none" }}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] mb-1 truncate" style={{ color: "var(--text-tertiary)" }}>
-                          sur : {c.post.titre}
-                        </p>
-                        <p className="text-[13px] line-clamp-2" style={{ color: "var(--text-secondary)" }}>
-                          {c.contenu}
-                        </p>
-                      </div>
-                      <span className="text-[11px] shrink-0 mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-                        {new Date(c.creeLe).toLocaleDateString("fr-CA", { month: "short", day: "numeric" })}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-            {/* Rapports financiers sauvegardés */}
-            {isOwn && savedReports.length > 0 && (
-              <div>
-                <h2 className="text-[12px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-tertiary)" }}>
-                  Finance — Rapports sauvegardés
-                </h2>
-                <div
-                  className="rounded-xl overflow-hidden"
-                  style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-                >
+                <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
                   {savedReports.map((r, i) => {
                     const typeLabels: Record<string, { label: string; color: string; bg: string }> = {
                       hypothecaire: { label: "Hypothèque", color: "var(--blue-text)", bg: "var(--blue-bg)" },
@@ -251,17 +196,10 @@ export default async function ProfilPage({ params }: Props) {
                     const t = typeLabels[r.type] ?? { label: r.type, color: "var(--text-tertiary)", bg: "var(--bg-secondary)" };
                     const resultats = JSON.parse(r.resultats);
                     return (
-                      <Link
-                        key={r.id}
-                        href={`/rapport/${r.id}`}
-                        className="block px-4 py-3 transition-colors hover-bg"
-                        style={{ borderBottom: i < savedReports.length - 1 ? "0.5px solid var(--border)" : "none" }}
-                      >
+                      <Link key={r.id} href={`/rapport/${r.id}`} className="block px-4 py-3 transition-colors hover-bg" style={{ borderBottom: i < savedReports.length - 1 ? "0.5px solid var(--border)" : "none" }}>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md" style={{ background: t.bg, color: t.color }}>{t.label}</span>
-                          <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                            {new Date(r.creeLe).toLocaleDateString("fr-CA", { day: "numeric", month: "short", year: "numeric" })}
-                          </span>
+                          <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{new Date(r.creeLe).toLocaleDateString("fr-CA", { day: "numeric", month: "short", year: "numeric" })}</span>
                         </div>
                         <p className="text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>{r.titre}</p>
                         <div className="flex items-center gap-3 mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
@@ -269,17 +207,37 @@ export default async function ProfilPage({ params }: Props) {
                           {resultats.cashflowMensuel !== undefined && <span>CF : {resultats.cashflowMensuel >= 0 ? "+" : ""}{resultats.cashflowMensuel} $/mois</span>}
                           {resultats.mrb && <span>MRB : {resultats.mrb}×</span>}
                           {resultats.ecart && <span>Écart : {parseInt(resultats.ecart).toLocaleString("fr-CA")} $</span>}
-                          {resultats.paiementMensuel && <span>Paiement : {resultats.paiementMensuel} $</span>}
-                          <span className="ml-auto" style={{ color: "var(--green)" }}>Voir le rapport →</span>
+                          <span className="ml-auto" style={{ color: "var(--green)" }}>Voir →</span>
                         </div>
                       </Link>
                     );
                   })}
                 </div>
+              )}
+            </div>
+          )}
+
+          {/* Tab: Réponses */}
+          <div>
+            {dbComments.length === 0 ? (
+              <div className="rounded-xl p-8 text-center" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>Aucune réponse pour l&apos;instant.</p>
+              </div>
+            ) : (
+              <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                {dbComments.map((c, i) => (
+                  <Link key={c.id} href={`/post/${c.post.id}`} className="flex gap-3 px-4 py-3 transition-colors hover-bg" style={{ borderBottom: i < dbComments.length - 1 ? "0.5px solid var(--border)" : "none" }}>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] mb-1 truncate" style={{ color: "var(--text-tertiary)" }}>sur : {c.post.titre}</p>
+                      <p className="text-[13px] line-clamp-2" style={{ color: "var(--text-secondary)" }}>{c.contenu}</p>
+                    </div>
+                    <span className="text-[11px] shrink-0 mt-0.5" style={{ color: "var(--text-tertiary)" }}>{new Date(c.creeLe).toLocaleDateString("fr-CA", { month: "short", day: "numeric" })}</span>
+                  </Link>
+                ))}
               </div>
             )}
           </div>
-        </div>
+        </ProfileTabs>
       </main>
     </div>
   );
