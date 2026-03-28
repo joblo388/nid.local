@@ -42,7 +42,7 @@ function timeAgo(dateStr: string) {
 
 const TYPE_LABELS: Record<string, string> = {
   unifamiliale: "Unifamiliale", condo: "Condo", duplex: "Duplex", triplex: "Triplex", quadruplex: "Quadruplex",
-  maison_de_ville: "Maison de ville", terrain: "Terrain", commercial: "Commercial",
+  "5plex": "5-plex", maison_de_ville: "Maison de ville", terrain: "Terrain", commercial: "Commercial",
 };
 
 export function AnnoncesListeView() {
@@ -169,6 +169,7 @@ export function AnnoncesListeView() {
             <option value="duplex">Duplex</option>
             <option value="triplex">Triplex</option>
             <option value="quadruplex">Quadruplex</option>
+            <option value="5plex">5-plex</option>
             <option value="maison_de_ville">Maison de ville</option>
             <option value="terrain">Terrain</option>
             <option value="commercial">Commercial</option>
