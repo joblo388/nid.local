@@ -42,7 +42,30 @@ export default async function HomePage() {
   const initialVotedPostIds = userVotes.map((v) => v.postId);
   const initialBookmarkedPostIds = userBookmarks.map((b) => b.postId);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: "nid.local",
+        url: "https://nidlocal.com",
+        description: "Le forum immobilier québécois. Discussions entre propriétaires, acheteurs et locataires.",
+        inLanguage: "fr-CA",
+        potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: "https://nidlocal.com/recherche?q={search_term_string}" }, "query-input": "required name=search_term_string" },
+      },
+      {
+        "@type": "Organization",
+        name: "nid.local",
+        url: "https://nidlocal.com",
+        logo: "https://nidlocal.com/favicon.ico",
+        sameAs: [],
+      },
+    ],
+  };
+
   return (
+    <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     <div className="flex flex-col min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
       <HomepageView
@@ -53,5 +76,6 @@ export default async function HomePage() {
         sidebarStats={sidebarStats}
       />
     </div>
+    </>
   );
 }

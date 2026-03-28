@@ -9,17 +9,48 @@ const geist = Geist({
   subsets: ["latin"],
 });
 
-const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.local";
+const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nidlocal.com";
 
 export const metadata: Metadata = {
-  title: "nid.local — Le forum immobilier québécois",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "nid.local — Forum immobilier Québec | Acheter, vendre, louer",
+    template: "%s | nid.local",
+  },
   description:
-    "Forum communautaire sur l'immobilier au Québec. Questions, annonces, rénovations et nouvelles de quartier.",
+    "Le forum immobilier québécois. Discussions entre propriétaires, acheteurs et locataires. Marketplace sans commission, calculatrices hypothécaires, données de marché et conseils juridiques.",
+  keywords: [
+    "immobilier québec", "forum immobilier", "acheter maison québec", "vendre maison sans courtier",
+    "plex montréal", "condo montréal", "duplex québec", "calculatrice hypothécaire",
+    "marché immobilier québec 2026", "location québec", "rénovation maison",
+  ],
+  authors: [{ name: "nid.local" }],
+  creator: "nid.local",
+  openGraph: {
+    type: "website",
+    locale: "fr_CA",
+    url: BASE_URL,
+    siteName: "nid.local",
+    title: "nid.local — Forum immobilier Québec",
+    description: "Le forum immobilier québécois. Discussions, marketplace sans commission, calculatrices et données de marché.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "nid.local — Forum immobilier Québec",
+    description: "Discussions entre propriétaires, acheteurs et locataires au Québec.",
+  },
   alternates: {
+    canonical: BASE_URL,
     types: {
       "application/rss+xml": `${BASE_URL}/rss.xml`,
     },
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
+  },
+  verification: {},
 };
 
 export default function RootLayout({

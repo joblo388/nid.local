@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+const BASE_URL = process.env.NEXTAUTH_URL ?? "https://nidlocal.com";
 
 export default function robots(): MetadataRoute.Robots {
   return {
