@@ -15,11 +15,9 @@ export async function uploadImage(file: File, maxBytes = 2_000_000): Promise<str
     return blob.url;
   }
 
-  // Fallback: base64 in DB
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target?.result as string);
-    reader.onerror = () => reject(new Error("Erreur de lecture du fichier."));
-    reader.readAsDataURL(file);
-  });
+  // Fallback: base64 data URL (works on server via Buffer)
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  const mime = file.type || "image/jpeg";
+  return `data:${mime};base64,${buffer.toString("base64")}`;
 }

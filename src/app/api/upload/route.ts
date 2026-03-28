@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     const url = await uploadImage(file, maxBytes);
     return NextResponse.json({ url });
   } catch (err) {
+    console.error("[upload] Error:", err);
     const message = err instanceof Error ? err.message : "Erreur lors du téléversement.";
     return NextResponse.json({ error: message }, { status: 400 });
   }
