@@ -67,7 +67,7 @@ export function Header() {
             <span style={{ color: "var(--green)" }}>.local</span>
           </span>
           <span
-            className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md"
+            className="hidden md:inline text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md"
             style={{ background: isMarketplace ? "var(--green-light-bg)" : "var(--blue-bg)", color: isMarketplace ? "var(--green-text)" : "var(--blue-text)" }}
           >
             {isMarketplace ? t("nav.marketplace") : t("nav.communaute")}
@@ -152,9 +152,11 @@ export function Header() {
             <div className="w-8 h-8 rounded-full animate-pulse" style={{ background: "var(--bg-secondary)" }} />
           ) : session ? (
             <>
-              <CommandPaletteTrigger />
-              <ThemeToggle />
-              <LanguageSwitcher />
+              <span className="hidden md:flex items-center gap-2">
+                <CommandPaletteTrigger />
+                <ThemeToggle />
+                <LanguageSwitcher />
+              </span>
               <NotificationBell />
               <div className="relative" ref={menuRef}>
                 <button
@@ -237,9 +239,11 @@ export function Header() {
             </>
           ) : (
             <>
-              <CommandPaletteTrigger />
-              <ThemeToggle />
-              <LanguageSwitcher />
+              <span className="hidden md:flex items-center gap-2">
+                <CommandPaletteTrigger />
+                <ThemeToggle />
+                <LanguageSwitcher />
+              </span>
               <Link
                 href={`/auth/connexion?callbackUrl=${encodeURIComponent(pathname)}`}
                 className="hidden md:block text-[13px] font-medium transition-opacity hover:opacity-60"

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Post, Categorie } from "@/lib/types";
-import { villes, quartiers, quartiersDeVille, villeBySlug, ressourcesUtiles } from "@/lib/data";
+import { villes, quartiers, quartiersDeVille, villeBySlug } from "@/lib/data";
 import { PostCard } from "./PostCard";
 import { SkeletonPostCard } from "./Skeleton";
 import { Sidebar, SidebarStats } from "./Sidebar";
@@ -446,8 +446,8 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
   return (
     <PullToRefresh onRefresh={handlePullToRefresh}>
-      {/* Barres de navigation — sticky sous le header */}
-      <div className="sticky z-40" style={{ top: "52px" }}>
+      {/* Barres de navigation — sticky sous le header (desktop only) */}
+      <div className="hidden md:block sticky z-40" style={{ top: "52px" }}>
         <VilleBar selected={mesQuartiersActive ? "" : villeSlug} onSelect={selectVille} />
         {!mesQuartiersActive && hasQuartiers && (
           <QuartierBar villeSlug={villeSlug} selected={quartierSlug} onSelect={(s) => setQuartierSlug(s)} />
@@ -476,8 +476,8 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
         )}
       </div>
 
-      {/* Breadcrumb */}
-      <div style={{ borderBottom: "0.5px solid var(--border)" }}>
+      {/* Breadcrumb (desktop only) */}
+      <div className="hidden md:block" style={{ borderBottom: "0.5px solid var(--border)" }}>
         <div
           className="max-w-[1100px] mx-auto px-5 py-2 flex items-center justify-between"
         >
@@ -526,8 +526,8 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
           {/* Fil */}
           <div className="flex-1 min-w-0 space-y-3">
 
-            {/* Recherche */}
-            <div className="relative" ref={searchRef}>
+            {/* Recherche (desktop only) */}
+            <div className="hidden md:block relative" ref={searchRef}>
               <SearchBar
                 value={searchQuery}
                 onChange={(q) => { handleSearchChange(q); setSearchFocused(true); }}
@@ -541,8 +541,8 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
               )}
             </div>
 
-            {/* Filtres catégorie */}
-            <div className="flex items-center gap-1 flex-wrap">
+            {/* Filtres catégorie (desktop only) */}
+            <div className="hidden md:flex items-center gap-1 flex-wrap">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.value}
@@ -561,7 +561,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
             {/* En-tête + tri */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
                   Discussions{" "}
                   <span
@@ -588,13 +588,6 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                   ))}
                 </div>
               </div>
-              <Link
-                href="/nouveau-post"
-                className="md:hidden text-[13px] font-semibold text-white px-3 py-1.5 rounded-lg transition-opacity hover:opacity-90"
-                style={{ background: "var(--green)" }}
-              >
-                + Publier
-              </Link>
               {!mesQuartiersActive && (
                 <Link
                   href={`/ville/${villeSlug}`}
@@ -662,42 +655,6 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
           <Sidebar villeSlug={villeSlug} stats={sidebarStats} />
         </div>
 
-        {/* Ressources utiles — mobile uniquement */}
-        <div className="md:hidden mt-5">
-          <div
-            className="rounded-xl overflow-hidden"
-            style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-          >
-            <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-              <h3 className="text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: "var(--text-tertiary)" }}>
-                Ressources utiles
-              </h3>
-            </div>
-            <div className="grid grid-cols-2">
-              {ressourcesUtiles.map((r, i) => (
-                <Link
-                  key={r.href}
-                  href={r.href}
-                  className="flex flex-col gap-0.5 px-4 py-3 transition-colors hover-bg"
-                  style={{
-                    borderRight: i % 2 === 0 ? "0.5px solid var(--border)" : "none",
-                    borderBottom: i < ressourcesUtiles.length - 2 ? "0.5px solid var(--border)" : "none",
-                  }}
-                >
-                  <span className="text-[12px] font-medium" style={{ color: "var(--text-primary)" }}>
-                    {r.label}
-                  </span>
-                  {"description" in r && r.description && (
-                    <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
-                      {r.description}
-                    </span>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
       </main>
     </PullToRefresh>
   );
