@@ -9,7 +9,6 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { CommandPaletteTrigger } from "./CommandPalette";
 import { useLocale } from "@/lib/useLocale";
-import { ressourcesUtiles } from "@/lib/data";
 
 export function Header() {
   const { data: session, status } = useSession();
@@ -133,21 +132,6 @@ export function Header() {
                   >
                     + {t("common.nouvelle_discussion")}
                   </Link>
-                </div>
-                <div style={{ borderTop: "0.5px solid var(--border)" }} className="mt-1 pt-1">
-                  <p className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                    Ressources
-                  </p>
-                  {ressourcesUtiles.map((r) => (
-                    <Link
-                      key={r.href}
-                      href={r.href}
-                      className="block px-4 py-2 text-[13px] transition-colors hover-bg"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
-                      {r.label}
-                    </Link>
-                  ))}
                 </div>
                 {!session && status !== "loading" && (
                   <div style={{ borderTop: "0.5px solid var(--border)" }} className="mt-1 pt-1">

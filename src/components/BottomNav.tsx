@@ -7,8 +7,9 @@ import { useSession } from "next-auth/react";
 export function BottomNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const isForum = !pathname.startsWith("/annonces") && !pathname.startsWith("/auth") && !pathname.startsWith("/parametres");
+  const isForum = !pathname.startsWith("/annonces") && !pathname.startsWith("/auth") && !pathname.startsWith("/parametres") && !pathname.startsWith("/ressources");
   const isPublier = pathname === "/nouveau-post" || pathname === "/annonces/publier";
+  const isOutils = pathname === "/ressources" || pathname.startsWith("/calculatrice") || pathname.startsWith("/capacite") || pathname.startsWith("/calculateur") || pathname.startsWith("/acheter") || pathname.startsWith("/donnees") || pathname.startsWith("/estimation");
   const isProfile = pathname.startsWith("/u/") || pathname === "/parametres" || pathname === "/notifications" || pathname === "/messages" || pathname === "/favoris";
 
   const username = session?.user?.username ?? session?.user?.name;
@@ -22,6 +23,10 @@ export function BottomNav() {
       <Link href="/nouveau-post" className={isPublier ? "active" : ""}>
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>
         Publier
+      </Link>
+      <Link href="/ressources" className={isOutils ? "active" : ""}>
+        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg>
+        Outils
       </Link>
       {session ? (
         <Link href={username ? `/u/${username}` : "/parametres"} className={isProfile ? "active" : ""}>
