@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
-import { quartierBySlug, ressourcesUtiles } from "@/lib/data";
+import { villes, quartierBySlug, ressourcesUtiles } from "@/lib/data";
 import { SkeletonListingCard } from "@/components/Skeleton";
 import { AnnonceMapView } from "./AnnonceMapView";
 import "./marketplace.css";
@@ -42,6 +42,7 @@ function timeAgo(dateStr: string) {
 
 const TYPE_LABELS: Record<string, string> = {
   unifamiliale: "Unifamiliale", condo: "Condo", duplex: "Duplex", triplex: "Triplex", quadruplex: "Quadruplex",
+  maison_de_ville: "Maison de ville", terrain: "Terrain", commercial: "Commercial",
 };
 
 export function AnnoncesListeView() {
@@ -50,7 +51,7 @@ export function AnnoncesListeView() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [favs, setFavs] = useState<Set<string>>(new Set());
-  const [filters, setFilters] = useState({ quartierSlug: "", type: "", prixMax: "", tri: "recent", q: "" });
+  const [filters, setFilters] = useState({ villeSlug: "", quartierSlug: "", type: "", prixMax: "", tri: "recent", q: "" });
   const [searchInput, setSearchInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -60,6 +61,7 @@ export function AnnoncesListeView() {
   const fetchListings = useCallback(async (p = 1, append = false) => {
     if (!append) setLoading(true);
     const params = new URLSearchParams();
+    if (filters.villeSlug) params.set("villeSlug", filters.villeSlug);
     if (filters.quartierSlug) params.set("quartierSlug", filters.quartierSlug);
     if (filters.type) params.set("type", filters.type);
     if (filters.prixMax) params.set("prixMax", filters.prixMax);
@@ -156,16 +158,9 @@ export function AnnoncesListeView() {
 
         {/* Filters + sort */}
         <div className="mp-filters">
-          <select className="mp-filter-select" value={filters.quartierSlug} onChange={(e) => setFilters((f) => ({ ...f, quartierSlug: e.target.value }))}>
-            <option value="">Tous les quartiers</option>
-            <option value="rosemont">Rosemont</option>
-            <option value="plateau-mont-royal">Plateau-Mont-Royal</option>
-            <option value="villeray">Villeray</option>
-            <option value="hochelaga">Hochelaga</option>
-            <option value="mile-end">Mile-End</option>
-            <option value="verdun">Verdun</option>
-            <option value="griffintown">Griffintown</option>
-            <option value="outremont">Outremont</option>
+          <select className="mp-filter-select" value={filters.villeSlug} onChange={(e) => setFilters((f) => ({ ...f, villeSlug: e.target.value }))}>
+            <option value="">Toutes les villes</option>
+            {villes.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
           </select>
           <select className="mp-filter-select" value={filters.type} onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}>
             <option value="">Tous les types</option>
@@ -173,15 +168,23 @@ export function AnnoncesListeView() {
             <option value="condo">Condo</option>
             <option value="duplex">Duplex</option>
             <option value="triplex">Triplex</option>
+            <option value="quadruplex">Quadruplex</option>
+            <option value="maison_de_ville">Maison de ville</option>
+            <option value="terrain">Terrain</option>
+            <option value="commercial">Commercial</option>
           </select>
           <select className="mp-filter-select" value={filters.prixMax} onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}>
             <option value="">Prix max</option>
+            <option value="300000">300 000 $</option>
             <option value="400000">400 000 $</option>
+            <option value="500000">500 000 $</option>
             <option value="600000">600 000 $</option>
             <option value="800000">800 000 $</option>
             <option value="1000000">1 000 000 $</option>
+            <option value="1500000">1 500 000 $</option>
+            <option value="2000000">2 000 000 $+</option>
           </select>
-          <select className="mp-filter-select" value={filters.tri} onChange={(e) => setFilters((f) => ({ ...f, tri: e.target.value }))}>
+          <select className="mp-filter-select mp-filter-sort" value={filters.tri} onChange={(e) => setFilters((f) => ({ ...f, tri: e.target.value }))}>
             <option value="recent">Plus récent</option>
             <option value="prix_asc">Prix ↑</option>
             <option value="prix_desc">Prix ↓</option>
@@ -207,6 +210,7 @@ export function AnnoncesListeView() {
             onToggleFav={toggleFav}
             onTrackClick={trackClick}
             quartierFilter={filters.quartierSlug}
+            villeFilter={filters.villeSlug}
           />
         ) : (
         <div className="mp-layout">

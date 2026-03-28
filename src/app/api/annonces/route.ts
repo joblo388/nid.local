@@ -7,14 +7,16 @@ import { sendAlertEmail } from "@/lib/email";
 import { quartierBySlug } from "@/lib/data";
 
 const PAGE_SIZE = 20;
-const TYPES_VALIDES = ["unifamiliale", "condo", "duplex", "triplex", "quadruplex"];
+const TYPES_VALIDES = ["unifamiliale", "condo", "duplex", "triplex", "quadruplex", "maison_de_ville", "terrain", "commercial"];
 const TRIS_VALIDES = ["recent", "prix_asc", "prix_desc", "populaire"];
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
+  const villeSlug = searchParams.get("villeSlug");
   const quartierSlug = searchParams.get("quartierSlug");
   const type = searchParams.get("type");
   const prixMax = searchParams.get("prixMax");
+  const prixMin = searchParams.get("prixMin");
   const search = searchParams.get("q")?.trim();
   const tri = searchParams.get("tri") ?? "recent";
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
@@ -23,9 +25,14 @@ export async function GET(req: NextRequest) {
   const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : PAGE_SIZE;
 
   const where: Prisma.ListingWhereInput = { statut: "active" };
+  if (villeSlug) where.villeSlug = villeSlug;
   if (quartierSlug) where.quartierSlug = quartierSlug;
   if (type && TYPES_VALIDES.includes(type)) where.type = type;
-  if (prixMax) where.prix = { lte: parseInt(prixMax) };
+  if (prixMax || prixMin) {
+    where.prix = {};
+    if (prixMax) (where.prix as Record<string, number>).lte = parseInt(prixMax);
+    if (prixMin) (where.prix as Record<string, number>).gte = parseInt(prixMin);
+  }
   if (excludeId) where.id = { not: excludeId };
   if (search) {
     where.OR = [

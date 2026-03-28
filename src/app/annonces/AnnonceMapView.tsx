@@ -25,6 +25,7 @@ type ListingItem = {
 
 const TYPE_LABELS: Record<string, string> = {
   unifamiliale: "Unifamiliale", condo: "Condo", duplex: "Duplex", triplex: "Triplex", quadruplex: "Quadruplex",
+  maison_de_ville: "Maison de ville", terrain: "Terrain", commercial: "Commercial",
 };
 
 function fmtPrice(p: number) { return p.toLocaleString("fr-CA") + " $"; }
@@ -35,19 +36,23 @@ type Props = {
   onToggleFav: (id: string, e: React.MouseEvent) => void;
   onTrackClick: (id: string) => void;
   quartierFilter: string;
+  villeFilter?: string;
 };
 
-export function AnnonceMapView({ listings, favs, onToggleFav, onTrackClick, quartierFilter }: Props) {
+export function AnnonceMapView({ listings, favs, onToggleFav, onTrackClick, quartierFilter, villeFilter }: Props) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedListing, setSelectedListing] = useState<string | null>(null);
 
-  // Build map query: if a quartier filter is set, center on that quartier, otherwise on the ville
+  // Build map query: center on selected listing address, then quartier, then ville filter, then first listing's ville
   const mapCenter = (() => {
     if (quartierFilter) {
       const q = quartierBySlug[quartierFilter];
       return q ? `${q.nom}, Québec, Canada` : "Montréal, Québec, Canada";
     }
-    // If listings have a dominant ville, use that
+    if (villeFilter) {
+      const v = villeBySlug[villeFilter];
+      return v ? `${v.nom}, Québec, Canada` : "Montréal, Québec, Canada";
+    }
     if (listings.length > 0) {
       const ville = villeBySlug[listings[0].villeSlug];
       return ville ? `${ville.nom}, Québec, Canada` : "Montréal, Québec, Canada";
@@ -55,11 +60,12 @@ export function AnnonceMapView({ listings, favs, onToggleFav, onTrackClick, quar
     return "Montréal, Québec, Canada";
   })();
 
-  // When a listing is selected, center the map on its address
-  const activeMapQuery = selectedListing
-    ? encodeURIComponent(
-        (listings.find((l) => l.id === selectedListing)?.adresse ?? mapCenter) + ", Québec, Canada"
-      )
+  // When a listing is selected, center the map on its full address
+  const selectedAddr = selectedListing
+    ? listings.find((l) => l.id === selectedListing)?.adresse
+    : null;
+  const activeMapQuery = selectedAddr
+    ? encodeURIComponent(selectedAddr + ", Québec, Canada")
     : encodeURIComponent(mapCenter);
 
   // Group listings by quartier for the sidebar

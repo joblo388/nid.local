@@ -8,6 +8,14 @@
 .mp-btn-primary:hover{background:var(--green-text)}
 .mp-filters{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .mp-filter-select{font-size:13px;padding:6px 10px;border-radius:20px;border:0.5px solid var(--border-secondary);background:var(--bg-card);color:var(--text-primary);font-family:inherit;cursor:pointer;outline:none}
+@media(max-width:640px){
+  .mp-filters{gap:6px}
+  .mp-filter-select{flex:1 1 calc(50% - 4px);min-width:0;font-size:12px;padding:8px 8px}
+  .mp-filter-sort{flex:1 1 100%}
+  .mp-results-count{flex:1 1 100%;text-align:center;margin:0}
+  .mp-view-toggle{display:none}
+  .mp-page-header{flex-direction:column;align-items:flex-start;gap:10px}
+}
 .mp-filter-pill{font-size:12px;padding:5px 12px;border-radius:20px;border:0.5px solid var(--border-secondary);cursor:pointer;color:var(--text-tertiary);background:transparent;transition:all 0.15s}
 .mp-filter-pill.on{background:var(--green-light-bg);color:var(--green-text);border-color:transparent}
 .mp-results-count{font-size:13px;color:var(--text-tertiary);margin-left:auto}
