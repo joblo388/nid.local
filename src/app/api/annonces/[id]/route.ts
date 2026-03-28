@@ -113,7 +113,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
   }
 
   const body = await req.json();
-  const { titre, description, prix, statut, anonyme, telephone, ...rest } = body;
+  const { titre, description, prix, statut, anonyme, telephone, images, documents, ...rest } = body;
 
   // Track price change
   if (prix !== undefined && prix !== listing.prix) {
@@ -121,6 +121,36 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     await prisma.listingPriceHistory.create({
       data: { listingId: id, prix, evenement },
     });
+  }
+
+  // Update images if provided — delete old ones and create new
+  if (images !== undefined && Array.isArray(images)) {
+    await prisma.listingImage.deleteMany({ where: { listingId: id } });
+    if (images.length > 0) {
+      await prisma.listingImage.createMany({
+        data: images.map((img: { url: string; principale?: boolean }, i: number) => ({
+          listingId: id,
+          url: img.url,
+          position: i,
+          principale: img.principale ?? i === 0,
+        })),
+      });
+    }
+  }
+
+  // Update documents if provided
+  if (documents !== undefined && Array.isArray(documents)) {
+    await prisma.listingDocument.deleteMany({ where: { listingId: id } });
+    if (documents.length > 0) {
+      await prisma.listingDocument.createMany({
+        data: documents.map((doc: { nom: string; url: string; taille?: string }) => ({
+          listingId: id,
+          nom: doc.nom,
+          url: doc.url,
+          taille: doc.taille || null,
+        })),
+      });
+    }
   }
 
   const updated = await prisma.listing.update({

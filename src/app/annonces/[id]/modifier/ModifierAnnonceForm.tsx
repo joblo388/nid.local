@@ -217,6 +217,8 @@ export function ModifierAnnonceForm() {
           lienVisite: form.lienVisite || null,
           anonyme: form.anonyme,
           telephone: form.telephone || null,
+          images: images.map((img, i) => ({ url: img.url, principale: i === 0 })),
+          documents: docs.map((d) => ({ nom: d.nom, url: d.url, taille: d.taille })),
         }),
       });
       const data = await res.json();

@@ -11,7 +11,7 @@ export async function uploadImage(file: File, maxBytes = 2_000_000): Promise<str
     const { put } = await import("@vercel/blob");
     const ext = file.name.split(".").pop() ?? "jpg";
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const blob = await put(filename, file, { access: "public" });
+    const blob = await put(filename, file, { access: "public", addRandomSuffix: true });
     return blob.url;
   }
 
