@@ -52,27 +52,46 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user, account, trigger }) {
       if (user) {
         token.id = user.id;
-        // For Google OAuth, ensure user has a username
-        if (account?.provider === "google" && user.id) {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: user.id as string },
-            select: { username: true },
+        // For Google OAuth, ensure user exists in DB and has a username
+        if (account?.provider === "google" && user.email) {
+          let dbUser = await prisma.user.findUnique({
+            where: { email: user.email },
+            select: { id: true, username: true },
           });
-          if (!dbUser?.username) {
-            // Generate a username from the email
-            const base = (user.email ?? "user").split("@")[0].toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 20);
+
+          // Create user if doesn't exist
+          if (!dbUser) {
+            const base = (user.email).split("@")[0].toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 20);
             let candidate = base || "user";
             let suffix = 0;
             while (await prisma.user.findFirst({ where: { username: candidate } })) {
               suffix++;
               candidate = `${base}${suffix}`;
             }
-            await prisma.user.update({ where: { id: user.id as string }, data: { username: candidate } });
-            token.username = candidate;
-          } else {
-            token.username = dbUser.username;
+            dbUser = await prisma.user.create({
+              data: {
+                email: user.email,
+                name: user.name ?? candidate,
+                username: candidate,
+                image: user.image ?? null,
+              },
+              select: { id: true, username: true },
+            });
+          } else if (!dbUser.username) {
+            const base = (user.email).split("@")[0].toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 20);
+            let candidate = base || "user";
+            let suffix = 0;
+            while (await prisma.user.findFirst({ where: { username: candidate } })) {
+              suffix++;
+              candidate = `${base}${suffix}`;
+            }
+            await prisma.user.update({ where: { id: dbUser.id }, data: { username: candidate } });
+            dbUser.username = candidate;
           }
-        } else {
+
+          token.id = dbUser.id;
+          token.username = dbUser.username;
+        } else if (user) {
           const dbUser = await prisma.user.findUnique({
             where: { id: user.id as string },
             select: { username: true },
