@@ -60,6 +60,18 @@
 .mp-quartier-stat:hover{background:var(--bg-secondary)}
 .mp-qs-count{font-size:11px;color:var(--text-tertiary);background:var(--bg-secondary);padding:1px 6px;border-radius:20px}
 
+/* --- Saved searches --- */
+.mp-save-search-btn{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:11px;color:var(--green-text);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;white-space:nowrap}
+.mp-save-search-btn:hover{text-decoration:underline}
+.mp-save-search-btn:disabled{opacity:0.5;cursor:default;text-decoration:none}
+.mp-save-search-btn svg{flex-shrink:0}
+.mp-saved-searches{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.mp-saved-label{font-size:11px;color:var(--text-tertiary);font-weight:500;white-space:nowrap;margin-right:2px}
+.mp-saved-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 10px;border-radius:20px;border:0.5px solid transparent;background:var(--green-light-bg);color:var(--green-text);cursor:pointer;font-family:inherit;font-weight:500;transition:all 0.15s;white-space:nowrap}
+.mp-saved-pill:hover{border-color:var(--green-text)}
+.mp-saved-pill-x{font-size:14px;line-height:1;margin-left:2px;opacity:0.6;cursor:pointer}
+.mp-saved-pill-x:hover{opacity:1}
+
 /* --- Détail (page /annonces/[id]) --- */
 .mp-breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-tertiary);margin-bottom:20px}
 .mp-breadcrumb a{color:var(--blue-text);cursor:pointer;text-decoration:none}

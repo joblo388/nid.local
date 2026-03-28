@@ -26,13 +26,63 @@ export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const prevUnreadRef = useRef<number>(0);
 
   const unread = notifications.filter((n) => !n.lu).length;
 
+  // Trigger a browser notification when new unread notifications arrive
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "granted" &&
+      unread > prevUnreadRef.current &&
+      prevUnreadRef.current !== -1
+    ) {
+      const latestUnread = notifications.find((n) => !n.lu);
+      if (latestUnread) {
+        const body =
+          latestUnread.type === "comment"
+            ? `${latestUnread.acteurNom} a commenté votre post`
+            : `${latestUnread.acteurNom} a interagi avec votre post`;
+        try {
+          new window.Notification("nid.local", {
+            body,
+            icon: "/icons/icon-192.png",
+          });
+        } catch {
+          // Notification constructor may throw in some contexts
+        }
+      }
+    }
+    prevUnreadRef.current = unread;
+  }, [unread, notifications]);
+
+  // Poll for notifications, reducing frequency when tab is hidden
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30_000);
-    return () => clearInterval(interval);
+
+    let interval: ReturnType<typeof setInterval>;
+
+    function startPolling() {
+      clearInterval(interval);
+      const delay = document.hidden ? 60_000 : 30_000;
+      interval = setInterval(fetchNotifications, delay);
+    }
+
+    startPolling();
+
+    function handleVisibility() {
+      startPolling();
+      // Fetch immediately when tab becomes visible again
+      if (!document.hidden) fetchNotifications();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   async function fetchNotifications() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,6 +8,9 @@ import { Header } from "@/components/Header";
 import { ListingActions } from "@/components/ListingActions";
 import { ReportButton } from "@/components/ReportButton";
 import { useLightbox } from "@/components/LightboxProvider";
+import { SellerRating } from "@/components/SellerRating";
+import { SellerDashboard } from "@/components/SellerDashboard";
+import { ImageCarousel } from "@/components/ImageCarousel";
 import { quartierBySlug } from "@/lib/data";
 import "../marketplace.css";
 
@@ -88,21 +91,10 @@ export function AnnonceDetailView() {
   const [sent, setSent] = useState(false);
   const [contactMsg, setContactMsg] = useState("Bonjour, je suis intéressé par votre propriété. Serait-il possible de planifier une visite?");
   const [sending, setSending] = useState(false);
-  const [galleryIndex, setGalleryIndex] = useState(0);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [newComment, setNewComment] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);
   const [similar, setSimilar] = useState<{ id: string; titre: string; prix: number; type: string; quartierSlug: string; imageUrl: string | null; chambres: number; sallesDeBain: number; superficie: number }[]>([]);
-
-  const goPrev = useCallback(() => {
-    if (!listing) return;
-    setGalleryIndex((i) => (i - 1 + listing.images.length) % listing.images.length);
-  }, [listing]);
-
-  const goNext = useCallback(() => {
-    if (!listing) return;
-    setGalleryIndex((i) => (i + 1) % listing.images.length);
-  }, [listing]);
 
   useEffect(() => {
     fetch(`/api/annonces/${id}`)
@@ -183,72 +175,25 @@ export function AnnonceDetailView() {
           <span>{TYPE_LABELS[listing.type] ?? listing.type}</span>
         </div>
 
-        {/* Owner stats banner */}
+        {/* Seller dashboard */}
         {listing.isOwner && (
-          <div
-            style={{ display: "flex", alignItems: "center", gap: 20, padding: "12px 16px", borderRadius: 12, marginBottom: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-          >
-            <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 0.5 }}>
-              Tableau de bord
-            </div>
-            <div style={{ display: "flex", gap: 16, flex: 1 }}>
-              {[
-                { label: "Vues", value: listing.nbVues, icon: "👁" },
-                { label: "Clics", value: listing.nbClics, icon: "🖱" },
-                { label: "Favoris", value: listing.nbFavoris, icon: "♥" },
-                { label: "Commentaires", value: listing.nbCommentaires, icon: "💬" },
-              ].map((s) => (
-                <div key={s.label} style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 18, fontWeight: 600, color: "var(--text-primary)" }}>{s.value}</div>
-                  <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>{s.label}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: 6 }}>
-              <span
-                className="text-[10px] font-medium px-2 py-0.5 rounded-md"
-                style={{
-                  background: listing.statut === "active" ? "var(--green-light-bg)" : listing.statut === "vendu" ? "var(--red-bg)" : "var(--bg-secondary)",
-                  color: listing.statut === "active" ? "var(--green-text)" : listing.statut === "vendu" ? "var(--red-text)" : "var(--text-tertiary)",
-                }}
-              >
-                {listing.statut === "active" ? "Active" : listing.statut === "vendu" ? "Vendu" : "Retiré"}
-              </span>
-            </div>
-          </div>
+          <SellerDashboard listingId={listing.id} />
         )}
 
         <div className="mp-detail-layout">
           <div>
-            {/* Gallery */}
-            {listing.images.length > 0 ? (
-              <div className="mp-gallery">
-                <div className="mp-gallery-main" style={{ position: "relative", cursor: "pointer" }} onClick={() => openLightbox(listing.images.map((img) => img.url), galleryIndex)}>
-                  <Image src={listing.images[galleryIndex]?.url ?? listing.images[0].url} alt={listing.titre} fill sizes="450px" style={{ objectFit: "cover" }} />
-                  {listing.lienVisite && <div className="mp-gallery-badge">Visite 360°</div>}
-                  <div className="mp-gallery-count">{galleryIndex + 1} / {listing.images.length}</div>
+            {/* Gallery Carousel */}
+            <div style={{ position: "relative" }}>
+              <ImageCarousel
+                images={listing.images}
+                onImageClick={(index) => openLightbox(listing.images.map((img) => img.url), index)}
+              />
+              {listing.lienVisite && listing.images.length > 0 && (
+                <div style={{ position: "absolute", top: 12, left: 12, fontSize: 11, padding: "3px 9px", borderRadius: 20, background: "var(--blue-bg)", color: "var(--blue-text)", fontWeight: 500, zIndex: 2 }}>
+                  Visite 360°
                 </div>
-                {listing.images.slice(1, 3).map((img, i) => (
-                  <div key={img.id} className="mp-gallery-thumb" style={{ position: "relative" }} onClick={() => setGalleryIndex(i + 1)}>
-                    <Image src={img.url} alt="" fill sizes="225px" style={{ objectFit: "cover" }} />
-                    {i === 1 && listing.images.length > 3 && (
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>+{listing.images.length - 3} photos</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {[...Array(Math.max(0, 2 - (listing.images.length - 1)))].map((_, i) => (
-                  <div key={`ph-${i}`} className="mp-gallery-thumb"><div className="mp-gallery-placeholder"><svg viewBox="0 0 36 36"><rect x="2" y="8" width="32" height="22" rx="3" /><circle cx="11" cy="16" r="3" /><path d="M2 24l8-7 7 6 5-4 12 9" /></svg></div></div>
-                ))}
-              </div>
-            ) : (
-              <div className="mp-gallery">
-                <div className="mp-gallery-main"><div className="mp-gallery-placeholder"><svg viewBox="0 0 36 36"><rect x="2" y="8" width="32" height="22" rx="3" /><circle cx="11" cy="16" r="3" /><path d="M2 24l8-7 7 6 5-4 12 9" /></svg></div></div>
-                <div className="mp-gallery-thumb"><div className="mp-gallery-placeholder"><svg viewBox="0 0 36 36"><rect x="2" y="8" width="32" height="22" rx="3" /><circle cx="11" cy="16" r="3" /><path d="M2 24l8-7 7 6 5-4 12 9" /></svg></div></div>
-                <div className="mp-gallery-thumb"><div className="mp-gallery-placeholder"><svg viewBox="0 0 36 36"><rect x="2" y="8" width="32" height="22" rx="3" /><circle cx="11" cy="16" r="3" /><path d="M2 24l8-7 7 6 5-4 12 9" /></svg></div></div>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Price + type */}
             <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6 }}>
@@ -416,6 +361,9 @@ export function AnnonceDetailView() {
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 500 }}>{listing.auteur.username}</div>
                   <span className="mp-seller-badge">{listing.auteur.anonyme ? "Propriétaire anonyme" : "Propriétaire"}</span>
+                  <div style={{ marginTop: 4 }}>
+                    <SellerRating sellerId={listing.auteur.id} compact />
+                  </div>
                 </div>
               </div>
 

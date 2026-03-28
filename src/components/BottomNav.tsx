@@ -20,11 +20,11 @@ export function BottomNav() {
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
         Fil
       </Link>
-      <Link href="/nouveau-post" className={isPublier ? "active" : ""}>
+      <Link href="/nouveau-post" className={isPublier ? "active" : ""} data-tour="publier-mobile">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>
         Publier
       </Link>
-      <Link href="/ressources" className={isOutils ? "active" : ""}>
+      <Link href="/ressources" className={isOutils ? "active" : ""} data-tour="outils">
         <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg>
         Outils
       </Link>

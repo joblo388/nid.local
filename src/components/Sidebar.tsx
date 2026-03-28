@@ -31,6 +31,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
       {/* CTA */}
       <Link
         href="/nouveau-post"
+        data-tour="publier-desktop"
         className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90 flex items-center justify-center"
         style={{ background: "var(--green)" }}
       >
@@ -161,6 +162,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
 
       {/* Ressources */}
       <div
+        data-tour="outils-desktop"
         className="rounded-xl overflow-hidden"
         style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
       >

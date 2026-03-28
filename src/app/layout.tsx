@@ -9,6 +9,9 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { ConfettiProvider } from "@/components/Confetti";
 import { PageTransition } from "@/components/PageTransition";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { NotificationPermission } from "@/components/NotificationPermission";
+import { OfflineBanner } from "@/components/OfflineBanner";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import "./globals.css";
@@ -87,7 +90,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen" suppressHydrationWarning>
           <SessionProvider><ThemeProvider><ToastProvider><LightboxProvider><ConfettiProvider><PageTransition>{children}</PageTransition><BottomNav /><CommandPalette /></ConfettiProvider></LightboxProvider></ToastProvider></ThemeProvider></SessionProvider>
+          <OnboardingTour />
+          <NotificationPermission />
           <ServiceWorkerRegister />
+          <OfflineBanner />
           <Analytics />
         </body>
     </html>

@@ -604,7 +604,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
             </div>
 
             {/* Posts */}
-            <div ref={listRef}>
+            <div ref={listRef} data-tour="posts">
             {loading && posts.length === 0 ? (
               <div className="space-y-2">
                 {[...Array(3)].map((_, i) => (

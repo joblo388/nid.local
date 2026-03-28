@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { Header } from "@/components/Header";
 import { villes, quartierBySlug, ressourcesUtiles } from "@/lib/data";
 import { SkeletonListingCard } from "@/components/Skeleton";
@@ -75,7 +76,20 @@ const TYPES_LOCATION = [
   { value: "autre_location", label: "Autre" },
 ];
 
+type SavedSearchItem = {
+  id: string;
+  nom: string;
+  mode: string | null;
+  villeSlug: string | null;
+  type: string | null;
+  prixMax: number | null;
+};
+
+const VILLE_LABELS: Record<string, string> = {};
+villes.forEach((v) => { VILLE_LABELS[v.slug] = v.nom; });
+
 export function AnnoncesListeView() {
+  const { data: session } = useSession();
   const [listings, setListings] = useState<ListingItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -87,6 +101,55 @@ export function AnnoncesListeView() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"liste" | "carte">("liste");
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [savedSearches, setSavedSearches] = useState<SavedSearchItem[]>([]);
+  const [savingSearch, setSavingSearch] = useState(false);
+
+  // Fetch saved searches when logged in
+  useEffect(() => {
+    if (!session?.user) return;
+    fetch("/api/saved-searches")
+      .then((r) => r.json())
+      .then((data) => { if (data.searches) setSavedSearches(data.searches); })
+      .catch(() => {});
+  }, [session?.user]);
+
+  async function handleSaveSearch() {
+    const nom = prompt("Nom de la recherche :");
+    if (!nom || nom.trim().length === 0) return;
+    setSavingSearch(true);
+    try {
+      const res = await fetch("/api/saved-searches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nom: nom.trim(),
+          mode: filters.mode || undefined,
+          villeSlug: filters.villeSlug || undefined,
+          type: filters.type || undefined,
+          prixMax: filters.prixMax || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (data.search) setSavedSearches((prev) => [data.search, ...prev]);
+    } catch { /* ignore */ }
+    setSavingSearch(false);
+  }
+
+  async function handleDeleteSearch(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    setSavedSearches((prev) => prev.filter((s) => s.id !== id));
+    await fetch(`/api/saved-searches/${id}`, { method: "DELETE" });
+  }
+
+  function applySearch(s: SavedSearchItem) {
+    setFilters((f) => ({
+      ...f,
+      mode: s.mode ?? "",
+      villeSlug: s.villeSlug ?? "",
+      type: s.type ?? "",
+      prixMax: s.prixMax != null ? String(s.prixMax) : "",
+    }));
+  }
 
   const fetchListings = useCallback(async (p = 1, append = false) => {
     if (!append) setLoading(true);
@@ -246,7 +309,20 @@ export function AnnoncesListeView() {
             <option value="prix_desc">Prix ↓</option>
             <option value="populaire">Plus vu</option>
           </select>
-          <span className="mp-results-count">{total} annonce{total !== 1 ? "s" : ""}</span>
+          <span className="mp-results-count">
+            {total} annonce{total !== 1 ? "s" : ""}
+            {session?.user && (
+              <button
+                className="mp-save-search-btn"
+                onClick={handleSaveSearch}
+                disabled={savingSearch}
+                title="Sauvegarder cette recherche"
+              >
+                <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 1v12M1 7h12" /></svg>
+                {savingSearch ? "..." : "Sauvegarder"}
+              </button>
+            )}
+          </span>
           <div className="mp-view-toggle">
             <button className={`mp-view-toggle-btn${viewMode === "liste" ? " active" : ""}`} onClick={() => setViewMode("liste")}>
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="1" y1="3" x2="15" y2="3" /><line x1="1" y1="8" x2="15" y2="8" /><line x1="1" y1="13" x2="15" y2="13" /></svg>
@@ -258,6 +334,35 @@ export function AnnoncesListeView() {
             </button>
           </div>
         </div>
+
+        {/* Saved searches */}
+        {session?.user && savedSearches.length > 0 && (
+          <div className="mp-saved-searches">
+            <span className="mp-saved-label">Mes recherches</span>
+            {savedSearches.map((s) => (
+              <button
+                key={s.id}
+                className="mp-saved-pill"
+                onClick={() => applySearch(s)}
+                title={[
+                  s.mode === "vente" ? "Acheter" : s.mode === "location" ? "Louer" : null,
+                  s.villeSlug ? VILLE_LABELS[s.villeSlug] ?? s.villeSlug : null,
+                  s.type ? TYPE_LABELS[s.type] ?? s.type : null,
+                  s.prixMax != null ? `max ${s.prixMax.toLocaleString("fr-CA")} $` : null,
+                ].filter(Boolean).join(" · ") || "Tous les filtres"}
+              >
+                {s.nom}
+                <span
+                  className="mp-saved-pill-x"
+                  onClick={(e) => handleDeleteSearch(s.id, e)}
+                  title="Supprimer"
+                >
+                  &times;
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {viewMode === "carte" ? (
           <AnnonceMapView

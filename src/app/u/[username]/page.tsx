@@ -8,6 +8,7 @@ import { dbPostToAppPost, quartierBySlug, villeBySlug } from "@/lib/data";
 import { getUserBadges, badgeCouleurs } from "@/lib/badges";
 import { ProfileListingCard } from "@/components/ProfileListingCard";
 import { ProfileTabs } from "@/components/ProfileTabs";
+import { SellerRating } from "@/components/SellerRating";
 
 export const dynamic = "force-dynamic";
 
@@ -141,6 +142,11 @@ export default async function ProfilPage({ params }: Props) {
               })}
             </div>
           </div>
+        )}
+
+        {/* Reputation vendeur — visible si l'utilisateur a des annonces */}
+        {dbListings.length > 0 && (
+          <SellerRating sellerId={user.id} />
         )}
 
         <ProfileTabs tabs={[
