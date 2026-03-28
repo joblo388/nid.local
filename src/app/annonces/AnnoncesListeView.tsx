@@ -217,32 +217,29 @@ export function AnnoncesListeView() {
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
-          <select className="mp-filter-select" value={filters.prixMax} onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}>
-            <option value="">{filters.mode === "location" ? "Loyer max" : "Prix max"}</option>
-            {filters.mode === "location" ? (
-              <>
-                <option value="800">800 $/mois</option>
-                <option value="1000">1 000 $/mois</option>
-                <option value="1200">1 200 $/mois</option>
-                <option value="1500">1 500 $/mois</option>
-                <option value="1800">1 800 $/mois</option>
-                <option value="2000">2 000 $/mois</option>
-                <option value="2500">2 500 $/mois</option>
-                <option value="3000">3 000 $/mois+</option>
-              </>
-            ) : (
-              <>
-                <option value="300000">300 000 $</option>
-                <option value="400000">400 000 $</option>
-                <option value="500000">500 000 $</option>
-                <option value="600000">600 000 $</option>
-                <option value="800000">800 000 $</option>
-                <option value="1000000">1 000 000 $</option>
-                <option value="1500000">1 500 000 $</option>
-                <option value="2000000">2 000 000 $+</option>
-              </>
-            )}
-          </select>
+          {filters.mode === "location" ? (
+            <input
+              type="number"
+              className="mp-filter-select"
+              placeholder="Loyer max $/mois"
+              value={filters.prixMax}
+              onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
+              min={0}
+              step={50}
+              style={{ minWidth: 130 }}
+            />
+          ) : (
+            <input
+              type="number"
+              className="mp-filter-select"
+              placeholder="Prix max $"
+              value={filters.prixMax}
+              onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
+              min={0}
+              step={10000}
+              style={{ minWidth: 130 }}
+            />
+          )}
           <select className="mp-filter-select mp-filter-sort" value={filters.tri} onChange={(e) => setFilters((f) => ({ ...f, tri: e.target.value }))}>
             <option value="recent">Plus récent</option>
             <option value="prix_asc">Prix ↑</option>
