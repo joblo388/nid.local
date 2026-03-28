@@ -41,6 +41,49 @@ export function verifyEmailContent(verifyUrl: string): string {
   `);
 }
 
+// ─── Welcome email ───────────────────────────────────────────────────────────
+
+export function welcomeEmailContent(): string {
+  function row(emoji: string, title: string, desc: string): string {
+    return `<tr>
+      <td style="padding:12px 0;border-bottom:1px solid #e8e7e2;vertical-align:top;width:36px"><span style="font-size:20px">${emoji}</span></td>
+      <td style="padding:12px 0 12px 12px;border-bottom:1px solid #e8e7e2"><strong style="font-size:14px">${title}</strong><br><span style="color:#6e6c67;font-size:13px">${desc}</span></td>
+    </tr>`;
+  }
+
+  return wrapHtml(`
+    <h2 style="font-size:20px;font-weight:700;margin:0 0 16px;color:#1a1a18">Bienvenue dans la communauté!</h2>
+
+    <p>On a créé <strong>nid.local</strong> avec une conviction simple : tout le monde devrait pouvoir accéder à un chez-soi, que ce soit comme locataire ou comme propriétaire.</p>
+
+    <p>Le marché immobilier québécois peut être intimidant — entre les termes juridiques, les calculs hypothécaires et les décisions à six chiffres. On croit que la meilleure façon de naviguer tout ça, c'est <strong>ensemble</strong>.</p>
+
+    <p style="color:#6e6c67;font-size:13px;margin:20px 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Ce que vous trouverez sur nid.local</p>
+
+    <table style="width:100%;border-collapse:collapse">
+      ${row("💬", "La communauté", "Posez vos questions, partagez vos expériences. Des propriétaires, courtiers, notaires et entrepreneurs répondent bénévolement.")}
+      ${row("🏠", "Le marketplace", "Achetez ou vendez directement entre propriétaires, sans commission. Unifamiliales, condos, plex, terrains — partout au Québec.")}
+      ${row("🧮", "Les calculatrices", "Hypothèque, capacité d'emprunt, rentabilité plex, acheter vs louer, estimation de valeur — tous les outils pour prendre une décision éclairée.")}
+      ${row("📊", "Les données de marché", "Prix médians par quartier, tendances 2020-2026, délais de vente — pour savoir exactement où vous en êtes.")}
+      <tr>
+        <td style="padding:12px 0;vertical-align:top;width:36px"><span style="font-size:20px">⭐</span></td>
+        <td style="padding:12px 0 12px 12px"><strong style="font-size:14px">Les avis sur les quartiers</strong><br><span style="color:#6e6c67;font-size:13px">Sécurité, transport, commerces, écoles — des notes par critère données par les résidents eux-mêmes.</span></td>
+      </tr>
+    </table>
+
+    <div style="margin:24px 0;padding:16px 20px;background:#FDF0E6;border-radius:10px;border:1px solid rgba(212,116,42,0.15)">
+      <p style="margin:0 0 4px;font-weight:600;color:#A8511B;font-size:14px">Notre mission</p>
+      <p style="margin:0;color:#A8511B;font-size:13px;line-height:1.6">Rendre l'immobilier québécois accessible, transparent et humain. Pas de jargon, pas de commission cachée — juste une communauté qui s'entraide.</p>
+    </div>
+
+    <p>Votre première étape? <strong>Présentez-vous dans le fil</strong> et dites-nous où vous en êtes dans votre parcours immobilier. La communauté est là pour vous.</p>
+
+    ${cta(`${SITE}`, "Découvrir nid.local")}
+
+    <p style="margin-top:24px;color:#6e6c67;font-size:13px">À bientôt sur le fil,<br><strong>L'équipe nid.local</strong></p>
+  `);
+}
+
 // ─── Notification emails ─────────────────────────────────────────────────────
 
 type NotifType = "comment" | "reply" | "mention" | "listing_comment" | "message" | "suggestion";
