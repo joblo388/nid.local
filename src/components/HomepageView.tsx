@@ -337,7 +337,11 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
       if (!res.ok) return;
       const data = await res.json();
       if (params.append) {
-        setPosts((prev) => [...prev, ...data.posts]);
+        setPosts((prev) => {
+          const existingIds = new Set(prev.map((p) => p.id));
+          const newPosts = data.posts.filter((p: Post) => !existingIds.has(p.id));
+          return [...prev, ...newPosts];
+        });
       } else {
         setPosts(data.posts);
       }

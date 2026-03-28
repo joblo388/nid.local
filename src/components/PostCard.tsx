@@ -214,7 +214,8 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              <AnimatedCounter value={post.nbCommentaires} /><span className="hidden md:inline">&nbsp;réponses</span>
+              <span><AnimatedCounter value={post.nbCommentaires} /></span>
+              <span className="hidden md:inline">réponses</span>
             </Link>
             <div className="hidden md:block"><BookmarkButton postId={post.id} initialBookmarked={isBookmarked} /></div>
             <div className="hidden md:flex items-center gap-1 text-[12px] ml-auto" style={{ color: "var(--text-tertiary)" }}>
