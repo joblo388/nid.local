@@ -170,7 +170,8 @@ model Listing {
   titre         String
   description   String
   prix          Int
-  type          String   // "unifamiliale" | "condo" | "duplex" | "triplex" | "quadruplex"
+  mode          String   @default("vente") // "vente" | "location"
+  type          String   // "unifamiliale" | "condo" | "duplex" | "triplex" | "quadruplex" | "1_et_demi" | "2_et_demi" | "3_et_demi" | "4_et_demi" | "5_et_demi" | "6_et_demi" | "studio" | "loft"
   style         String?  // "maison_de_ville" | "cottage" | "bungalow" | "loft" etc.
   quartierSlug  String
   villeSlug     String   @default("montreal")
@@ -189,6 +190,9 @@ model Listing {
   taxesScolaires   Int?  // $ / an
   fraisCondo       Int?  // $ / mois
   lienVisite    String?  // URL visite virtuelle
+  disponibleLe  DateTime? // date de disponibilité (location)
+  meuble        Boolean  @default(false) // meublé (location)
+  inclusions    String?  // "chauffage, eau chaude, électricité" (location)
   anonyme       Boolean  @default(false)  // masquer le username du propriétaire
   telephone     String?  // numéro affiché si le propriétaire le souhaite
   statut        String   @default("active") // "active" | "vendu" | "retire"

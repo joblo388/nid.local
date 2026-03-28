@@ -9,6 +9,7 @@ type ListingItem = {
   id: string;
   titre: string;
   prix: number;
+  mode?: string;
   type: string;
   quartierSlug: string;
   villeSlug: string;
@@ -26,9 +27,13 @@ type ListingItem = {
 const TYPE_LABELS: Record<string, string> = {
   unifamiliale: "Unifamiliale", condo: "Condo", duplex: "Duplex", triplex: "Triplex", quadruplex: "Quadruplex",
   "5plex": "5-plex", maison_de_ville: "Maison de ville", terrain: "Terrain", commercial: "Commercial",
+  "1_et_demi": "1\u00BD", "2_et_demi": "2\u00BD", "3_et_demi": "3\u00BD", "4_et_demi": "4\u00BD",
+  "5_et_demi": "5\u00BD", "6_et_demi": "6\u00BD", studio: "Studio", loft: "Loft",
 };
 
-function fmtPrice(p: number) { return p.toLocaleString("fr-CA") + " $"; }
+function fmtPrice(p: number, mode?: string) {
+  return p.toLocaleString("fr-CA") + (mode === "location" ? " $/mois" : " $");
+}
 
 type Props = {
   listings: ListingItem[];
@@ -144,7 +149,7 @@ export function AnnonceMapView({ listings, favs, onToggleFav, onTrackClick, quar
                       )}
                     </div>
                     <div className="mp-map-card-body">
-                      <div className="mp-map-card-price">{fmtPrice(l.prix)}</div>
+                      <div className="mp-map-card-price">{fmtPrice(l.prix, l.mode)}</div>
                       <div className="mp-map-card-type">{TYPE_LABELS[l.type] ?? l.type}</div>
                       <div className="mp-map-card-address">{l.adresse}</div>
                       <div className="mp-map-card-specs">

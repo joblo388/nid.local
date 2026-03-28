@@ -15,6 +15,7 @@ type UploadedImage = { url: string; principale: boolean; preview: string };
 type UploadedDoc = { nom: string; url: string; taille: string };
 
 type FormData = {
+  mode: string;
   type: string;
   villeSlug: string;
   quartierSlug: string;
@@ -38,6 +39,9 @@ type FormData = {
   lienVisite: string;
   anonyme: boolean;
   telephone: string;
+  disponibleLe: string;
+  meuble: boolean;
+  inclusions: string;
 };
 
 export function PublierAnnonceForm() {
@@ -55,12 +59,13 @@ export function PublierAnnonceForm() {
   const docRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState<FormData>({
-    type: "unifamiliale", villeSlug: "montreal", quartierSlug: "", adresse: "",
+    mode: "vente", type: "unifamiliale", villeSlug: "montreal", quartierSlug: "", adresse: "",
     chambres: "", sallesDeBain: "", superficie: "", anneeConstruction: "",
     stationnement: "", description: "", style: "", superficieTerrain: "",
     chauffage: "", eauChaude: "", sousSol: "", piscine: "",
     prix: "", taxesMunicipales: "", taxesScolaires: "", fraisCondo: "",
     lienVisite: "", anonyme: false, telephone: "",
+    disponibleLe: "", meuble: false, inclusions: "",
   });
 
   const quartiersDispo = quartiersDeVille(form.villeSlug);
@@ -68,6 +73,7 @@ export function PublierAnnonceForm() {
   function setField(key: keyof FormData, value: string | boolean) {
     setForm((f) => ({ ...f, [key]: value }));
     if (key === "villeSlug") setForm((f) => ({ ...f, villeSlug: value as string, quartierSlug: "" }));
+    if (key === "mode") setForm((f) => ({ ...f, mode: value as string, type: value === "location" ? "3_et_demi" : "unifamiliale" }));
   }
 
   const goStep = useCallback((n: number) => {
@@ -138,10 +144,12 @@ export function PublierAnnonceForm() {
     setErreur("");
     setSubmitting(true);
 
+    const isLocation = form.mode === "location";
     const payload = {
       titre: form.adresse || `${form.type} — ${form.quartierSlug}`,
       description: form.description,
       prix: parseNum(form.prix),
+      mode: form.mode,
       type: form.type,
       quartierSlug: form.quartierSlug,
       villeSlug: form.villeSlug,
@@ -149,20 +157,23 @@ export function PublierAnnonceForm() {
       chambres: parseNum(form.chambres),
       sallesDeBain: parseNum(form.sallesDeBain),
       superficie: parseNum(form.superficie),
-      anneeConstruction: parseNum(form.anneeConstruction) || null,
+      anneeConstruction: isLocation ? null : (parseNum(form.anneeConstruction) || null),
       stationnement: form.stationnement || null,
       style: form.style || null,
-      superficieTerrain: parseNum(form.superficieTerrain) || null,
+      superficieTerrain: isLocation ? null : (parseNum(form.superficieTerrain) || null),
       chauffage: form.chauffage || null,
       eauChaude: form.eauChaude || null,
       sousSol: form.sousSol || null,
-      piscine: form.piscine || null,
-      taxesMunicipales: parseNum(form.taxesMunicipales) || null,
-      taxesScolaires: parseNum(form.taxesScolaires) || null,
-      fraisCondo: parseNum(form.fraisCondo) || null,
+      piscine: isLocation ? null : (form.piscine || null),
+      taxesMunicipales: isLocation ? null : (parseNum(form.taxesMunicipales) || null),
+      taxesScolaires: isLocation ? null : (parseNum(form.taxesScolaires) || null),
+      fraisCondo: isLocation ? null : (parseNum(form.fraisCondo) || null),
       lienVisite: form.lienVisite || null,
       anonyme: form.anonyme,
       telephone: form.telephone || null,
+      disponibleLe: isLocation && form.disponibleLe ? form.disponibleLe : null,
+      meuble: isLocation ? form.meuble : false,
+      inclusions: isLocation ? (form.inclusions || null) : null,
       images: images.map((img) => ({ url: img.url, principale: img.principale })),
       documents: docs.map((d) => ({ nom: d.nom, url: d.url, taille: d.taille })),
     };
@@ -201,7 +212,7 @@ export function PublierAnnonceForm() {
             </div>
             <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>Annonce publiée</div>
             <div style={{ fontSize: 14, color: "var(--text-tertiary)", marginBottom: 24 }}>
-              Ta propriété est maintenant visible sur nid.local. Tu recevras un courriel dès qu&apos;un acheteur te contacte.
+              Ton annonce est maintenant visible sur nid.local. Tu recevras un courriel dès qu&apos;une personne te contacte.
             </div>
             <Link className="mp-btn-primary" href="/annonces">Voir les annonces</Link>
           </div>
@@ -240,18 +251,60 @@ export function PublierAnnonceForm() {
         {/* Step 1 */}
         {current === 1 && (
           <div className="mp-form-card">
-            <div className="mp-form-section-title">Informations sur la propriété</div>
+            {/* Mode selection */}
+            <div className="mp-form-section-title">Type d&apos;annonce</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+              <button
+                type="button"
+                onClick={() => setField("mode", "vente")}
+                style={{
+                  padding: "16px 12px", borderRadius: 10, border: form.mode === "vente" ? "1.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                  background: form.mode === "vente" ? "var(--green-light-bg)" : "var(--bg-card)",
+                  color: form.mode === "vente" ? "var(--green-text)" : "var(--text-secondary)",
+                  cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 500, textAlign: "center",
+                }}
+              >
+                Vendre une propriété
+              </button>
+              <button
+                type="button"
+                onClick={() => setField("mode", "location")}
+                style={{
+                  padding: "16px 12px", borderRadius: 10, border: form.mode === "location" ? "1.5px solid var(--blue-text)" : "0.5px solid var(--border-secondary)",
+                  background: form.mode === "location" ? "var(--blue-bg)" : "var(--bg-card)",
+                  color: form.mode === "location" ? "var(--blue-text)" : "var(--text-secondary)",
+                  cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 500, textAlign: "center",
+                }}
+              >
+                Louer un logement
+              </button>
+            </div>
+
+            <div className="mp-form-section-title">{form.mode === "location" ? "Informations sur le logement" : "Informations sur la propriété"}</div>
             <div className="mp-grid">
               <div className="mp-field">
-                <label>Type de propriété</label>
+                <label>{form.mode === "location" ? "Type de logement" : "Type de propriété"}</label>
                 <div className="mp-field-input">
-                  <select value={form.type} onChange={(e) => setField("type", e.target.value)}>
-                    <option value="unifamiliale">Maison unifamiliale</option>
-                    <option value="condo">Condo</option>
-                    <option value="duplex">Duplex</option>
-                    <option value="triplex">Triplex</option>
-                    <option value="quadruplex">Quadruplex</option>
-                  </select>
+                  {form.mode === "location" ? (
+                    <select value={form.type} onChange={(e) => setField("type", e.target.value)}>
+                      <option value="studio">Studio</option>
+                      <option value="1_et_demi">1&frac12;</option>
+                      <option value="2_et_demi">2&frac12;</option>
+                      <option value="3_et_demi">3&frac12;</option>
+                      <option value="4_et_demi">4&frac12;</option>
+                      <option value="5_et_demi">5&frac12;</option>
+                      <option value="6_et_demi">6&frac12;</option>
+                      <option value="loft">Loft</option>
+                    </select>
+                  ) : (
+                    <select value={form.type} onChange={(e) => setField("type", e.target.value)}>
+                      <option value="unifamiliale">Maison unifamiliale</option>
+                      <option value="condo">Condo</option>
+                      <option value="duplex">Duplex</option>
+                      <option value="triplex">Triplex</option>
+                      <option value="quadruplex">Quadruplex</option>
+                    </select>
+                  )}
                 </div>
               </div>
               <div className="mp-field">
@@ -298,10 +351,12 @@ export function PublierAnnonceForm() {
                 <label>Superficie habitable</label>
                 <div className="mp-field-input"><input type="text" placeholder="1 820" value={form.superficie} onChange={(e) => setField("superficie", e.target.value)} /><span className="mp-unit">pi²</span></div>
               </div>
-              <div className="mp-field">
-                <label>Année de construction</label>
-                <div className="mp-field-input"><input type="text" placeholder="2006" value={form.anneeConstruction} onChange={(e) => setField("anneeConstruction", e.target.value)} /></div>
-              </div>
+              {form.mode !== "location" && (
+                <div className="mp-field">
+                  <label>Année de construction</label>
+                  <div className="mp-field-input"><input type="text" placeholder="2006" value={form.anneeConstruction} onChange={(e) => setField("anneeConstruction", e.target.value)} /></div>
+                </div>
+              )}
               <div className="mp-field">
                 <label>Stationnement</label>
                 <div className="mp-field-input">
@@ -314,15 +369,37 @@ export function PublierAnnonceForm() {
                   </select>
                 </div>
               </div>
+              {form.mode === "location" && (
+                <>
+                  <div className="mp-field">
+                    <label>Date de disponibilité</label>
+                    <div className="mp-field-input"><input type="date" value={form.disponibleLe} onChange={(e) => setField("disponibleLe", e.target.value)} /></div>
+                  </div>
+                  <div className="mp-field">
+                    <label>Inclusions</label>
+                    <div className="mp-field-input"><input type="text" placeholder="chauffage, eau chaude, électricité..." value={form.inclusions} onChange={(e) => setField("inclusions", e.target.value)} /></div>
+                  </div>
+                  <div className="mp-field full">
+                    <div
+                      className={`mp-check-item${form.meuble ? " checked" : ""}`}
+                      onClick={() => setField("meuble", !form.meuble)}
+                    >
+                      <input type="checkbox" checked={form.meuble} readOnly />
+                      Logement meublé
+                    </div>
+                  </div>
+                </>
+              )}
               <div className="mp-field full">
                 <label>Description</label>
                 <div className="mp-field-input">
-                  <textarea placeholder="Décrivez votre propriété — rénovations, points forts, environnement..." value={form.description} onChange={(e) => setField("description", e.target.value)} />
+                  <textarea placeholder={form.mode === "location" ? "Décrivez le logement — inclusions, état, environnement..." : "Décrivez votre propriété — rénovations, points forts, environnement..."} value={form.description} onChange={(e) => setField("description", e.target.value)} />
                 </div>
               </div>
             </div>
 
-            {/* Accordion */}
+            {/* Accordion — hidden in location mode */}
+            {form.mode !== "location" && (
             <div className="mp-accordion">
               <div className="mp-accordion-header" onClick={() => setAccOpen(!accOpen)}>
                 <div>
@@ -347,6 +424,7 @@ export function PublierAnnonceForm() {
                 </div>
               </div>
             </div>
+            )}
             <div className="mp-form-footer">
               <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>Étape 1 sur 4</span>
               <button className="mp-btn-primary-lg" onClick={() => goStep(2)}>Continuer →</button>
@@ -423,12 +501,16 @@ export function PublierAnnonceForm() {
         {/* Step 3 */}
         {current === 3 && (
           <div className="mp-form-card">
-            <div className="mp-form-section-title">Prix et informations financières</div>
+            <div className="mp-form-section-title">{form.mode === "location" ? "Loyer" : "Prix et informations financières"}</div>
             <div className="mp-grid">
-              <div className="mp-field"><label>Prix demandé</label><div className="mp-field-input"><input type="text" placeholder="895 000" value={form.prix} onChange={(e) => setField("prix", e.target.value)} /><span className="mp-unit">$</span></div></div>
-              <div className="mp-field"><label>Taxes municipales</label><div className="mp-field-input"><input type="text" placeholder="4 820" value={form.taxesMunicipales} onChange={(e) => setField("taxesMunicipales", e.target.value)} /><span className="mp-unit">$ / an</span></div></div>
-              <div className="mp-field"><label>Taxes scolaires</label><div className="mp-field-input"><input type="text" placeholder="680" value={form.taxesScolaires} onChange={(e) => setField("taxesScolaires", e.target.value)} /><span className="mp-unit">$ / an</span></div></div>
-              <div className="mp-field"><label>Frais de condo</label><div className="mp-field-input"><input type="text" placeholder="0 si non applicable" value={form.fraisCondo} onChange={(e) => setField("fraisCondo", e.target.value)} /><span className="mp-unit">$ / mois</span></div></div>
+              <div className="mp-field"><label>{form.mode === "location" ? "Loyer mensuel" : "Prix demandé"}</label><div className="mp-field-input"><input type="text" placeholder={form.mode === "location" ? "1 200" : "895 000"} value={form.prix} onChange={(e) => setField("prix", e.target.value)} /><span className="mp-unit">{form.mode === "location" ? "$ / mois" : "$"}</span></div></div>
+              {form.mode !== "location" && (
+                <>
+                  <div className="mp-field"><label>Taxes municipales</label><div className="mp-field-input"><input type="text" placeholder="4 820" value={form.taxesMunicipales} onChange={(e) => setField("taxesMunicipales", e.target.value)} /><span className="mp-unit">$ / an</span></div></div>
+                  <div className="mp-field"><label>Taxes scolaires</label><div className="mp-field-input"><input type="text" placeholder="680" value={form.taxesScolaires} onChange={(e) => setField("taxesScolaires", e.target.value)} /><span className="mp-unit">$ / an</span></div></div>
+                  <div className="mp-field"><label>Frais de condo</label><div className="mp-field-input"><input type="text" placeholder="0 si non applicable" value={form.fraisCondo} onChange={(e) => setField("fraisCondo", e.target.value)} /><span className="mp-unit">$ / mois</span></div></div>
+                </>
+              )}
             </div>
 
             <div className="mp-divider" />
@@ -468,11 +550,21 @@ export function PublierAnnonceForm() {
               </div>
             </div>
             <div className="mp-summary-grid">
+              <div className="mp-summary-row"><span>Mode</span><span>{form.mode === "location" ? "Location" : "Vente"}</span></div>
               <div className="mp-summary-row"><span>Type</span><span>{form.type || "—"}</span></div>
-              <div className="mp-summary-row"><span>Prix</span><span>{form.prix ? parseNum(form.prix).toLocaleString("fr-CA") + " $" : "—"}</span></div>
+              <div className="mp-summary-row"><span>{form.mode === "location" ? "Loyer" : "Prix"}</span><span>{form.prix ? parseNum(form.prix).toLocaleString("fr-CA") + (form.mode === "location" ? " $/mois" : " $") : "—"}</span></div>
               <div className="mp-summary-row"><span>Ville</span><span>{villes.find((v) => v.slug === form.villeSlug)?.nom ?? "—"}</span></div>
               <div className="mp-summary-row"><span>Quartier</span><span>{quartiersDispo.find((q) => q.slug === form.quartierSlug)?.nom ?? "—"}</span></div>
               <div className="mp-summary-row"><span>Adresse</span><span>{form.adresse || "—"}</span></div>
+              {form.mode === "location" && form.disponibleLe && (
+                <div className="mp-summary-row"><span>Disponible le</span><span>{form.disponibleLe}</span></div>
+              )}
+              {form.mode === "location" && (
+                <div className="mp-summary-row"><span>Meublé</span><span>{form.meuble ? "Oui" : "Non"}</span></div>
+              )}
+              {form.mode === "location" && form.inclusions && (
+                <div className="mp-summary-row"><span>Inclusions</span><span>{form.inclusions}</span></div>
+              )}
               <div className="mp-summary-row"><span>Photos</span><span>{images.length} ajoutées</span></div>
               <div className="mp-summary-row"><span>Anonyme</span><span>{form.anonyme ? "Oui" : "Non"}</span></div>
               <div className="mp-summary-row"><span>Téléphone</span><span>{form.telephone || "Non affiché"}</span></div>

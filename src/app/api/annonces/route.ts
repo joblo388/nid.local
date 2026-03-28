@@ -7,7 +7,7 @@ import { sendAlertEmail } from "@/lib/email";
 import { quartierBySlug } from "@/lib/data";
 
 const PAGE_SIZE = 20;
-const TYPES_VALIDES = ["unifamiliale", "condo", "duplex", "triplex", "quadruplex", "5plex", "maison_de_ville", "terrain", "commercial"];
+const TYPES_VALIDES = ["unifamiliale", "condo", "duplex", "triplex", "quadruplex", "5plex", "maison_de_ville", "terrain", "commercial", "1_et_demi", "2_et_demi", "3_et_demi", "4_et_demi", "5_et_demi", "6_et_demi", "studio", "loft"];
 const TRIS_VALIDES = ["recent", "prix_asc", "prix_desc", "populaire"];
 
 export async function GET(req: NextRequest) {
@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
   const excludeId = searchParams.get("excludeId");
   const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : PAGE_SIZE;
 
+  const mode = searchParams.get("mode");
+
   const where: Prisma.ListingWhereInput = { statut: "active" };
+  if (mode) where.mode = mode;
   if (villeSlug) where.villeSlug = villeSlug;
   if (quartierSlug) where.quartierSlug = quartierSlug;
   if (type && TYPES_VALIDES.includes(type)) where.type = type;
@@ -82,6 +85,7 @@ export async function GET(req: NextRequest) {
       id: l.id,
       titre: l.titre,
       prix: l.prix,
+      mode: l.mode,
       type: l.type,
       quartierSlug: l.quartierSlug,
       villeSlug: l.villeSlug,
@@ -119,7 +123,9 @@ export async function POST(req: NextRequest) {
     stationnement, style, superficieTerrain, chauffage, eauChaude,
     sousSol, piscine, taxesMunicipales, taxesScolaires, fraisCondo,
     lienVisite, anonyme, telephone, images, documents,
+    mode: bodyMode, disponibleLe, meuble, inclusions,
   } = body;
+  const mode = bodyMode === "location" ? "location" : "vente";
 
   // Honeypot
   if (body._hp) {
@@ -132,7 +138,8 @@ export async function POST(req: NextRequest) {
   if (!description?.trim() || description.trim().length < 20) {
     return NextResponse.json({ error: "La description doit avoir au moins 20 caractères." }, { status: 400 });
   }
-  if (!prix || prix < 1000) {
+  const minPrix = mode === "location" ? 100 : 1000;
+  if (!prix || prix < minPrix) {
     return NextResponse.json({ error: "Prix invalide." }, { status: 400 });
   }
   if (!TYPES_VALIDES.includes(type)) {
@@ -147,7 +154,7 @@ export async function POST(req: NextRequest) {
     data: {
       titre: titre.trim(),
       description: description.trim(),
-      prix, type,
+      prix, type, mode,
       style: style || null,
       quartierSlug,
       villeSlug: villeSlug || "montreal",
@@ -166,6 +173,9 @@ export async function POST(req: NextRequest) {
       taxesScolaires: taxesScolaires || null,
       fraisCondo: fraisCondo || null,
       lienVisite: lienVisite || null,
+      disponibleLe: disponibleLe ? new Date(disponibleLe) : null,
+      meuble: meuble ?? false,
+      inclusions: inclusions || null,
       anonyme: anonyme ?? false,
       telephone: telephone || null,
       auteurId: session.user.id,
@@ -180,7 +190,7 @@ export async function POST(req: NextRequest) {
 
   // Initial price history
   await prisma.listingPriceHistory.create({
-    data: { listingId: listing.id, prix, evenement: "mise_en_vente" },
+    data: { listingId: listing.id, prix, evenement: mode === "location" ? "mise_en_location" : "mise_en_vente" },
   });
 
   // ─── Send marketplace alert emails (fire-and-forget) ───────────────────────

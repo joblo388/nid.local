@@ -13,6 +13,7 @@ type ListingItem = {
   id: string;
   titre: string;
   prix: number;
+  mode?: string;
   type: string;
   quartierSlug: string;
   villeSlug: string;
@@ -27,7 +28,9 @@ type ListingItem = {
   creeLe: string;
 };
 
-function fmtPrice(p: number) { return p.toLocaleString("fr-CA") + " $"; }
+function fmtPrice(p: number, mode?: string) {
+  return p.toLocaleString("fr-CA") + (mode === "location" ? " $/mois" : " $");
+}
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -43,7 +46,32 @@ function timeAgo(dateStr: string) {
 const TYPE_LABELS: Record<string, string> = {
   unifamiliale: "Unifamiliale", condo: "Condo", duplex: "Duplex", triplex: "Triplex", quadruplex: "Quadruplex",
   "5plex": "5-plex", maison_de_ville: "Maison de ville", terrain: "Terrain", commercial: "Commercial",
+  "1_et_demi": "1\u00BD", "2_et_demi": "2\u00BD", "3_et_demi": "3\u00BD", "4_et_demi": "4\u00BD",
+  "5_et_demi": "5\u00BD", "6_et_demi": "6\u00BD", studio: "Studio", loft: "Loft",
 };
+
+const TYPES_VENTE = [
+  { value: "unifamiliale", label: "Unifamiliale" },
+  { value: "condo", label: "Condo" },
+  { value: "duplex", label: "Duplex" },
+  { value: "triplex", label: "Triplex" },
+  { value: "quadruplex", label: "Quadruplex" },
+  { value: "5plex", label: "5-plex" },
+  { value: "maison_de_ville", label: "Maison de ville" },
+  { value: "terrain", label: "Terrain" },
+  { value: "commercial", label: "Commercial" },
+];
+
+const TYPES_LOCATION = [
+  { value: "studio", label: "Studio" },
+  { value: "1_et_demi", label: "1\u00BD" },
+  { value: "2_et_demi", label: "2\u00BD" },
+  { value: "3_et_demi", label: "3\u00BD" },
+  { value: "4_et_demi", label: "4\u00BD" },
+  { value: "5_et_demi", label: "5\u00BD" },
+  { value: "6_et_demi", label: "6\u00BD" },
+  { value: "loft", label: "Loft" },
+];
 
 export function AnnoncesListeView() {
   const [listings, setListings] = useState<ListingItem[]>([]);
@@ -51,7 +79,7 @@ export function AnnoncesListeView() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [favs, setFavs] = useState<Set<string>>(new Set());
-  const [filters, setFilters] = useState({ villeSlug: "", quartierSlug: "", type: "", prixMax: "", tri: "recent", q: "" });
+  const [filters, setFilters] = useState({ villeSlug: "", quartierSlug: "", type: "", prixMax: "", tri: "recent", q: "", mode: "" });
   const [searchInput, setSearchInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -61,6 +89,7 @@ export function AnnoncesListeView() {
   const fetchListings = useCallback(async (p = 1, append = false) => {
     if (!append) setLoading(true);
     const params = new URLSearchParams();
+    if (filters.mode) params.set("mode", filters.mode);
     if (filters.villeSlug) params.set("villeSlug", filters.villeSlug);
     if (filters.quartierSlug) params.set("quartierSlug", filters.quartierSlug);
     if (filters.type) params.set("type", filters.type);
@@ -158,32 +187,59 @@ export function AnnoncesListeView() {
 
         {/* Filters + sort */}
         <div className="mp-filters">
+          <button
+            className={`mp-filter-pill${filters.mode === "" ? " on" : ""}`}
+            onClick={() => setFilters((f) => ({ ...f, mode: "", type: "", prixMax: "" }))}
+          >
+            Toutes
+          </button>
+          <button
+            className={`mp-filter-pill${filters.mode === "vente" ? " on" : ""}`}
+            onClick={() => setFilters((f) => ({ ...f, mode: f.mode === "vente" ? "" : "vente", type: "", prixMax: "" }))}
+          >
+            Acheter
+          </button>
+          <button
+            className={`mp-filter-pill${filters.mode === "location" ? " on" : ""}`}
+            onClick={() => setFilters((f) => ({ ...f, mode: f.mode === "location" ? "" : "location", type: "", prixMax: "" }))}
+          >
+            Louer
+          </button>
           <select className="mp-filter-select" value={filters.villeSlug} onChange={(e) => setFilters((f) => ({ ...f, villeSlug: e.target.value }))}>
             <option value="">Toutes les villes</option>
             {villes.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
           </select>
           <select className="mp-filter-select" value={filters.type} onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}>
             <option value="">Tous les types</option>
-            <option value="unifamiliale">Unifamiliale</option>
-            <option value="condo">Condo</option>
-            <option value="duplex">Duplex</option>
-            <option value="triplex">Triplex</option>
-            <option value="quadruplex">Quadruplex</option>
-            <option value="5plex">5-plex</option>
-            <option value="maison_de_ville">Maison de ville</option>
-            <option value="terrain">Terrain</option>
-            <option value="commercial">Commercial</option>
+            {(filters.mode === "location" ? TYPES_LOCATION : filters.mode === "vente" ? TYPES_VENTE : [...TYPES_VENTE, ...TYPES_LOCATION]).map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
           </select>
           <select className="mp-filter-select" value={filters.prixMax} onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}>
-            <option value="">Prix max</option>
-            <option value="300000">300 000 $</option>
-            <option value="400000">400 000 $</option>
-            <option value="500000">500 000 $</option>
-            <option value="600000">600 000 $</option>
-            <option value="800000">800 000 $</option>
-            <option value="1000000">1 000 000 $</option>
-            <option value="1500000">1 500 000 $</option>
-            <option value="2000000">2 000 000 $+</option>
+            <option value="">{filters.mode === "location" ? "Loyer max" : "Prix max"}</option>
+            {filters.mode === "location" ? (
+              <>
+                <option value="800">800 $/mois</option>
+                <option value="1000">1 000 $/mois</option>
+                <option value="1200">1 200 $/mois</option>
+                <option value="1500">1 500 $/mois</option>
+                <option value="1800">1 800 $/mois</option>
+                <option value="2000">2 000 $/mois</option>
+                <option value="2500">2 500 $/mois</option>
+                <option value="3000">3 000 $/mois+</option>
+              </>
+            ) : (
+              <>
+                <option value="300000">300 000 $</option>
+                <option value="400000">400 000 $</option>
+                <option value="500000">500 000 $</option>
+                <option value="600000">600 000 $</option>
+                <option value="800000">800 000 $</option>
+                <option value="1000000">1 000 000 $</option>
+                <option value="1500000">1 500 000 $</option>
+                <option value="2000000">2 000 000 $+</option>
+              </>
+            )}
           </select>
           <select className="mp-filter-select mp-filter-sort" value={filters.tri} onChange={(e) => setFilters((f) => ({ ...f, tri: e.target.value }))}>
             <option value="recent">Plus récent</option>
@@ -247,7 +303,12 @@ export function AnnoncesListeView() {
                         ) : (
                           <svg viewBox="0 0 32 32"><rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" /><rect x="12" y="20" width="8" height="10" /></svg>
                         )}
-                        {l.lienVisite && <div className="mp-listing-badge mp-badge-virtual">Visite virtuelle</div>}
+                        {l.mode === "location" ? (
+                          <div className="mp-listing-badge" style={{ background: "var(--blue-bg)", color: "var(--blue-text)" }}>À louer</div>
+                        ) : (
+                          <div className="mp-listing-badge" style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}>À vendre</div>
+                        )}
+                        {l.lienVisite && <div className="mp-listing-badge mp-badge-virtual" style={{ top: "auto", bottom: 8 }}>Visite virtuelle</div>}
                         <div className="cmp-checkbox-wrapper">
                           <label
                             className={`cmp-checkbox-label${compareIds.includes(l.id) ? " checked" : ""}`}
@@ -265,7 +326,7 @@ export function AnnoncesListeView() {
                       </div>
                       <div className="mp-listing-body">
                         <div>
-                          <div className="mp-listing-price">{fmtPrice(l.prix)}</div>
+                          <div className="mp-listing-price">{fmtPrice(l.prix, l.mode)}</div>
                           <div className="mp-listing-price-sub">{TYPE_LABELS[l.type] ?? l.type} · {quartierNom}</div>
                         </div>
                         <div className="mp-listing-title">{l.titre}</div>
