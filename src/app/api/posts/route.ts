@@ -62,7 +62,12 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { titre, contenu, quartierSlug, villeSlug, categorie, imageUrl } = body;
+  const { titre, contenu, quartierSlug, villeSlug, categorie, imageUrl, _hp } = body;
+
+  // Honeypot check
+  if (_hp) {
+    return NextResponse.json({ id: "fake" }, { status: 201 });
+  }
 
   if (!titre?.trim() || titre.trim().length < 5) {
     return NextResponse.json({ error: "Le titre doit avoir au moins 5 caractères." }, { status: 400 });

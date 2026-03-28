@@ -108,6 +108,11 @@ export async function POST(req: NextRequest) {
     lienVisite, anonyme, telephone, images, documents,
   } = body;
 
+  // Honeypot
+  if (body._hp) {
+    return NextResponse.json({ id: "fake" }, { status: 201 });
+  }
+
   if (!titre?.trim() || titre.trim().length < 5) {
     return NextResponse.json({ error: "Le titre doit avoir au moins 5 caractères." }, { status: 400 });
   }

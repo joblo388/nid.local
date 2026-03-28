@@ -26,6 +26,7 @@ export function NouveauPostForm() {
   const [villeSlug, setVilleSlug] = useState("montreal");
   const [quartierSlug, setQuartierSlug] = useState("");
   const [categorie, setCategorie] = useState("question");
+  const [hp, setHp] = useState(""); // honeypot
   const [imageData, setImageData] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
@@ -118,7 +119,7 @@ export function NouveauPostForm() {
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titre, contenu, villeSlug, quartierSlug, categorie, imageUrl: imageData }),
+        body: JSON.stringify({ titre, contenu, villeSlug, quartierSlug, categorie, imageUrl: imageData, _hp: hp }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -287,6 +288,11 @@ export function NouveauPostForm() {
           </button>
         )}
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageFile} />
+      </div>
+
+      {/* Honeypot */}
+      <div style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, overflow: "hidden" }} aria-hidden="true" tabIndex={-1}>
+        <input type="text" name="company" value={hp} onChange={(e) => setHp(e.target.value)} autoComplete="off" tabIndex={-1} />
       </div>
 
       {erreur && (

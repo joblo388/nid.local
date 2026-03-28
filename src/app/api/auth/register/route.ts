@@ -6,10 +6,13 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-  console.log("[register] DATABASE_URL:", process.env.DATABASE_URL);
   const body = await req.text();
-  console.log("[register] body:", body);
-  const { username, email, password } = JSON.parse(body);
+  const { username, email, password, website } = JSON.parse(body);
+
+  // Honeypot — bots fill this hidden field
+  if (website) {
+    return NextResponse.json({ success: true }); // fake success to confuse bots
+  }
 
   if (!username || !email || !password) {
     return NextResponse.json({ error: "Champs manquants." }, { status: 400 });
@@ -36,7 +39,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  console.log("[register] checking email...");
   const existingEmail = await prisma.user.findUnique({ where: { email } });
   if (existingEmail) {
     return NextResponse.json(

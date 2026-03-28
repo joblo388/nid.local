@@ -12,6 +12,7 @@ export default function InscriptionPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [website, setWebsite] = useState(""); // honeypot
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,7 +31,7 @@ export default function InscriptionPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, website }),
       });
 
       const text = await res.text();
@@ -167,6 +168,12 @@ export default function InscriptionPage() {
                   color: "var(--text-primary)",
                 }}
               />
+            </div>
+
+            {/* Honeypot — invisible to humans, bots fill it */}
+            <div style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, overflow: "hidden" }} aria-hidden="true" tabIndex={-1}>
+              <label>Website</label>
+              <input type="text" name="website" value={website} onChange={(e) => setWebsite(e.target.value)} autoComplete="off" tabIndex={-1} />
             </div>
 
             {error && (
