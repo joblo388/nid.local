@@ -108,7 +108,7 @@ export default async function PostPage({ params }: Props) {
       {/* Track view client-side so ISR cache hits still count */}
       <ViewTracker postId={id} />
       <Header />
-      <main className="max-w-[1100px] mx-auto px-5 py-5">
+      <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-5">
         <div className="flex gap-5 items-start">
           <div className="flex-1 min-w-0 space-y-3">
             <Link
@@ -200,7 +200,9 @@ export default async function PostPage({ params }: Props) {
 
             <CommentSection postId={post.id} initial={comments} />
           </div>
-          <Sidebar stats={sidebarStats} />
+          <div className="hidden md:block">
+            <Sidebar stats={sidebarStats} />
+          </div>
         </div>
       </main>
     </div>

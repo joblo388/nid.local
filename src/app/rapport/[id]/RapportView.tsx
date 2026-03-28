@@ -148,7 +148,7 @@ export function RapportView() {
           {/* Résultats — en évidence */}
           <div className="rounded-xl p-5 mb-5" style={{ background: info.bg, border: `0.5px solid var(--border)` }}>
             <h2 className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: info.color }}>Résultats</h2>
-            <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))" }}>
+            <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))" }}>
               {resultatsEntries.map(([k, v]) => (
                 <div key={k}>
                   <div className="text-[11px] mb-0.5" style={{ color: info.color, opacity: 0.7 }}>{LABELS[k] ?? k}</div>
@@ -161,7 +161,7 @@ export function RapportView() {
           {/* Données d'entrée */}
           <div className="rounded-xl p-5 mb-5" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
             <h2 className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-tertiary)" }}>Données d&apos;entrée</h2>
-            <div className="grid gap-x-8 gap-y-2" style={{ gridTemplateColumns: "1fr 1fr" }}>
+            <div className="grid gap-x-8 gap-y-2 grid-cols-1 md:grid-cols-2">
               {donneesEntries.map(([k, v]) => (
                 <div key={k} className="flex justify-between py-1.5" style={{ borderBottom: "0.5px solid var(--border)" }}>
                   <span className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>{LABELS[k] ?? k}</span>

@@ -69,11 +69,11 @@ export default async function ProfilPage({ params }: Props) {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
-      <main className="max-w-[1100px] mx-auto px-5 py-6 space-y-5">
+      <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-6 space-y-5">
 
         {/* En-tête profil */}
         <div
-          className="rounded-xl p-6 flex items-center gap-4"
+          className="rounded-xl p-4 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-4"
           style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
         >
           <div
@@ -90,7 +90,7 @@ export default async function ProfilPage({ params }: Props) {
               Membre depuis {memberSince}
             </p>
           </div>
-          <div className="flex gap-5 text-center">
+          <div className="flex gap-3 md:gap-5 text-center flex-wrap">
             <div>
               <p className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>{posts.length}</p>
               <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>discussions</p>

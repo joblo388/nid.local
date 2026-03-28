@@ -146,7 +146,7 @@ export default async function CalculatriceHypothecairePage() {
       />
       <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
         <Header />
-        <main className="max-w-[1100px] mx-auto px-5 py-6">
+        <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-6">
           {/* Breadcrumb + back */}
           <nav className="flex items-center gap-1.5 text-[12px] mb-5" style={{ color: "var(--text-tertiary)" }} aria-label="Fil d'Ariane">
             <Link href="/" className="transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>
