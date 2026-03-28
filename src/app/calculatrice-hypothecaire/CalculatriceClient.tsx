@@ -315,4 +315,5 @@ const css = `
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-tertiary); }
 .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .calc-footer { font-size: 11px; color: var(--text-tertiary); line-height: 1.6; text-align: center; margin-top: 16px; opacity: 0.8; }
+@media(max-width:520px){.calc-grid{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr}}
 `;

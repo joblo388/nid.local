@@ -20,7 +20,7 @@ export default async function CapaciteEmpruntPage() {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
-      <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-6">
+      <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-6 pb-20 md:pb-6">
         <nav className="flex items-center gap-1.5 text-[12px] mb-5" style={{ color: "var(--text-tertiary)" }}>
           <Link href="/" className="transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>nid.local</Link>
           <span>/</span>

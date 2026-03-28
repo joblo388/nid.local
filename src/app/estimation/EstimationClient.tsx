@@ -500,7 +500,7 @@ export function EstimationClient() {
               </div>
 
               {/* Property info */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "0.5px solid var(--border)", flexWrap: "wrap", gap: "4px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "0.5px solid var(--border)", flexWrap: "wrap", gap: "4px", wordBreak: "break-word" as const }}>
                 <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>
                   {result.typeLabel} — {result.quartierNom}
                 </span>
@@ -511,7 +511,7 @@ export function EstimationClient() {
 
               {/* Adjustments */}
               {result.adjustments.map((adj, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "0.5px solid var(--border)", flexWrap: "wrap", gap: "4px" }}>
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "0.5px solid var(--border)", flexWrap: "wrap", gap: "4px", wordBreak: "break-word" as const }}>
                   <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{adj.label}</span>
                   <span style={{
                     fontSize: 12, fontWeight: 600,

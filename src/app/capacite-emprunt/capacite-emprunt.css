@@ -1,5 +1,5 @@
 .ce-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:500px){.ce-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.ce-grid{grid-template-columns:1fr}}
 .ce-field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
 .ce-field.full{grid-column:1/-1}
 .ce-field label{font-size:12px;font-weight:500;color:var(--text-tertiary);display:flex;align-items:center;gap:6px}
@@ -19,7 +19,7 @@
 .ce-rh-sub{font-size:13px;color:var(--green-text);margin-top:6px;opacity:0.8;line-height:1.5}
 .ce-result-hero.warning .ce-rh-sub{color:var(--amber-text)}
 .ce-result-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
-@media(max-width:500px){.ce-result-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.ce-result-grid{grid-template-columns:1fr}}
 .ce-result-box{border-radius:8px;padding:12px 14px;border:0.5px solid var(--border);background:var(--bg-card)}
 .ce-rb-label{font-size:11px;color:var(--text-tertiary);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.4px}
 .ce-rb-val{font-size:17px;font-weight:500}
