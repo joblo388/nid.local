@@ -46,6 +46,7 @@ type ListingDetail = {
   taxesScolaires: number | null;
   fraisCondo: number | null;
   lienVisite: string | null;
+  mls: string | null;
   anonyme: boolean;
   telephone: string | null;
   statut: string;
@@ -382,6 +383,17 @@ export function AnnonceDetailView() {
                   <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" /><path d="M8 2a8 8 0 010 12M8 2a8 8 0 000 12" /><line x1="2" y1="8" x2="14" y2="8" /></svg>
                   Voir la visite virtuelle
                 </a>
+              )}
+
+              {listing.mls && (
+                <div style={{ padding: "12px 14px", borderRadius: 8, background: "var(--bg-secondary)", fontSize: 13, marginBottom: 12 }}>
+                  <span style={{ color: "var(--text-tertiary)", fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.5px" }}>MLS</span>
+                  <span style={{ fontWeight: 600, marginLeft: 8, color: "var(--text-primary)" }}>{listing.mls}</span>
+                  <div style={{ display: "flex", gap: 12, marginTop: 6, fontSize: 12 }}>
+                    <a href={`https://www.centris.ca/fr/propriete~a-vendre?uc=0&view=Summary&search=mls%3D${listing.mls}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--green)" }}>Centris →</a>
+                    <a href={`https://www.realtor.ca/map#view=list&Sort=6-D&GeoIds=g30_dpz89rm7&GeoName=Qu%C3%A9bec&PropertyTypeGroupID=1&PropertySearchTypeId=1&TransactionTypeId=2&MlsNumber=${listing.mls}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--green)" }}>Realtor.ca →</a>
+                  </div>
+                </div>
               )}
 
               {!sent ? (

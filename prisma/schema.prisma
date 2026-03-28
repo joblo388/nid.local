@@ -198,6 +198,7 @@ model Listing {
   disponibleLe  DateTime? // date de disponibilité (location)
   meuble        Boolean  @default(false) // meublé (location)
   inclusions    String?  // "chauffage, eau chaude, électricité" (location)
+  mls           String?  // numéro MLS (optionnel)
   anonyme       Boolean  @default(false)  // masquer le username du propriétaire
   telephone     String?  // numéro affiché si le propriétaire le souhaite
   statut        String   @default("active") // "active" | "vendu" | "retire"

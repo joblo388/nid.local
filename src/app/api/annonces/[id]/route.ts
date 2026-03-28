@@ -66,6 +66,7 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
     taxesScolaires: listing.taxesScolaires,
     fraisCondo: listing.fraisCondo,
     lienVisite: listing.lienVisite,
+    mls: listing.mls,
     anonyme: listing.anonyme,
     telephone: listing.telephone,
     statut: listing.statut,

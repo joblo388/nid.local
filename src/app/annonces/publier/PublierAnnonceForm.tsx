@@ -37,6 +37,7 @@ type FormData = {
   taxesScolaires: string;
   fraisCondo: string;
   lienVisite: string;
+  mls: string;
   anonyme: boolean;
   telephone: string;
   disponibleLe: string;
@@ -64,7 +65,7 @@ export function PublierAnnonceForm() {
     stationnement: "", description: "", style: "", superficieTerrain: "",
     chauffage: "", eauChaude: "", sousSol: "", piscine: "",
     prix: "", taxesMunicipales: "", taxesScolaires: "", fraisCondo: "",
-    lienVisite: "", anonyme: false, telephone: "",
+    lienVisite: "", mls: "", anonyme: false, telephone: "",
     disponibleLe: "", meuble: false, inclusions: "",
   });
 
@@ -169,6 +170,7 @@ export function PublierAnnonceForm() {
       taxesScolaires: isLocation ? null : (parseNum(form.taxesScolaires) || null),
       fraisCondo: isLocation ? null : (parseNum(form.fraisCondo) || null),
       lienVisite: form.lienVisite || null,
+      mls: form.mls || null,
       anonyme: form.anonyme,
       telephone: form.telephone || null,
       disponibleLe: isLocation && form.disponibleLe ? form.disponibleLe : null,
@@ -490,6 +492,23 @@ export function PublierAnnonceForm() {
               <label>Lien externe <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>(Matterport, YouTube, etc.) — optionnel</span></label>
               <div className="mp-field-input"><input type="url" placeholder="https://my.matterport.com/..." value={form.lienVisite} onChange={(e) => setField("lienVisite", e.target.value)} /></div>
             </div>
+
+            {form.mode === "vente" && (
+              <>
+                <div className="mp-divider" />
+                <div className="mp-form-section-title">Numéro MLS</div>
+                <div className="mp-field">
+                  <label>Numéro MLS <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>(optionnel — ajoute de la crédibilité)</span></label>
+                  <div className="mp-field-input"><input type="text" placeholder="Ex: 28574839" value={form.mls} onChange={(e) => setField("mls", e.target.value)} /></div>
+                  {form.mls && (
+                    <div style={{ display: "flex", gap: 12, marginTop: 6, fontSize: 12 }}>
+                      <a href={`https://www.centris.ca/fr/propriete~a-vendre?uc=0&view=Summary&search=mls%3D${form.mls}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--green)" }}>Voir sur Centris →</a>
+                      <a href={`https://www.realtor.ca/map#view=list&Sort=6-D&GeoIds=g30_dpz89rm7&GeoName=Qu%C3%A9bec&PropertyTypeGroupID=1&PropertySearchTypeId=1&TransactionTypeId=2&MlsNumber=${form.mls}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--green)" }}>Voir sur Realtor.ca →</a>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
 
             <div className="mp-form-footer">
               <button className="mp-btn-secondary" onClick={() => goStep(1)}>← Retour</button>

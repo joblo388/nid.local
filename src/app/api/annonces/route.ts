@@ -94,6 +94,7 @@ export async function GET(req: NextRequest) {
       sallesDeBain: l.sallesDeBain,
       superficie: l.superficie,
       lienVisite: l.lienVisite,
+      mls: l.mls,
       statut: l.statut,
       imageUrl: l.images[0]?.url ?? null,
       nbFavoris: l._count.favoris,
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest) {
     adresse, chambres, sallesDeBain, superficie, anneeConstruction,
     stationnement, style, superficieTerrain, chauffage, eauChaude,
     sousSol, piscine, taxesMunicipales, taxesScolaires, fraisCondo,
-    lienVisite, anonyme, telephone, images, documents,
+    lienVisite, mls, anonyme, telephone, images, documents,
     mode: bodyMode, disponibleLe, meuble, inclusions,
   } = body;
   const mode = bodyMode === "location" ? "location" : "vente";
@@ -177,6 +178,7 @@ export async function POST(req: NextRequest) {
       taxesScolaires: taxesScolaires || null,
       fraisCondo: fraisCondo || null,
       lienVisite: lienVisite || null,
+      mls: typeof mls === "string" && mls.trim() ? mls.trim() : null,
       disponibleLe: disponibleLe ? new Date(disponibleLe) : null,
       meuble: meuble ?? false,
       inclusions: inclusions || null,
