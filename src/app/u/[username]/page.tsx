@@ -170,8 +170,8 @@ export default async function ProfilPage({ params }: Props) {
           { id: "annonces", label: "Annonces", count: dbListings.length },
           ...(isOwn ? [{ id: "finance", label: "Finance", count: savedReports.length }] : []),
           { id: "reponses", label: "Réponses", count: dbComments.length },
-          ...(isOwn ? [{ id: "parametres", label: "Paramètres" }] : []),
-          ...(isOwn ? [{ id: "pro", label: "Profil pro" }] : []),
+          ...(isOwn ? [{ id: "parametres", label: "Paramètres", count: 0 }] : []),
+          ...(isOwn ? [{ id: "pro", label: "Profil pro", count: 0 }] : []),
         ]}>
           {/* Tab: Discussions */}
           <div>
