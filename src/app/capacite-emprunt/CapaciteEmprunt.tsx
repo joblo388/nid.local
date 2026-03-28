@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { SaveReportButton } from "@/components/SaveReportButton";
+import { ShareCalculation } from "@/components/ShareCalculation";
 import "./capacite-emprunt.css";
 
 function raw(s: string): number { return parseFloat(s.replace(/\s/g, "").replace(",", ".")) || 0; }
@@ -17,6 +18,19 @@ export function CapaciteEmprunt() {
 
   const set = useCallback((k: string, v: string, fmt = false) => {
     setVals((p) => ({ ...p, [k]: fmt ? fmtInput(v) : v }));
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.toString()) {
+      const patch: Record<string, string> = {};
+      for (const key of Object.keys(vals)) {
+        const v = params.get(key);
+        if (v !== null) patch[key] = v;
+      }
+      if (Object.keys(patch).length > 0) setVals((prev) => ({ ...prev, ...patch }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rev1 = raw(vals.rev1), rev2 = raw(vals.rev2), revLoc = raw(vals.revLoc);
@@ -172,12 +186,15 @@ export function CapaciteEmprunt() {
       </div>
 
       <div style={{ marginTop: 16 }}>
-        <SaveReportButton
-          type="capacite_emprunt"
-          getDonnees={() => vals}
-          getResultats={() => ({ prixMax: Math.round(maxPrix), hypothequeMax: Math.round(maxH), paiementMensuel: Math.round(pmtMax), gds: +gds.toFixed(1), tds: +tds.toFixed(1) })}
-          getTitre={() => `Capacité ${fmtCAD(maxPrix)} — GDS ${gds.toFixed(1)}% · TDS ${tds.toFixed(1)}%`}
-        />
+        <div className="flex items-center gap-3 flex-wrap">
+          <SaveReportButton
+            type="capacite_emprunt"
+            getDonnees={() => vals}
+            getResultats={() => ({ prixMax: Math.round(maxPrix), hypothequeMax: Math.round(maxH), paiementMensuel: Math.round(pmtMax), gds: +gds.toFixed(1), tds: +tds.toFixed(1) })}
+            getTitre={() => `Capacité ${fmtCAD(maxPrix)} — GDS ${gds.toFixed(1)}% · TDS ${tds.toFixed(1)}%`}
+          />
+          <ShareCalculation getData={() => vals} />
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { SaveReportButton } from "@/components/SaveReportButton";
+import { ShareCalculation } from "@/components/ShareCalculation";
 import "./acheter-ou-louer.css";
 
 function raw(s: string): number {
@@ -24,6 +25,21 @@ export function AcheterOuLouer() {
 
   const set = useCallback((key: string, value: string, format = false) => {
     setVals((v) => ({ ...v, [key]: format ? fmtInput(value) : value }));
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.toString()) {
+      const patch: Record<string, string> = {};
+      for (const key of Object.keys(vals)) {
+        const v = params.get(key);
+        if (v !== null) patch[key] = v;
+      }
+      if (Object.keys(patch).length > 0) setVals((prev) => ({ ...prev, ...patch }));
+      const h = params.get("horizon");
+      if (h !== null) setHorizon(parseInt(h) || 5);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const prix = raw(vals.prix), mise = raw(vals.mise), taux = raw(vals.taux) / 100;
@@ -200,12 +216,15 @@ export function AcheterOuLouer() {
       </table>
 
       <div style={{ marginTop: 16 }}>
-        <SaveReportButton
-          type="acheter_louer"
-          getDonnees={() => ({ ...vals, horizon })}
-          getResultats={() => ({ netAchat: Math.round(netAchat), netLouer: Math.round(netLouer), ecart: Math.round(Math.abs(diff)), gagnant: achatGagne ? "acheter" : "louer", horizon })}
-          getTitre={() => `${achatGagne ? "Acheter" : "Louer"} gagne sur ${horizon} ans — écart ${fmtCAD(Math.abs(diff))}`}
-        />
+        <div className="flex items-center gap-3 flex-wrap">
+          <SaveReportButton
+            type="acheter_louer"
+            getDonnees={() => ({ ...vals, horizon })}
+            getResultats={() => ({ netAchat: Math.round(netAchat), netLouer: Math.round(netLouer), ecart: Math.round(Math.abs(diff)), gagnant: achatGagne ? "acheter" : "louer", horizon })}
+            getTitre={() => `${achatGagne ? "Acheter" : "Louer"} gagne sur ${horizon} ans — écart ${fmtCAD(Math.abs(diff))}`}
+          />
+          <ShareCalculation getData={() => ({ ...vals, horizon })} />
+        </div>
       </div>
     </div>
   );

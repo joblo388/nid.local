@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { SaveReportButton } from "@/components/SaveReportButton";
+import { ShareCalculation } from "@/components/ShareCalculation";
 import "./calculateur-plex.css";
 
 function raw(s: string): number {
@@ -26,6 +27,19 @@ export function CalculateurPlex() {
 
   const set = useCallback((key: string, value: string, format = false) => {
     setVals((v) => ({ ...v, [key]: format ? fmtInput(value) : value }));
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.toString()) {
+      const patch: Record<string, string> = {};
+      for (const key of Object.keys(vals)) {
+        const v = params.get(key);
+        if (v !== null) patch[key] = v;
+      }
+      if (Object.keys(patch).length > 0) setVals((prev) => ({ ...prev, ...patch }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Calculs
@@ -190,12 +204,15 @@ export function CalculateurPlex() {
       </table>
 
       <div style={{ marginTop: 16 }}>
-        <SaveReportButton
-          type="plex"
-          getDonnees={() => vals}
-          getResultats={() => ({ mrb: +mrb.toFixed(1), cashflowMensuel: Math.round(cfM), rendement: +rend.toFixed(1), valeur5ans: Math.round(val5), prix, mise })}
-          getTitre={() => `Plex ${fmtCAD(prix)} — MRB ${mrb.toFixed(1)}× — CF ${Math.round(cfM) >= 0 ? "+" : ""}${Math.round(cfM)} $/mois`}
-        />
+        <div className="flex items-center gap-3 flex-wrap">
+          <SaveReportButton
+            type="plex"
+            getDonnees={() => vals}
+            getResultats={() => ({ mrb: +mrb.toFixed(1), cashflowMensuel: Math.round(cfM), rendement: +rend.toFixed(1), valeur5ans: Math.round(val5), prix, mise })}
+            getTitre={() => `Plex ${fmtCAD(prix)} — MRB ${mrb.toFixed(1)}× — CF ${Math.round(cfM) >= 0 ? "+" : ""}${Math.round(cfM)} $/mois`}
+          />
+          <ShareCalculation getData={() => vals} />
+        </div>
       </div>
 
     </div>

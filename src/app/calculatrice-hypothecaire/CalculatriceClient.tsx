@@ -1,9 +1,38 @@
 "use client";
 
 import { useEffect } from "react";
+import { ShareCalculation } from "@/components/ShareCalculation";
 
 export function CalculatriceClient() {
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.toString()) {
+      const map: Record<string, string> = { prix: "price", mise: "down", taux: "rate", amortissement: "amort", typeLogement: "prop-type" };
+      for (const [paramKey, elId] of Object.entries(map)) {
+        const v = params.get(paramKey);
+        if (v !== null) {
+          const el = document.getElementById(elId) as HTMLInputElement | HTMLSelectElement | null;
+          if (el) el.value = v;
+        }
+      }
+      const freq = params.get("frequence");
+      if (freq) {
+        const freqMap: Record<string, number> = { weekly: 52, biweekly: 26, monthly: 12, accweekly: 52 };
+        if (freqMap[freq]) {
+          freqPerYear = freqMap[freq];
+          freqKey = freq;
+          document.querySelectorAll(".seg-opt").forEach((b) => b.classList.remove("active"));
+          const labels: Record<string, string> = { weekly: "Hebdo", biweekly: "Aux 2 sem.", monthly: "Mensuel", accweekly: "Hebdo accéléré" };
+          document.querySelectorAll(".seg-opt").forEach((b) => {
+            if (b.textContent?.trim() === labels[freq]) b.classList.add("active");
+          });
+          const periodLabels: Record<string, string> = { weekly: "$ / semaine", biweekly: "$ / 2 semaines", monthly: "$ / mois", accweekly: "$ / semaine (accéléré)" };
+          const periodEl = document.getElementById("period-label");
+          if (periodEl) periodEl.textContent = periodLabels[freq];
+        }
+      }
+      onTypeChange();
+    }
     calc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -107,6 +136,16 @@ export function CalculatriceClient() {
             <div className="legend-item"><div className="legend-dot" style={{ background: "var(--green)" }} /><span id="principal-pct">63% capital</span></div>
             <div className="legend-item"><div className="legend-dot" style={{ background: "var(--border-secondary)" }} /><span id="interest-pct">37% intérêts</span></div>
           </div>
+        </div>
+        <div style={{ marginTop: 16 }}>
+          <ShareCalculation getData={() => ({
+            prix: (document.getElementById("price") as HTMLInputElement)?.value ?? "",
+            mise: (document.getElementById("down") as HTMLInputElement)?.value ?? "",
+            taux: (document.getElementById("rate") as HTMLInputElement)?.value ?? "",
+            amortissement: (document.getElementById("amort") as HTMLInputElement)?.value ?? "",
+            frequence: freqKey,
+            typeLogement: (document.getElementById("prop-type") as HTMLSelectElement)?.value ?? "",
+          })} />
         </div>
         <div className="calc-footer">
           Les calculs sont à titre indicatif seulement. Consultez un courtier hypothécaire pour une estimation officielle.<br />

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { villes, quartiers, quartiersDeVille } from "@/lib/data";
+import { ShareCalculation } from "@/components/ShareCalculation";
 
 // ─── Market data (mirrors DonneesMarche.tsx MARKET) ─────────────────────────
 type MarketEntry = { uni: number | null; condo: number | null; plex: number | null };
@@ -261,6 +262,21 @@ export function EstimationClient() {
   const [annee, setAnnee] = useState("1990");
   const [etat, setEtat] = useState<Etat>("bon");
   const [result, setResult] = useState<EstimationResult | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.toString()) {
+      if (params.get("villeSlug")) setVilleSlug(params.get("villeSlug")!);
+      if (params.get("quartierSlug")) setQuartierSlug(params.get("quartierSlug")!);
+      if (params.get("type")) setType(params.get("type")! as PropType);
+      if (params.get("sqft")) setSqft(params.get("sqft")!);
+      if (params.get("chambres")) setChambres(params.get("chambres")!);
+      if (params.get("sdb")) setSdb(params.get("sdb")!);
+      if (params.get("annee")) setAnnee(params.get("annee")!);
+      if (params.get("etat")) setEtat(params.get("etat")! as Etat);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const quartiersForVille = quartiersDeVille(villeSlug).filter((q) => MARKET[q.slug]);
   // Also include ville-level entries (villes without sub-quartiers)
@@ -540,6 +556,9 @@ export function EstimationClient() {
                 effectuees, le terrain et les conditions du marche au moment de la vente.
               </p>
             </div>
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <ShareCalculation getData={() => ({ villeSlug, quartierSlug, type, sqft, chambres, sdb, annee, etat })} />
           </div>
         </div>
       )}
