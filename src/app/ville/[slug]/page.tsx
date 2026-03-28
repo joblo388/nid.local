@@ -31,18 +31,36 @@ export default async function VillePage({ params }: Props) {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [dbPostsVille, allDbPosts, userVotes] = await Promise.all([
-    prisma.post.findMany({ where: { villeSlug: slug }, orderBy: { nbVotes: "desc" } }),
-    prisma.post.findMany({ select: { villeSlug: true, quartierSlug: true, nbVues: true, nbCommentaires: true, id: true, titre: true, contenu: true, auteurNom: true, categorie: true, nbVotes: true, epingle: true, creeLe: true, auteurId: true } }),
+  const PAGE_SIZE = 20;
+  const whereVille = { villeSlug: slug };
+  const orderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
+
+  const [dbPostsVille, totalVille, userVotes, userBookmarks, byVille, byQuartier, totaux] = await Promise.all([
+    prisma.post.findMany({ where: whereVille, orderBy, take: PAGE_SIZE }),
+    prisma.post.count({ where: whereVille }),
     userId ? prisma.vote.findMany({ where: { userId }, select: { postId: true } }) : [],
+    userId ? prisma.bookmark.findMany({ where: { userId }, select: { postId: true } }) : [],
+    prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
+    prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
+    prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
   ]);
 
   const postsVille = dbPostsVille.map(dbPostToAppPost);
-  const allPosts = allDbPosts.map(dbPostToAppPost);
-  const votedPostIds = new Set(userVotes.map((v) => v.postId));
+  const initialVotedPostIds = userVotes.map((v) => v.postId);
+  const initialBookmarkedPostIds = userBookmarks.map((b) => b.postId);
+
+  const countsByQuartier = Object.fromEntries(byQuartier.map((r) => [r.quartierSlug, r._count._all]));
+
+  const sidebarStats = {
+    countsByVille: Object.fromEntries(byVille.map((r) => [r.villeSlug, r._count._all])),
+    countsByQuartier,
+    totalPosts: totaux._count._all,
+    totalVues: totaux._sum.nbVues ?? 0,
+    totalReponses: totaux._sum.nbCommentaires ?? 0,
+  };
 
   const quartiersAvecNb = qDeVille
-    .map((q) => ({ ...q, nb: postsVille.filter((p) => p.quartier.slug === q.slug).length }))
+    .map((q) => ({ ...q, nb: countsByQuartier[q.slug] ?? 0 }))
     .filter((q) => q.nb > 0)
     .sort((a, b) => b.nb - a.nb);
 
@@ -81,7 +99,7 @@ export default async function VillePage({ params }: Props) {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3">
                   {qDeVille.map((q, i) => {
-                    const nb = postsVille.filter((p) => p.quartier.slug === q.slug).length;
+                    const nb = countsByQuartier[q.slug] ?? 0;
                     return (
                       <Link
                         key={q.slug}
@@ -118,12 +136,12 @@ export default async function VillePage({ params }: Props) {
                   className="ml-1 px-1.5 py-0.5 rounded-md text-[11px] font-bold normal-case tracking-normal"
                   style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
                 >
-                  {postsVille.length}
+                  {totalVille}
                 </span>
               </p>
             </div>
 
-            {postsVille.length === 0 ? (
+            {totalVille === 0 ? (
               <div
                 className="rounded-xl px-6 py-12 text-center"
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
@@ -140,11 +158,17 @@ export default async function VillePage({ params }: Props) {
                 </Link>
               </div>
             ) : (
-              <PostsFiltres posts={postsVille} votedPostIds={votedPostIds} />
+              <PostsFiltres
+                initialPosts={postsVille}
+                initialTotal={totalVille}
+                initialVotedPostIds={initialVotedPostIds}
+                initialBookmarkedPostIds={initialBookmarkedPostIds}
+                villeSlug={slug}
+              />
             )}
           </div>
 
-          <Sidebar villeSlug={slug} posts={allPosts} />
+          <Sidebar villeSlug={slug} stats={sidebarStats} />
         </div>
       </main>
     </div>

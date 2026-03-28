@@ -49,7 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
       if (user) {
         token.id = user.id;
         // For Google OAuth, ensure user has a username
@@ -79,6 +79,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
           token.username = dbUser?.username ?? null;
         }
+      }
+      // Rafraîchir l'username depuis la DB si manquant ou sur demande explicite (update())
+      if ((trigger === "update" || token.username == null) && token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { username: true },
+        });
+        token.username = dbUser?.username ?? null;
       }
       return token;
     },

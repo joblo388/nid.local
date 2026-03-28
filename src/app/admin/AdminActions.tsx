@@ -3,6 +3,38 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+export function PinButton({ postId, initialEpingle }: { postId: string; initialEpingle: boolean }) {
+  const router = useRouter();
+  const [epingle, setEpingle] = useState(initialEpingle);
+  const [loading, setLoading] = useState(false);
+
+  async function toggle() {
+    setLoading(true);
+    const res = await fetch(`/api/admin/posts/${postId}/pin`, { method: "POST" });
+    if (res.ok) {
+      const data = await res.json();
+      setEpingle(data.epingle);
+      router.refresh();
+    }
+    setLoading(false);
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={loading}
+      className="text-[12px] px-2.5 py-1 rounded-lg transition-opacity hover:opacity-70 disabled:opacity-40 shrink-0"
+      style={
+        epingle
+          ? { background: "var(--amber-bg)", color: "var(--amber-text)" }
+          : { background: "var(--bg-secondary)", color: "var(--text-secondary)" }
+      }
+    >
+      {epingle ? "Désépingler" : "Épingler"}
+    </button>
+  );
+}
+
 export function AdminActions({
   reportId,
   type,

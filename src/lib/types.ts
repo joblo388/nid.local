@@ -17,7 +17,10 @@ export type Categorie =
   | "question"
   | "renovation"
   | "voisinage"
-  | "alerte";
+  | "construction"
+  | "legal"
+  | "financement"
+  | "copropriete";
 
 export type Post = {
   id: string;
@@ -32,4 +35,5 @@ export type Post = {
   nbVues: number;
   epingle?: boolean;
   auteurId?: string | null;
+  imageUrl?: string | null;
 };

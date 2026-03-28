@@ -103,6 +103,13 @@ function ConnexionForm() {
                 <label className="text-[12px] font-medium" style={{ color: "var(--text-secondary)" }}>
                   Mot de passe
                 </label>
+                <Link
+                  href="/auth/mot-de-passe-oublie"
+                  className="text-[11px] transition-opacity hover:opacity-70"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  Mot de passe oublié ?
+                </Link>
               </div>
               <input
                 type="password"

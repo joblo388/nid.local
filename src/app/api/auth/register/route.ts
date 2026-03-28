@@ -64,6 +64,20 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  // Send email verification
+  try {
+    const crypto = await import("crypto");
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await prisma.emailVerificationToken.create({ data: { email, token, expiresAt } });
+    const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+    const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}`;
+    const { sendEmail, verifyEmailContent } = await import("@/lib/email");
+    await sendEmail({ to: email, subject: "Vérifiez votre courriel — nid.local", html: verifyEmailContent(verifyUrl) });
+  } catch (e) {
+    console.error("[register] verify email error:", e);
+  }
+
   return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[register]", err);

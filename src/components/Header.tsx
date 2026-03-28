@@ -33,11 +33,20 @@ export function Header() {
   const username = session?.user?.username ?? session?.user?.name ?? session?.user?.email;
   const initial = username?.[0]?.toUpperCase() ?? "?";
 
-  const navLinks = [
-    { href: "/", label: "Fil" },
-    { href: "/villes", label: "Villes" },
-    { href: "/quartiers", label: "Quartiers" },
-  ];
+  const isMarketplace = pathname.startsWith("/annonces");
+
+  const navLinks = isMarketplace
+    ? [
+        { href: "/annonces", label: "Annonces" },
+        { href: "/annonces/publier", label: "Publier" },
+        { href: "/", label: "Forum" },
+      ]
+    : [
+        { href: "/", label: "Fil" },
+        { href: "/tendances", label: "Tendances" },
+        { href: "/villes", label: "Villes" },
+        { href: "/annonces", label: "Annonces" },
+      ];
 
   return (
     <header
@@ -46,9 +55,19 @@ export function Header() {
     >
       <div className="max-w-[1100px] mx-auto px-5 h-[52px] flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="text-[18px] font-black tracking-tight leading-none shrink-0">
-          <span style={{ color: "var(--text-primary)" }}>nid</span>
-          <span style={{ color: "var(--green)" }}>.local</span>
+        <Link href={isMarketplace ? "/annonces" : "/"} className="flex items-center gap-2 shrink-0">
+          <span className="text-[18px] font-black tracking-tight leading-none">
+            <span style={{ color: "var(--text-primary)" }}>nid</span>
+            <span style={{ color: "var(--green)" }}>.local</span>
+          </span>
+          {isMarketplace && (
+            <span
+              className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md"
+              style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
+            >
+              Marketplace
+            </span>
+          )}
         </Link>
 
         {/* Nav desktop */}
@@ -110,6 +129,17 @@ export function Header() {
                     + Nouvelle discussion
                   </Link>
                 </div>
+                {!session && status !== "loading" && (
+                  <div style={{ borderTop: "0.5px solid var(--border)" }} className="mt-1 pt-1">
+                    <Link
+                      href={`/auth/connexion?callbackUrl=${encodeURIComponent(pathname)}`}
+                      className="block px-4 py-2.5 text-[14px] font-medium transition-colors hover-bg"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Se connecter
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -161,6 +191,14 @@ export function Header() {
                       style={{ color: "var(--text-secondary)" }}
                     >
                       Mon profil
+                    </Link>
+                    <Link
+                      href="/favoris"
+                      onClick={() => setMenuOpen(false)}
+                      className="block px-4 py-2.5 text-[13px] transition-colors hover-bg"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Mes favoris
                     </Link>
                     <Link
                       href="/parametres"

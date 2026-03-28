@@ -1,18 +1,20 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { CommentSection } from "@/components/CommentSection";
 import { PostActions } from "@/components/PostActions";
 import { ShareButton } from "@/components/ShareButton";
-import { ReportButton } from "@/components/ReportButton";
 import { VoteButton } from "@/components/VoteButton";
+import { ViewTracker } from "@/components/ViewTracker";
+import { MarkdownContent } from "@/components/MarkdownContent";
 import { dbPostToAppPost } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
 import { Categorie } from "@/lib/types";
 
-export const dynamic = "force-dynamic";
+// Revalidate every 60 s — auth-dependent UI (vote state, edit/delete) is hydrated client-side
+export const revalidate = 60;
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -49,26 +51,50 @@ const badgeLabels: Record<string, string> = {
 
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
-  const session = await auth();
 
-  const userId = session?.user?.id;
-  const [dbPost, allDbPosts, dbComments, userVote] = await Promise.all([
+  const [dbPost, dbComments, byVille, byQuartier, totaux] = await Promise.all([
     prisma.post.findUnique({ where: { id } }),
-    prisma.post.findMany({ select: { villeSlug: true, quartierSlug: true, nbVues: true, nbCommentaires: true, id: true, titre: true, contenu: true, auteurNom: true, categorie: true, nbVotes: true, epingle: true, creeLe: true, auteurId: true } }),
-    prisma.comment.findMany({ where: { postId: id }, orderBy: { creeLe: "asc" } }),
-    userId ? prisma.vote.findUnique({ where: { userId_postId: { userId, postId: id } } }) : null,
+    prisma.comment.findMany({
+      where: { postId: id, parentId: null },
+      orderBy: { creeLe: "asc" },
+      select: {
+        id: true, contenu: true, imageUrl: true, auteurNom: true, auteurId: true, creeLe: true, nbVotes: true,
+        replies: {
+          orderBy: { creeLe: "asc" },
+          select: { id: true, contenu: true, imageUrl: true, auteurNom: true, auteurId: true, creeLe: true, nbVotes: true },
+        },
+      },
+    }),
+    prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
+    prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
+    prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
   ]);
 
   if (!dbPost) notFound();
 
-  // Incrémenter les vues (sans attendre)
-  prisma.post.update({ where: { id }, data: { nbVues: { increment: 1 } } }).catch(() => {});
-
   const post = dbPostToAppPost(dbPost);
-  const allPosts = allDbPosts.map(dbPostToAppPost);
-  const comments = dbComments.map((c) => ({ ...c, creeLe: c.creeLe.toISOString(), auteurId: c.auteurId ?? null }));
+  const comments = dbComments.map((c) => ({
+    ...c,
+    creeLe: c.creeLe.toISOString(),
+    auteurId: c.auteurId ?? null,
+    imageUrl: c.imageUrl ?? null,
+    nbVotes: c.nbVotes,
+    replies: c.replies.map((r) => ({
+      ...r,
+      creeLe: r.creeLe.toISOString(),
+      auteurId: r.auteurId ?? null,
+      imageUrl: r.imageUrl ?? null,
+      nbVotes: r.nbVotes,
+    })),
+  }));
 
-  const isAuthor = !!(session?.user?.id && session.user.id === dbPost.auteurId);
+  const sidebarStats = {
+    countsByVille: Object.fromEntries(byVille.map((r) => [r.villeSlug, r._count._all])),
+    countsByQuartier: Object.fromEntries(byQuartier.map((r) => [r.quartierSlug, r._count._all])),
+    totalPosts: totaux._count._all,
+    totalVues: totaux._sum.nbVues ?? 0,
+    totalReponses: totaux._sum.nbCommentaires ?? 0,
+  };
 
   const dateStr = new Date(post.creeLe).toLocaleDateString("fr-CA", {
     year: "numeric", month: "long", day: "numeric",
@@ -79,6 +105,8 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
+      {/* Track view client-side so ISR cache hits still count */}
+      <ViewTracker postId={id} />
       <Header />
       <main className="max-w-[1100px] mx-auto px-5 py-5">
         <div className="flex gap-5 items-start">
@@ -118,9 +146,22 @@ export default async function PostPage({ params }: Props) {
                 {post.titre}
               </h1>
 
-              <p className="text-[14px] leading-relaxed mb-6" style={{ color: "var(--text-secondary)" }}>
-                {post.contenu}
-              </p>
+              <div className="text-[14px] mb-6">
+                <MarkdownContent content={post.contenu} />
+              </div>
+
+              {dbPost.imageUrl && (
+                dbPost.imageUrl.startsWith("data:") ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={dbPost.imageUrl} alt="" className="w-full rounded-xl object-contain mb-6"
+                    style={{ maxHeight: "500px", border: "0.5px solid var(--border)" }} />
+                ) : (
+                  <div className="relative w-full mb-6 rounded-xl overflow-hidden" style={{ maxHeight: "500px", border: "0.5px solid var(--border)" }}>
+                    <Image src={dbPost.imageUrl} alt="" width={1100} height={500}
+                      className="w-full object-contain" sizes="(max-width: 1100px) 100vw, 1100px" />
+                  </div>
+                )
+              )}
 
               <div
                 className="flex items-center justify-between pt-4"
@@ -144,24 +185,22 @@ export default async function PostPage({ params }: Props) {
                 </div>
                 <div className="flex items-center gap-3">
                   <ShareButton />
-                  {!isAuthor && <ReportButton type="post" targetId={post.id} />}
+                  {/* PostActions shows edit/delete for author, ReportButton for others — resolved client-side */}
+                  <PostActions
+                    postId={post.id}
+                    auteurId={dbPost.auteurId}
+                    initialTitre={post.titre}
+                    initialContenu={post.contenu}
+                    initialCategorie={post.categorie as Categorie}
+                  />
                 </div>
-                <VoteButton postId={post.id} initialVotes={post.nbVotes} initialHasVoted={!!userVote} />
+                <VoteButton postId={post.id} initialVotes={post.nbVotes} initialHasVoted={false} hydrateVote />
               </div>
-
-              {isAuthor && (
-                <PostActions
-                  postId={post.id}
-                  initialTitre={post.titre}
-                  initialContenu={post.contenu}
-                  initialCategorie={post.categorie as Categorie}
-                />
-              )}
             </article>
 
             <CommentSection postId={post.id} initial={comments} />
           </div>
-          <Sidebar posts={allPosts} />
+          <Sidebar stats={sidebarStats} />
         </div>
       </main>
     </div>

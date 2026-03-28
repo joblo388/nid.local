@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 type Params = { params: Promise<{ id: string }> };
 
-const CATEGORIES = ["vente", "location", "question", "renovation", "voisinage", "alerte"];
+const CATEGORIES = ["vente", "location", "question", "renovation", "voisinage", "construction", "legal", "financement", "copropriete"];
 
 async function getAuthorizedPost(id: string, userId: string) {
   const post = await prisma.post.findUnique({ where: { id } });

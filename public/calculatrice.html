@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculatrice hypothécaire — nid.local</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:transparent;color:#1a1a18;padding:24px 16px 40px}
+@media(prefers-color-scheme:dark){body{color:#e8e6df}}
+.calc{max-width:680px;margin:0 auto}
+.calc-title{font-size:20px;font-weight:600;margin-bottom:4px}
+.calc-sub{font-size:13px;color:#888780;margin-bottom:20px}
+@media(prefers-color-scheme:dark){.calc-sub{color:#666660}}
+.rates-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;background:#f1efe8;border:0.5px solid #e8e7e2;margin-bottom:20px;flex-wrap:wrap}
+@media(prefers-color-scheme:dark){.rates-bar{background:#222;border-color:#2e2e2e}}
+.rates-label{font-size:12px;color:#888780;flex-shrink:0}
+.rate-pill{font-size:12px;padding:3px 10px;border-radius:20px;border:0.5px solid #d3d1c7;cursor:pointer;background:transparent;color:#888780;transition:all 0.15s}
+@media(prefers-color-scheme:dark){.rate-pill{border-color:#333;color:#666}}
+.rate-pill:hover{background:#fff}
+@media(prefers-color-scheme:dark){.rate-pill:hover{background:#2a2a2a}}
+.rate-pill.active{background:#E1F5EE;color:#0F6E56;border-color:transparent;font-weight:500}
+@media(prefers-color-scheme:dark){.rate-pill.active{background:#0a2e20;color:#5DCAA5}}
+.rate-source{font-size:11px;color:#b4b2a9;margin-left:auto}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;font-weight:500;color:#888780}
+@media(prefers-color-scheme:dark){.field label{color:#666660}}
+.field-input{display:flex;align-items:center;border:0.5px solid #d3d1c7;border-radius:8px;background:#fff;overflow:hidden;transition:border-color 0.15s}
+@media(prefers-color-scheme:dark){.field-input{background:#1a1a1a;border-color:#333}}
+.field-input:focus-within{border-color:#1D9E75}
+.field-input.warning{border-color:#E24B4A}
+.field-input.caution{border-color:#BA7517}
+.field-input input,.field-input select{flex:1;font-size:14px;padding:10px 12px;border:none;background:transparent;color:#1a1a18;font-family:inherit;outline:none;min-width:0}
+@media(prefers-color-scheme:dark){.field-input input,.field-input select{color:#e8e6df}}
+.field-input .unit{font-size:12px;padding:0 10px;color:#b4b2a9;border-left:0.5px solid #e8e7e2;height:100%;display:flex;align-items:center;background:#f1efe8;white-space:nowrap;flex-shrink:0}
+@media(prefers-color-scheme:dark){.field-input .unit{background:#222;border-color:#2e2e2e}}
+.occupant-row{display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:#f1efe8;border:0.5px solid #e8e7e2;margin-top:2px}
+@media(prefers-color-scheme:dark){.occupant-row{background:#222;border-color:#2e2e2e}}
+.occupant-row.visible{display:flex}
+.occupant-row label{font-size:13px;color:#1a1a18;cursor:pointer;display:flex;align-items:center;gap:8px;margin:0;flex:1}
+@media(prefers-color-scheme:dark){.occupant-row label{color:#e8e6df}}
+.occupant-row input[type=checkbox]{width:16px;height:16px;accent-color:#1D9E75;cursor:pointer;flex-shrink:0}
+.occupant-note{font-size:11px;color:#888780;flex-shrink:0}
+@media(prefers-color-scheme:dark){.occupant-note{color:#555}}
+.alert{display:none;align-items:flex-start;gap:8px;padding:8px 11px;border-radius:8px;font-size:12px;line-height:1.55;margin-top:6px}
+.alert.visible{display:flex}
+.alert svg{width:13px;height:13px;flex-shrink:0;margin-top:1px;fill:none;stroke-width:1.5}
+.alert.red{background:#FCEBEB;color:#A32D2D}.alert.red svg{stroke:#A32D2D}
+.alert.amber{background:#FAEEDA;color:#854F0B}.alert.amber svg{stroke:#854F0B}
+.alert.green{background:#E1F5EE;color:#0F6E56}.alert.green svg{stroke:#0F6E56}
+.alert.blue{background:#E6F1FB;color:#185FA5}.alert.blue svg{stroke:#185FA5}
+@media(prefers-color-scheme:dark){.alert.red{background:#3d1515;color:#f09595}.alert.amber{background:#2e1f08;color:#EF9F27}.alert.green{background:#0a2e20;color:#5DCAA5}.alert.blue{background:#0d2140;color:#85B7EB}}
+.seg-control{display:flex;border:0.5px solid #d3d1c7;border-radius:8px;overflow:hidden}
+@media(prefers-color-scheme:dark){.seg-control{border-color:#333}}
+.seg-opt{flex:1;padding:9px 6px;font-size:12px;text-align:center;cursor:pointer;border:none;background:transparent;color:#888780;transition:all 0.15s;font-family:inherit}
+@media(prefers-color-scheme:dark){.seg-opt{color:#666}}
+.seg-opt.active{background:#1D9E75;color:#fff;font-weight:500}
+.seg-opt:hover:not(.active){background:#f1efe8}
+@media(prefers-color-scheme:dark){.seg-opt:hover:not(.active){background:#252525}}
+.divider{height:0.5px;background:#e8e7e2;margin:16px 0}
+@media(prefers-color-scheme:dark){.divider{background:#2e2e2e}}
+.results{background:#f1efe8;border-radius:12px;padding:18px 20px;margin-bottom:16px}
+@media(prefers-color-scheme:dark){.results{background:#222}}
+.result-main{display:flex;align-items:baseline;gap:4px;margin-bottom:4px}
+.result-amount{font-size:36px;font-weight:500;letter-spacing:-1px}
+.result-period{font-size:14px;color:#888780}
+@media(prefers-color-scheme:dark){.result-period{color:#666}}
+.result-sub{font-size:12px;color:#888780;margin-bottom:16px}
+@media(prefers-color-scheme:dark){.result-sub{color:#666}}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.result-box{background:#fff;border-radius:8px;padding:10px 12px;border:0.5px solid #e8e7e2}
+@media(prefers-color-scheme:dark){.result-box{background:#1a1a1a;border-color:#2e2e2e}}
+.result-box-val{font-size:15px;font-weight:500;margin-bottom:2px}
+.result-box-lbl{font-size:11px;color:#888780}
+.breakdown-bar{height:8px;border-radius:4px;background:#d3d1c7;overflow:hidden;margin:12px 0 6px}
+@media(prefers-color-scheme:dark){.breakdown-bar{background:#333}}
+.breakdown-fill{height:100%;background:#1D9E75;border-radius:4px;transition:width 0.4s}
+.breakdown-legend{display:flex;gap:16px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#888780}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.calc-footer{font-size:11px;color:#b4b2a9;line-height:1.6;text-align:center;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="calc">
+  <div class="calc-sub">Estimez votre paiement mensuel avec les taux du marché québécois</div>
+  <div class="rates-bar">
+    <span class="rates-label">Taux du jour :</span>
+    <div class="rate-pill active" onclick="selectRate(this,4.99)">Variable 4,99%</div>
+    <div class="rate-pill" onclick="selectRate(this,5.24)">1 an 5,24%</div>
+    <div class="rate-pill" onclick="selectRate(this,4.84)">3 ans 4,84%</div>
+    <div class="rate-pill" onclick="selectRate(this,4.64)">5 ans 4,64%</div>
+    <div class="rate-pill" onclick="selectRate(this,5.09)">10 ans 5,09%</div>
+    <span class="rate-source">Taux indicatifs</span>
+  </div>
+  <div class="grid">
+    <div class="field full">
+      <label>Type de propriété</label>
+      <div class="field-input">
+        <select id="prop-type" onchange="onTypeChange()">
+          <optgroup label="Résidentiel">
+            <option value="unifamilial">Maison unifamiliale (1 logement)</option>
+            <option value="condo">Condo (1 logement)</option>
+            <option value="chalet">Chalet / résidence secondaire</option>
+          </optgroup>
+          <optgroup label="Plex">
+            <option value="duplex">Duplex (2 logements)</option>
+            <option value="triplex">Triplex (3 logements)</option>
+            <option value="quadruplex">Quadruplex (4 logements)</option>
+            <option value="cinqplex">5 logements et plus</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="occupant-row" id="occupant-row">
+        <input type="checkbox" id="occupant" checked onchange="calc()">
+        <label for="occupant">J'occupe une des unités comme résidence principale</label>
+        <span class="occupant-note" id="occupant-note">5% occupant · 20% non-occupant</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Prix de la propriété</label>
+      <div class="field-input">
+        <input type="text" id="price" value="450 000" oninput="fmt(this);calc()">
+        <span class="unit">$</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Mise de fonds</label>
+      <div class="field-input" id="down-wrap">
+        <input type="text" id="down" value="90 000" oninput="fmt(this);calc()">
+        <span class="unit">$ · <span id="down-pct">20%</span></span>
+      </div>
+      <div class="alert" id="down-alert">
+        <svg viewBox="0 0 16 16"><path d="M8 2L1 14h14L8 2z"/><line x1="8" y1="7" x2="8" y2="10"/><circle cx="8" cy="12.5" r="0.5" fill="currentColor"/></svg>
+        <span id="down-alert-text"></span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Taux d'intérêt</label>
+      <div class="field-input">
+        <input type="text" id="rate" value="4.99" oninput="calc()">
+        <span class="unit">%</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Amortissement</label>
+      <div class="field-input">
+        <input type="text" id="amort" value="25" oninput="calc()">
+        <span class="unit">ans</span>
+      </div>
+    </div>
+    <div class="field full">
+      <label>Fréquence de paiement</label>
+      <div class="seg-control">
+        <button class="seg-opt" onclick="setFreq(this,'weekly',52)">Hebdo</button>
+        <button class="seg-opt" onclick="setFreq(this,'biweekly',26)">Aux 2 sem.</button>
+        <button class="seg-opt active" onclick="setFreq(this,'monthly',12)">Mensuel</button>
+        <button class="seg-opt" onclick="setFreq(this,'accweekly',52)">Hebdo accéléré</button>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="results">
+    <div class="result-main">
+      <div class="result-amount" id="payment">1 899</div>
+      <div class="result-period" id="period-label">$ / mois</div>
+    </div>
+    <div class="result-sub" id="result-sub">Hypothèque de 360 000 $ sur 25 ans à 4,99%</div>
+    <div class="result-grid">
+      <div class="result-box"><div class="result-box-val" id="total-interest">—</div><div class="result-box-lbl">Intérêts totaux</div></div>
+      <div class="result-box"><div class="result-box-val" id="total-paid">—</div><div class="result-box-lbl">Total déboursé</div></div>
+      <div class="result-box"><div class="result-box-val" id="cmhc">0 $</div><div class="result-box-lbl">Prime SCHL</div></div>
+    </div>
+    <div class="breakdown-bar"><div class="breakdown-fill" id="principal-bar" style="width:63%"></div></div>
+    <div class="breakdown-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div><span id="principal-pct">63% capital</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d3d1c7"></div><span id="interest-pct">37% intérêts</span></div>
+    </div>
+  </div>
+  <div class="calc-footer">Les calculs sont à titre indicatif seulement. Consultez un courtier hypothécaire pour une estimation officielle.<br>Règles basées sur les directives OSFI et SCHL en vigueur au Canada.</div>
+</div>
+<script>
+let freqPerYear=12,freqKey='monthly';
+const TYPES={unifamilial:{minOccupant:null,minNonOccupant:null,plex:false,schl:true,progressive:true,note:''},condo:{minOccupant:null,minNonOccupant:null,plex:false,schl:true,progressive:true,note:''},chalet:{minOccupant:null,minNonOccupant:null,plex:false,schl:true,progressive:true,note:'Doit être habitable à année longue pour être éligible à la SCHL.'},duplex:{minOccupant:5,minNonOccupant:20,plex:true,schl:true,progressive:true,note:''},triplex:{minOccupant:10,minNonOccupant:20,plex:true,schl:true,progressive:false,note:''},quadruplex:{minOccupant:10,minNonOccupant:20,plex:true,schl:true,progressive:false,note:''},cinqplex:{minOccupant:20,minNonOccupant:20,plex:true,schl:false,progressive:false,note:'5 logements et plus : financement commercial, SCHL non disponible.'}};
+function raw(s){return parseFloat(String(s).replace(/\s/g,'').replace(',','.'))||0}
+function fmtCAD(n){return Math.round(n).toLocaleString('fr-CA')+' $'}
+function fmt(el){let v=el.value.replace(/\D/g,'');if(v)el.value=parseInt(v).toLocaleString('fr-CA')}
+function isPlex(t){return TYPES[t].plex}
+function isOccupant(){return document.getElementById('occupant').checked}
+function onTypeChange(){const type=document.getElementById('prop-type').value;const row=document.getElementById('occupant-row');if(isPlex(type)){row.classList.add('visible');const t=TYPES[type];document.getElementById('occupant-note').textContent=t.minOccupant+'% occupant · '+t.minNonOccupant+'% non-occupant';}else{row.classList.remove('visible');}calc();}
+function getMinDown(price,type,occupant){const t=TYPES[type];if(type==='cinqplex')return price*0.20;if(t.plex&&!occupant)return price*(t.minNonOccupant/100);if(t.plex&&!t.progressive)return price*(t.minOccupant/100);if(price<=500000)return price*0.05;if(price<1000000)return 25000+(price-500000)*0.10;return price*0.20;}
+function getSchl(type,occupant){if(type==='cinqplex')return false;if(TYPES[type].plex&&!occupant)return false;return TYPES[type].schl;}
+function checkDown(price,down,type,occupant){const min=getMinDown(price,type,occupant);const pct=price>0?down/price*100:0;const schl=getSchl(type,occupant);const t=TYPES[type];const wrap=document.getElementById('down-wrap');const alert=document.getElementById('down-alert');const alertText=document.getElementById('down-alert-text');alert.classList.remove('visible','red','amber','green','blue');wrap.classList.remove('warning','caution');let msg='',cls='';if(type==='cinqplex'){if(down<min){msg='5 logements et plus : mise de fonds insuffisante. Le minimum est 20% ('+fmtCAD(min)+'). Il manque '+fmtCAD(min-down)+'.';cls='red';wrap.classList.add('warning');}else{msg='5 logements et plus : financement commercial uniquement. SCHL non disponible. Mise de fonds de '+Math.round(pct)+'%.';cls='blue';}}else if(t.plex&&!occupant){if(down<min){msg='Non-occupant : 20% minimum requis ('+fmtCAD(min)+'). Il manque '+fmtCAD(min-down)+'.';cls='red';wrap.classList.add('warning');}else{msg='Non-occupant : mise de fonds de '+Math.round(pct)+'% — SCHL non disponible pour les immeubles non-occupants.';cls='green';}}else if(down<min){const pctReq=Math.round(min/price*100);msg='Mise de fonds insuffisante. Le minimum requis est '+fmtCAD(min)+' ('+pctReq+'%). Il manque '+fmtCAD(min-down)+'.';if(t.note)msg+=' '+t.note;cls='red';wrap.classList.add('warning');}else if(pct<20&&schl&&price<1500000){msg='Prime SCHL applicable (mise de fonds < 20%). Pour l\'éviter : '+fmtCAD(price*0.20)+'.';if(t.note)msg+=' '+t.note;cls='amber';wrap.classList.add('caution');}else{msg='Mise de fonds de '+Math.round(pct)+'% — aucune prime SCHL requise.';if(t.note)msg+=' '+t.note;cls='green';}if(msg){alertText.textContent=msg;alert.classList.add('visible',cls);}}
+function selectRate(el,rate){document.querySelectorAll('.rate-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('rate').value=rate;calc();}
+function setFreq(el,key,n){document.querySelectorAll('.seg-opt').forEach(b=>b.classList.remove('active'));el.classList.add('active');freqPerYear=n;freqKey=key;const labels={weekly:'$ / semaine',biweekly:'$ / 2 semaines',monthly:'$ / mois',accweekly:'$ / semaine (accéléré)'};document.getElementById('period-label').textContent=labels[key];calc();}
+function calc(){const price=raw(document.getElementById('price').value);const down=raw(document.getElementById('down').value);const annualRate=raw(document.getElementById('rate').value)/100;const years=parseInt(document.getElementById('amort').value)||25;const type=document.getElementById('prop-type').value;const occupant=isPlex(type)?isOccupant():true;const pct=price>0?Math.round(down/price*100):0;document.getElementById('down-pct').textContent=pct+'%';checkDown(price,down,type,occupant);let cmhc=0;const schl=getSchl(type,occupant);if(schl&&pct<20&&pct>=5&&price<1500000){const r=pct<10?0.031:pct<15?0.028:0.024;cmhc=Math.max(0,price-down)*r;}const principal=Math.max(0,price-down)+cmhc;const eff=Math.pow(1+annualRate/2,2)-1;const r=Math.pow(1+eff,1/freqPerYear)-1;const n=years*freqPerYear;let payment=0;if(r>0&&n>0&&principal>0)payment=principal*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);let display=payment;if(freqKey==='accweekly'){const mr=Math.pow(1+eff,1/12)-1,mn=years*12;display=principal*mr*Math.pow(1+mr,mn)/(Math.pow(1+mr,mn)-1)/2;}const totalPaid=freqKey==='accweekly'?display*52*years:payment*n;const totalInterest=Math.max(0,totalPaid-principal);const ppct=totalPaid>0?Math.round(principal/totalPaid*100):0;document.getElementById('payment').textContent=Math.round(display).toLocaleString('fr-CA');document.getElementById('result-sub').textContent='Hypothèque de '+fmtCAD(Math.max(0,price-down))+' sur '+years+' ans à '+document.getElementById('rate').value+'%';document.getElementById('total-interest').textContent=fmtCAD(totalInterest);document.getElementById('total-paid').textContent=fmtCAD(totalPaid);document.getElementById('cmhc').textContent=cmhc>0?fmtCAD(cmhc):'0 $';document.getElementById('principal-bar').style.width=ppct+'%';document.getElementById('principal-pct').textContent=ppct+'% capital';document.getElementById('interest-pct').textContent=(100-ppct)+'% intérêts';}
+calc();
+</script>
+</body>
+</html>

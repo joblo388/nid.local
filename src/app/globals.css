@@ -58,3 +58,53 @@ body {
 ::placeholder {
   color: var(--text-tertiary);
 }
+
+/* Bottom nav — mobile only */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--bg-card);
+    border-top: 0.5px solid var(--border);
+    padding: 6px 0 env(safe-area-inset-bottom, 6px);
+    justify-content: space-around;
+    align-items: center;
+  }
+  .bottom-nav a, .bottom-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    padding: 4px 12px;
+  }
+  .bottom-nav a.active, .bottom-nav button.active {
+    color: var(--green);
+  }
+  .bottom-nav svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.5;
+  }
+  /* pad body for bottom nav */
+  body {
+    padding-bottom: 60px;
+  }
+}

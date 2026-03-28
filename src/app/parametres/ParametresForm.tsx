@@ -31,6 +31,7 @@ export function ParametresForm({ user }: { user: UserData }) {
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -41,13 +42,20 @@ export function ParametresForm({ user }: { user: UserData }) {
       setProfileError("L'image doit faire moins de 500 KB.");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const result = ev.target?.result as string;
-      setImagePreview(result);
-      setImageData(result);
-    };
-    reader.readAsDataURL(file);
+    setImagePreview(URL.createObjectURL(file));
+    setImageData(undefined);
+    setImageUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("maxBytes", "500000");
+    fetch("/api/upload", { method: "POST", body: fd })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.url) setImageData(d.url);
+        else { setProfileError(d.error ?? "Erreur lors du téléversement."); setImagePreview(user.image); }
+      })
+      .catch(() => { setProfileError("Erreur lors du téléversement."); setImagePreview(user.image); })
+      .finally(() => setImageUploading(false));
   }
 
   function removeAvatar() {
@@ -77,7 +85,7 @@ export function ParametresForm({ user }: { user: UserData }) {
       setProfileError(data.error ?? "Une erreur est survenue.");
     } else {
       setProfileSuccess("Profil mis à jour.");
-      await update();
+      await update({ username });
       router.refresh();
     }
   }
@@ -245,11 +253,11 @@ export function ParametresForm({ user }: { user: UserData }) {
 
           <button
             type="submit"
-            disabled={loadingProfile}
+            disabled={loadingProfile || imageUploading}
             className="px-4 py-2 text-[13px] font-semibold text-white rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
             style={{ background: "var(--green)" }}
           >
-            {loadingProfile ? "Enregistrement…" : "Enregistrer les changements"}
+            {imageUploading ? "Téléversement…" : loadingProfile ? "Enregistrement…" : "Enregistrer les changements"}
           </button>
         </form>
       </section>

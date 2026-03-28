@@ -5,7 +5,74 @@ import Link from "next/link";
 import { Post, Categorie } from "@/lib/types";
 import { villes, quartiers, quartiersDeVille, villeBySlug } from "@/lib/data";
 import { PostCard } from "./PostCard";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, SidebarStats } from "./Sidebar";
+
+const PAGE_SIZE = 20;
+
+function Pagination({ page, total, onPage }: { page: number; total: number; onPage: (p: number) => void }) {
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  if (totalPages <= 1) return null;
+
+  const pages: (number | "…")[] = [];
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else if (page <= 4) {
+    for (let i = 1; i <= 5; i++) pages.push(i);
+    pages.push("…");
+    pages.push(totalPages);
+  } else if (page >= totalPages - 3) {
+    pages.push(1);
+    pages.push("…");
+    for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    pages.push("…");
+    pages.push(page - 1);
+    pages.push(page);
+    pages.push(page + 1);
+    pages.push("…");
+    pages.push(totalPages);
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1 pt-2">
+      <button
+        onClick={() => onPage(page - 1)}
+        disabled={page === 1}
+        className="px-2 py-1.5 rounded-lg text-[13px] transition-opacity disabled:opacity-30 hover:opacity-70"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        «
+      </button>
+      {pages.map((p, i) =>
+        p === "…" ? (
+          <span key={`e${i}`} className="px-1 text-[12px]" style={{ color: "var(--text-tertiary)" }}>…</span>
+        ) : (
+          <button
+            key={p}
+            onClick={() => onPage(p as number)}
+            className="w-8 h-8 rounded-lg text-[12px] font-medium transition-colors"
+            style={
+              p === page
+                ? { background: "var(--green)", color: "#fff" }
+                : { color: "var(--text-secondary)" }
+            }
+          >
+            {p}
+          </button>
+        )
+      )}
+      <button
+        onClick={() => onPage(page + 1)}
+        disabled={page === Math.ceil(total / PAGE_SIZE)}
+        className="px-2 py-1.5 rounded-lg text-[13px] transition-opacity disabled:opacity-30 hover:opacity-70"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        »
+      </button>
+    </div>
+  );
+}
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
@@ -16,7 +83,10 @@ const CATEGORIES: { value: Categorie | "tous"; label: string }[] = [
   { value: "question", label: "Questions" },
   { value: "renovation", label: "Conseils" },
   { value: "voisinage", label: "Voisinage" },
-  { value: "alerte", label: "Alertes" },
+  { value: "construction", label: "Construction" },
+  { value: "legal", label: "Légal" },
+  { value: "financement", label: "Financement" },
+  { value: "copropriete", label: "Co-propriété" },
 ];
 
 const TRIS = [
@@ -130,7 +200,7 @@ function SearchBar({ value, onChange }: { value: string; onChange: (q: string) =
 
 // ─── SearchDropdown ────────────────────────────────────────────────────────────
 
-function SearchDropdown({ results, onSelect }: { results: Post[]; onSelect: () => void }) {
+function SearchDropdown({ results, query, onSelect }: { results: Post[]; query: string; onSelect: () => void }) {
   if (results.length === 0) return null;
   return (
     <div
@@ -165,23 +235,51 @@ function SearchDropdown({ results, onSelect }: { results: Post[]; onSelect: () =
           </div>
         </Link>
       ))}
+      <Link
+        href={`/recherche?q=${encodeURIComponent(query)}`}
+        onClick={onSelect}
+        className="flex items-center justify-between px-4 py-2.5 text-[12px] font-medium transition-colors hover-bg"
+        style={{ color: "var(--green)" }}
+      >
+        <span>Voir tous les résultats pour &ldquo;{query}&rdquo;</span>
+        <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </Link>
     </div>
   );
 }
 
 // ─── HomepageView ──────────────────────────────────────────────────────────────
 
-export function HomepageView({ posts, votedPostIds = new Set() }: { posts: Post[]; votedPostIds?: Set<string> }) {
+type Props = {
+  initialPosts: Post[];
+  initialTotal: number;
+  initialVotedPostIds: string[];
+  initialBookmarkedPostIds: string[];
+  sidebarStats: SidebarStats;
+};
+
+export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, initialBookmarkedPostIds, sidebarStats }: Props) {
   const [villeSlug, setVilleSlug] = useState("montreal");
   const [quartierSlug, setQuartierSlug] = useState("tous");
   const [categorie, setCategorie] = useState<string>("tous");
   const [tri, setTri] = useState<"recent" | "populaire" | "actif">("populaire");
+
+  const [posts, setPosts] = useState<Post[]>(initialPosts ?? []);
+  const [total, setTotal] = useState(initialTotal);
+  const [votedPostIds, setVotedPostIds] = useState<Set<string>>(() => new Set(initialVotedPostIds));
+  const [bookmarkedPostIds, setBookmarkedPostIds] = useState<Set<string>>(() => new Set(initialBookmarkedPostIds));
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [dbResults, setDbResults] = useState<Post[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [page, setPage] = useState(1);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -193,11 +291,54 @@ export function HomepageView({ posts, votedPostIds = new Set() }: { posts: Post[
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  async function fetchPosts(params: {
+    villeSlug: string; quartierSlug: string; categorie: string; tri: string; page: number;
+  }) {
+    setLoading(true);
+    try {
+      const qs = new URLSearchParams({
+        villeSlug: params.villeSlug,
+        quartierSlug: params.quartierSlug,
+        categorie: params.categorie,
+        tri: params.tri,
+        page: String(params.page),
+      });
+      const res = await fetch(`/api/posts?${qs}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setPosts(data.posts);
+      setTotal(data.total);
+      setVotedPostIds((prev) => {
+        const next = new Set(prev);
+        (data.votedPostIds as string[]).forEach((id) => next.add(id));
+        return next;
+      });
+      setBookmarkedPostIds((prev) => {
+        const next = new Set(prev);
+        (data.bookmarkedPostIds as string[]).forEach((id) => next.add(id));
+        return next;
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    setPage(1);
+    fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: 1 });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [villeSlug, quartierSlug, categorie, tri]);
+
   function selectVille(slug: string) {
     setVilleSlug(slug);
     setQuartierSlug("tous");
-    setCategorie("tous");
-    setPage(1);
+  }
+
+  function goToPage(p: number) {
+    setPage(p);
+    fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: p });
+    listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function handleSearchChange(q: string) {
@@ -209,22 +350,6 @@ export function HomepageView({ posts, votedPostIds = new Set() }: { posts: Post[
       if (res.ok) setDbResults(await res.json());
     }, 300);
   }
-
-  const filtered = posts
-    .filter((p) => p.quartier.villeSlug === villeSlug)
-    .filter((p) => quartierSlug === "tous" || p.quartier.slug === quartierSlug)
-    .filter((p) => categorie === "tous" || p.categorie === categorie)
-    .sort((a, b) => {
-      if (a.epingle && !b.epingle) return -1;
-      if (!a.epingle && b.epingle) return 1;
-      if (tri === "recent") return new Date(b.creeLe).getTime() - new Date(a.creeLe).getTime();
-      if (tri === "populaire") return b.nbVotes - a.nbVotes;
-      return b.nbCommentaires - a.nbCommentaires;
-    });
-
-  const PAGE_SIZE = 20;
-  const paginated = filtered.slice(0, page * PAGE_SIZE);
-  const hasMore = filtered.length > page * PAGE_SIZE;
 
   const searchResults = searchQuery.trim().length >= 2 ? dbResults : [];
   const villeActive = villeBySlug[villeSlug];
@@ -238,7 +363,7 @@ export function HomepageView({ posts, votedPostIds = new Set() }: { posts: Post[
       <div className="sticky z-40" style={{ top: "52px" }}>
         <VilleBar selected={villeSlug} onSelect={selectVille} />
         {hasQuartiers && (
-          <QuartierBar villeSlug={villeSlug} selected={quartierSlug} onSelect={(s) => { setQuartierSlug(s); setPage(1); }} />
+          <QuartierBar villeSlug={villeSlug} selected={quartierSlug} onSelect={(s) => setQuartierSlug(s)} />
         )}
       </div>
 
@@ -281,79 +406,59 @@ export function HomepageView({ posts, votedPostIds = new Set() }: { posts: Post[
               {searchFocused && searchResults.length > 0 && (
                 <SearchDropdown
                   results={searchResults}
+                  query={searchQuery}
                   onSelect={() => { setSearchFocused(false); handleSearchChange(""); }}
                 />
               )}
             </div>
 
-            {/* Filtres catégorie + tri + CTA mobile */}
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-1 flex-wrap">
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.value}
-                    onClick={() => { setCategorie(cat.value); setPage(1); }}
-                    className="px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors"
-                    style={
-                      categorie === cat.value
-                        ? { background: "var(--green)", color: "#fff" }
-                        : { background: "var(--bg-card)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
-                    }
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-0.5">
-                {TRIS.map((t) => (
-                  <button
-                    key={t.value}
-                    onClick={() => { setTri(t.value); setPage(1); }}
-                    className="px-2.5 py-1.5 text-[12px] font-medium rounded-lg"
-                    style={
-                      tri === t.value
-                        ? { color: "var(--text-primary)", textDecoration: "underline", textUnderlineOffset: "3px" }
-                        : { color: "var(--text-tertiary)" }
-                    }
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
+            {/* Filtres catégorie */}
+            <div className="flex items-center gap-1 flex-wrap">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => setCategorie(cat.value)}
+                  className="px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap"
+                  style={
+                    categorie === cat.value
+                      ? { background: "var(--green)", color: "#fff" }
+                      : { background: "var(--bg-card)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
+                  }
+                >
+                  {cat.label}
+                </button>
+              ))}
             </div>
 
-            {/* Bannière résultats de recherche */}
-            {searchQuery.trim() && (
-              <div
-                className="flex items-center justify-between px-4 py-2.5 rounded-xl text-[13px]"
-                style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--green)" }}
-              >
-                <span style={{ color: "var(--green-text)" }}>
-                  <strong>{filtered.length}</strong>{" "}
-                  {filtered.length === 1 ? "résultat" : "résultats"} pour &laquo;{searchQuery}&raquo;
-                </span>
-                <button
-                  onClick={() => handleSearchChange("")}
-                  className="text-[12px] font-medium underline underline-offset-2"
-                  style={{ color: "var(--green-text)" }}
-                >
-                  Effacer
-                </button>
-              </div>
-            )}
-
-            {/* En-tête + CTA */}
+            {/* En-tête + tri */}
             <div className="flex items-center justify-between">
-              <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                Discussions{" "}
-                <span
-                  className="ml-1 px-1.5 py-0.5 rounded-md text-[11px] font-bold normal-case tracking-normal"
-                  style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
-                >
-                  {filtered.length}
-                </span>
-              </p>
-              {/* CTA visible sur mobile uniquement */}
+              <div className="flex items-center gap-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
+                  Discussions{" "}
+                  <span
+                    className="ml-1 px-1.5 py-0.5 rounded-md text-[11px] font-bold normal-case tracking-normal"
+                    style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
+                  >
+                    {total}
+                  </span>
+                </p>
+                <div className="flex items-center gap-0.5">
+                  {TRIS.map((t) => (
+                    <button
+                      key={t.value}
+                      onClick={() => setTri(t.value)}
+                      className="px-2.5 py-1.5 text-[12px] font-medium rounded-lg whitespace-nowrap"
+                      style={
+                        tri === t.value
+                          ? { color: "var(--text-primary)", textDecoration: "underline", textUnderlineOffset: "3px" }
+                          : { color: "var(--text-tertiary)" }
+                      }
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <Link
                 href="/nouveau-post"
                 className="md:hidden text-[13px] font-semibold text-white px-3 py-1.5 rounded-lg transition-opacity hover:opacity-90"
@@ -371,46 +476,43 @@ export function HomepageView({ posts, votedPostIds = new Set() }: { posts: Post[
             </div>
 
             {/* Posts */}
-            {filtered.length === 0 ? (
+            <div ref={listRef}>
+            {loading && posts.length === 0 ? (
+              <div className="space-y-2">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="rounded-xl h-[100px] animate-pulse"
+                    style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }} />
+                ))}
+              </div>
+            ) : posts.length === 0 ? (
               <div
                 className="rounded-xl px-6 py-12 text-center"
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <p className="text-[14px]" style={{ color: "var(--text-secondary)" }}>
-                  {searchQuery.trim()
-                    ? "Aucun résultat — Essaie un autre mot-clé"
-                    : `Aucune discussion à ${quartierActif?.nom ?? villeActive?.nom} pour l'instant.`}
+                  Aucune discussion à {quartierActif?.nom ?? villeActive?.nom} pour l&apos;instant.
                 </p>
-                {!searchQuery.trim() && (
-                  <Link
-                    href="/nouveau-post"
-                    className="inline-block mt-4 text-[13px] font-semibold text-white px-4 py-2 rounded-lg"
-                    style={{ background: "var(--green)" }}
-                  >
-                    Soyez le premier à publier
-                  </Link>
-                )}
+                <Link
+                  href="/nouveau-post"
+                  className="inline-block mt-4 text-[13px] font-semibold text-white px-4 py-2 rounded-lg"
+                  style={{ background: "var(--green)" }}
+                >
+                  Soyez le premier à publier
+                </Link>
               </div>
             ) : (
               <div className="space-y-2">
-                {paginated.map((post) => (
-                  <PostCard key={post.id} post={post} searchQuery={searchQuery} hasVoted={votedPostIds.has(post.id)} />
+                {posts.map((post) => (
+                  <PostCard key={post.id} post={post} searchQuery={searchQuery} hasVoted={votedPostIds.has(post.id)} isBookmarked={bookmarkedPostIds.has(post.id)} />
                 ))}
-                {hasMore && (
-                  <button
-                    onClick={() => setPage((p) => p + 1)}
-                    className="w-full py-3 rounded-xl text-[13px] font-medium transition-colors hover-bg"
-                    style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", color: "var(--text-secondary)" }}
-                  >
-                    Charger plus ({filtered.length - page * PAGE_SIZE} restants)
-                  </button>
-                )}
+                <Pagination page={page} total={total} onPage={goToPage} />
               </div>
             )}
+            </div>
           </div>
 
           {/* Sidebar — desktop uniquement */}
-          <Sidebar villeSlug={villeSlug} posts={posts} />
+          <Sidebar villeSlug={villeSlug} stats={sidebarStats} />
         </div>
       </main>
     </>

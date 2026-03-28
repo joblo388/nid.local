@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -8,10 +8,12 @@ export function VoteButton({
   postId,
   initialVotes,
   initialHasVoted,
+  hydrateVote = false,
 }: {
   postId: string;
   initialVotes: number;
   initialHasVoted: boolean;
+  hydrateVote?: boolean;
 }) {
   const { data: session } = useSession();
   const router = useRouter();
@@ -19,6 +21,18 @@ export function VoteButton({
   const [nbVotes, setNbVotes] = useState(initialVotes);
   const [hasVoted, setHasVoted] = useState(initialHasVoted);
   const [loading, setLoading] = useState(false);
+  const [erreur, setErreur] = useState("");
+
+  // When page is served from ISR cache, hydrate the real vote state client-side
+  useEffect(() => {
+    if (!hydrateVote) return;
+    let cancelled = false;
+    fetch(`/api/posts/${postId}/vote`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (!cancelled && d != null) setHasVoted(d.hasVoted); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [postId, hydrateVote]);
 
   async function handleVote(e: React.MouseEvent) {
     e.preventDefault();
@@ -29,6 +43,8 @@ export function VoteButton({
     }
     if (loading) return;
     setLoading(true);
+    setErreur("");
+    // Optimistic update
     setHasVoted(!hasVoted);
     setNbVotes((n) => n + (hasVoted ? -1 : 1));
     try {
@@ -38,12 +54,17 @@ export function VoteButton({
         setHasVoted(data.hasVoted);
         setNbVotes(data.nbVotes);
       } else {
+        // Revert
         setHasVoted(hasVoted);
         setNbVotes((n) => n + (hasVoted ? 1 : -1));
+        setErreur(data.error ?? "Erreur lors du vote.");
+        setTimeout(() => setErreur(""), 3000);
       }
     } catch {
       setHasVoted(hasVoted);
       setNbVotes((n) => n + (hasVoted ? 1 : -1));
+      setErreur("Une erreur est survenue.");
+      setTimeout(() => setErreur(""), 3000);
     } finally {
       setLoading(false);
     }
@@ -72,6 +93,11 @@ export function VoteButton({
       >
         {nbVotes}
       </span>
+      {erreur && (
+        <span className="text-[10px] text-center max-w-[60px]" style={{ color: "var(--red-text)" }}>
+          {erreur}
+        </span>
+      )}
     </div>
   );
 }

@@ -1,33 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { villes, quartiersDeVille } from "@/lib/data";
-import { Post } from "@/lib/types";
+import { villes, quartiersDeVille, ressourcesUtiles } from "@/lib/data";
 
-const ressources = [
-  { label: "Régie du logement", href: "#" },
-  { label: "Registre foncier du Québec", href: "#" },
-  { label: "Calcul hypothécaire", href: "#" },
-  { label: "Guide du locataire", href: "#" },
-  { label: "Règlements municipaux MTL", href: "#" },
-];
+export type SidebarStats = {
+  countsByVille: Record<string, number>;
+  countsByQuartier: Record<string, number>;
+  totalPosts: number;
+  totalVues: number;
+  totalReponses: number;
+};
 
-export function Sidebar({ villeSlug, posts }: { villeSlug?: string; posts: Post[] }) {
+export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: SidebarStats }) {
   const villesActives = villes
-    .map((v) => ({ ...v, nb: posts.filter((p) => p.quartier.villeSlug === v.slug).length }))
+    .map((v) => ({ ...v, nb: stats.countsByVille[v.slug] ?? 0 }))
     .filter((v) => v.nb > 0)
     .sort((a, b) => b.nb - a.nb);
 
   const qDeVilleActive = villeSlug ? quartiersDeVille(villeSlug) : [];
   const quartiersActifs = qDeVilleActive
-    .map((q) => ({ ...q, nb: posts.filter((p) => p.quartier.slug === q.slug).length }))
+    .map((q) => ({ ...q, nb: stats.countsByQuartier[q.slug] ?? 0 }))
     .filter((q) => q.nb > 0)
     .sort((a, b) => b.nb - a.nb)
     .slice(0, 6);
-
-  const totalPosts = posts.length;
-  const totalVues = posts.reduce((s, p) => s + p.nbVues, 0);
-  const totalReponses = posts.reduce((s, p) => s + p.nbCommentaires, 0);
 
   return (
     <aside className="hidden md:block space-y-3 w-[240px] shrink-0">
@@ -139,9 +134,9 @@ export function Sidebar({ villeSlug, posts }: { villeSlug?: string; posts: Post[
         <div className="grid grid-cols-2">
           {[
             { label: "Membres", valeur: "3 241" },
-            { label: "Discussions", valeur: totalPosts.toLocaleString("fr-CA") },
-            { label: "Vues totales", valeur: totalVues.toLocaleString("fr-CA") },
-            { label: "Réponses", valeur: totalReponses.toLocaleString("fr-CA") },
+            { label: "Discussions", valeur: stats.totalPosts.toLocaleString("fr-CA") },
+            { label: "Vues totales", valeur: stats.totalVues.toLocaleString("fr-CA") },
+            { label: "Réponses", valeur: stats.totalReponses.toLocaleString("fr-CA") },
           ].map((stat, i) => (
             <div
               key={stat.label}
@@ -174,9 +169,9 @@ export function Sidebar({ villeSlug, posts }: { villeSlug?: string; posts: Post[
           </h3>
         </div>
         <ul>
-          {ressources.map((r, i) => (
+          {ressourcesUtiles.map((r, i) => (
             <li key={r.label}
-              style={{ borderBottom: i < ressources.length - 1 ? "0.5px solid var(--border)" : "none" }}>
+              style={{ borderBottom: i < ressourcesUtiles.length - 1 ? "0.5px solid var(--border)" : "none" }}>
               <Link
                 href={r.href}
                 className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg"

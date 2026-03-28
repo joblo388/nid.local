@@ -5,6 +5,16 @@ import { rateLimit, getIp } from "@/lib/rateLimit";
 
 type Params = { params: Promise<{ id: string }> };
 
+export async function GET(_req: NextRequest, { params }: Params) {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ hasVoted: false });
+  const { id: postId } = await params;
+  const vote = await prisma.vote.findUnique({
+    where: { userId_postId: { userId: session.user.id, postId } },
+  });
+  return NextResponse.json({ hasVoted: !!vote });
+}
+
 export async function POST(req: NextRequest, { params }: Params) {
   if (!rateLimit(getIp(req), 30, 60_000)) {
     return NextResponse.json({ error: "Trop de requêtes." }, { status: 429 });

@@ -21,7 +21,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 
   const body = await req.json();
-  const { contenu } = body;
+  const { contenu, imageUrl, mentions } = body;
   if (!contenu?.trim() || contenu.trim().length < 2) {
     return NextResponse.json({ error: "Le commentaire est trop court." }, { status: 400 });
   }
@@ -35,7 +35,13 @@ export async function POST(req: NextRequest, { params }: Params) {
 
   const [comment] = await prisma.$transaction([
     prisma.comment.create({
-      data: { contenu: contenu.trim(), auteurNom, auteurId, postId },
+      data: {
+        contenu: contenu.trim(),
+        auteurNom,
+        auteurId,
+        postId,
+        imageUrl: typeof imageUrl === "string" && imageUrl.startsWith("data:image/") ? imageUrl : null,
+      },
     }),
     prisma.post.update({
       where: { id: postId },
@@ -46,14 +52,30 @@ export async function POST(req: NextRequest, { params }: Params) {
   // Notify post author (if different from commenter)
   if (post.auteurId && post.auteurId !== auteurId) {
     prisma.notification.create({
-      data: {
-        userId: post.auteurId,
-        type: "comment",
-        postId,
-        postTitre: post.titre,
-        acteurNom: auteurNom,
-      },
+      data: { userId: post.auteurId, type: "comment", postId, postTitre: post.titre, acteurNom: auteurNom },
     }).catch(() => {});
+  }
+
+  // Notify @mentioned users
+  if (Array.isArray(mentions) && mentions.length > 0) {
+    const mentionedUsers = await prisma.user.findMany({
+      where: { username: { in: mentions.slice(0, 5) } },
+      select: { id: true },
+    });
+    const notifyIds = mentionedUsers
+      .map((u) => u.id)
+      .filter((uid) => uid !== auteurId && uid !== post.auteurId);
+    if (notifyIds.length > 0) {
+      prisma.notification.createMany({
+        data: notifyIds.map((uid) => ({
+          userId: uid,
+          type: "mention",
+          postId,
+          postTitre: post.titre,
+          acteurNom: auteurNom,
+        })),
+      }).catch(() => {});
+    }
   }
 
   return NextResponse.json(comment, { status: 201 });

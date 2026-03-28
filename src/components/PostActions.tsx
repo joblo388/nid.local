@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Categorie } from "@/lib/types";
+import { ReportButton } from "./ReportButton";
 
 const CATEGORIES: { value: Categorie; label: string }[] = [
   { value: "question", label: "Question" },
@@ -10,17 +12,22 @@ const CATEGORIES: { value: Categorie; label: string }[] = [
   { value: "location", label: "Location" },
   { value: "renovation", label: "Conseil / Rénovation" },
   { value: "voisinage", label: "Voisinage" },
-  { value: "alerte", label: "Alerte" },
+  { value: "construction", label: "Construction" },
+  { value: "legal", label: "Légal" },
+  { value: "financement", label: "Financement" },
+  { value: "copropriete", label: "Co-propriété" },
 ];
 
 type Props = {
   postId: string;
+  auteurId?: string | null;
   initialTitre: string;
   initialContenu: string;
   initialCategorie: Categorie;
 };
 
-export function PostActions({ postId, initialTitre, initialContenu, initialCategorie }: Props) {
+export function PostActions({ postId, auteurId, initialTitre, initialContenu, initialCategorie }: Props) {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [mode, setMode] = useState<"view" | "edit" | "delete">("view");
   const [titre, setTitre] = useState(initialTitre);
@@ -28,6 +35,15 @@ export function PostActions({ postId, initialTitre, initialContenu, initialCateg
   const [categorie, setCategorie] = useState<Categorie>(initialCategorie);
   const [erreur, setErreur] = useState("");
   const [loading, setLoading] = useState(false);
+
+  if (status === "loading") return null;
+
+  const isAuthor = !!(session?.user?.id && session.user.id === auteurId);
+
+  // Non-authors see the report button
+  if (!isAuthor) {
+    return <ReportButton type="post" targetId={postId} />;
+  }
 
   async function handleSave() {
     setErreur("");
@@ -63,7 +79,6 @@ export function PostActions({ postId, initialTitre, initialContenu, initialCateg
   if (mode === "edit") {
     return (
       <div className="space-y-4 mt-4 pt-4" style={{ borderTop: "0.5px solid var(--border)" }}>
-        {/* Catégorie */}
         <div className="flex flex-wrap gap-1.5">
           {CATEGORIES.map((cat) => (
             <button

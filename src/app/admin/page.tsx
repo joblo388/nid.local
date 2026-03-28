@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { Header } from "@/components/Header";
 import { prisma } from "@/lib/prisma";
 import { AdminActions } from "./AdminActions";
+import { PinButton } from "./AdminActions";
 
 export const dynamic = "force-dynamic";
 
@@ -15,17 +16,23 @@ export default async function AdminPage() {
 
   if (user?.role !== "admin") notFound();
 
-  const reports = await prisma.report.findMany({
-    orderBy: { creeLe: "desc" },
-    include: { auteur: { select: { username: true, name: true } } },
-  });
-
-  const stats = {
-    posts: await prisma.post.count(),
-    comments: await prisma.comment.count(),
-    users: await prisma.user.count(),
-    reports: reports.length,
-  };
+  const [reports, recentPosts, stats] = await Promise.all([
+    prisma.report.findMany({
+      orderBy: { creeLe: "desc" },
+      include: { auteur: { select: { username: true, name: true } } },
+    }),
+    prisma.post.findMany({
+      orderBy: [{ epingle: "desc" }, { creeLe: "desc" }],
+      take: 20,
+      select: { id: true, titre: true, auteurNom: true, epingle: true, creeLe: true },
+    }),
+    Promise.all([
+      prisma.post.count(),
+      prisma.comment.count(),
+      prisma.user.count(),
+      prisma.report.count(),
+    ]).then(([posts, comments, users, rpts]) => ({ posts, comments, users, reports: rpts })),
+  ]);
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
@@ -52,6 +59,43 @@ export default async function AdminPage() {
               <p className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>{s.label}</p>
             </div>
           ))}
+        </div>
+
+        {/* Posts épinglés */}
+        <div>
+          <h2 className="text-[14px] font-bold mb-3" style={{ color: "var(--text-primary)" }}>
+            Posts récents — gestion épingle
+          </h2>
+          <div
+            className="rounded-xl overflow-hidden"
+            style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+          >
+            {recentPosts.map((p, i) => (
+              <div
+                key={p.id}
+                className="flex items-center gap-3 px-4 py-3"
+                style={{ borderBottom: i < recentPosts.length - 1 ? "0.5px solid var(--border)" : "none" }}
+              >
+                {p.epingle && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                    style={{ background: "var(--amber-bg)", color: "var(--amber-text)" }}>
+                    épinglé
+                  </span>
+                )}
+                <Link
+                  href={`/post/${p.id}`}
+                  className="flex-1 text-[13px] truncate transition-opacity hover:opacity-70"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {p.titre}
+                </Link>
+                <span className="text-[11px] shrink-0" style={{ color: "var(--text-tertiary)" }}>
+                  {p.auteurNom}
+                </span>
+                <PinButton postId={p.id} initialEpingle={p.epingle} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Signalements */}

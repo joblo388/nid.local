@@ -1,30 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Post } from "@/lib/types";
 import { VoteButton } from "./VoteButton";
+import { BookmarkButton } from "./BookmarkButton";
 
 const badgeBg: Record<string, string> = {
-  alerte:    "var(--red-bg)",
-  question:  "var(--blue-bg)",
-  vente:     "var(--green-light-bg)",
-  location:  "#EEE9FB",
-  renovation:"var(--amber-bg)",
-  voisinage: "var(--bg-secondary)",
+  question:     "var(--blue-bg)",
+  vente:        "var(--green-light-bg)",
+  location:     "#EEE9FB",
+  renovation:   "var(--amber-bg)",
+  voisinage:    "var(--bg-secondary)",
+  construction: "var(--amber-bg)",
+  legal:        "var(--red-bg)",
+  financement:  "var(--blue-bg)",
+  copropriete:  "var(--green-light-bg)",
 };
 
 const badgeFg: Record<string, string> = {
-  alerte:    "var(--red-text)",
-  question:  "var(--blue-text)",
-  vente:     "var(--green-text)",
-  location:  "#5B31B3",
-  renovation:"var(--amber-text)",
-  voisinage: "var(--text-secondary)",
+  question:     "var(--blue-text)",
+  vente:        "var(--green-text)",
+  location:     "#5B31B3",
+  renovation:   "var(--amber-text)",
+  voisinage:    "var(--text-secondary)",
+  construction: "var(--amber-text)",
+  legal:        "var(--red-text)",
+  financement:  "var(--blue-text)",
+  copropriete:  "var(--green-text)",
 };
 
 const badgeLabels: Record<string, string> = {
-  alerte: "Alerte", question: "Question", vente: "Vente",
-  location: "Location", renovation: "Conseil", voisinage: "Voisinage",
+  question: "Question", vente: "Vente", location: "Location",
+  renovation: "Conseil", voisinage: "Voisinage",
+  construction: "Construction", legal: "Légal",
+  financement: "Financement", copropriete: "Co-propriété",
 };
 
 function tempsRelatif(dateStr: string): string {
@@ -57,11 +67,36 @@ function Highlighted({ text, query }: { text: string; query: string }) {
   );
 }
 
-export function PostCard({ post, searchQuery = "", hasVoted = false }: { post: Post; searchQuery?: string; hasVoted?: boolean }) {
+function PostImage({ src }: { src: string }) {
+  if (src.startsWith("data:")) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return (
+      <img src={src} alt="" loading="lazy"
+        className="w-full rounded-lg object-cover mb-3"
+        style={{ maxHeight: "180px", border: "0.5px solid var(--border)" }}
+      />
+    );
+  }
+  return (
+    <div className="relative w-full mb-3 rounded-lg overflow-hidden" style={{ maxHeight: "180px", border: "0.5px solid var(--border)" }}>
+      <Image src={src} alt="" width={700} height={180}
+        className="w-full object-cover" style={{ maxHeight: "180px" }}
+        sizes="(max-width: 768px) 100vw, 700px" />
+    </div>
+  );
+}
+
+export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean }) {
   return (
     <article
       className="rounded-xl transition-colors hover-bg"
-      style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+      style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", cursor: "pointer" }}
+      onClick={(e) => {
+        // Don't navigate if clicking on interactive elements
+        const target = e.target as HTMLElement;
+        if (target.closest("a, button, [role=button]")) return;
+        window.location.href = `/post/${post.id}`;
+      }}
     >
       <div className="flex gap-0">
         {/* Colonne vote — style Reddit */}
@@ -109,6 +144,8 @@ export function PostCard({ post, searchQuery = "", hasVoted = false }: { post: P
             <Highlighted text={post.contenu} query={searchQuery} />
           </p>
 
+          {post.imageUrl && <PostImage src={post.imageUrl} />}
+
           {/* Footer */}
           <div className="flex items-center gap-4">
             <Link href={`/post/${post.id}`}
@@ -120,6 +157,7 @@ export function PostCard({ post, searchQuery = "", hasVoted = false }: { post: P
               </svg>
               {post.nbCommentaires} réponses
             </Link>
+            <BookmarkButton postId={post.id} initialBookmarked={isBookmarked} />
             <span className="flex items-center gap-1 text-[12px] ml-auto" style={{ color: "var(--text-tertiary)" }}>
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

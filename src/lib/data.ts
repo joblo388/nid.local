@@ -116,6 +116,20 @@ type DbPost = {
   creeLe: Date;
 };
 
+// ─── Ressources utiles (source unique pour tout le site) ──────────────────────
+
+export const ressourcesUtiles = [
+  { label: "Marketplace immobilier", href: "/annonces" },
+  { label: "Données de marché", href: "/donnees-marche" },
+  { label: "Calculatrice hypothécaire", href: "/calculatrice-hypothecaire" },
+  { label: "Capacité d'emprunt", href: "/capacite-emprunt" },
+  { label: "Calculateur plex", href: "/calculateur-plex" },
+  { label: "Acheter ou louer?", href: "/acheter-ou-louer" },
+  { label: "Suggestions", href: "/suggestions" },
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 export function dbPostToAppPost(p: DbPost): Post {
   const quartier: Quartier = quartierBySlug[p.quartierSlug] ?? {
     slug: p.quartierSlug,
@@ -136,5 +150,6 @@ export function dbPostToAppPost(p: DbPost): Post {
     nbVotes: p.nbVotes,
     nbVues: p.nbVues,
     epingle: p.epingle,
+    imageUrl: p.imageUrl ?? null,
   };
 }

@@ -23,8 +23,14 @@ model User {
   posts         Post[]
   comments      Comment[]
   votes         Vote[]
+  commentVotes  CommentVote[]
   reports       Report[]
   notifications Notification[]
+  bookmarks     Bookmark[]
+  listings         Listing[]
+  listingFavorites ListingFavorite[]
+  listingComments  ListingComment[]
+  savedReports     SavedReport[]
 }
 
 model Post {
@@ -43,9 +49,19 @@ model Post {
   epingle        Boolean  @default(false)
   creeLe         DateTime @default(now())
 
-  auteur   User?     @relation(fields: [auteurId], references: [id], onDelete: SetNull)
-  comments Comment[]
-  votes    Vote[]
+  auteur    User?      @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+  comments  Comment[]
+  votes     Vote[]
+  bookmarks Bookmark[]
+
+  @@index([villeSlug])
+  @@index([quartierSlug])
+  @@index([categorie])
+  @@index([villeSlug, quartierSlug])
+  @@index([creeLe])
+  @@index([nbVotes])
+  @@index([nbCommentaires])
+  @@index([epingle])
 }
 
 model Vote {
@@ -62,19 +78,39 @@ model Vote {
 model Comment {
   id        String   @id @default(cuid())
   contenu   String
+  imageUrl  String?
   auteurNom String
   auteurId  String?
   postId    String
+  parentId  String?
+  nbVotes   Int      @default(0)
   creeLe    DateTime @default(now())
 
-  auteur User? @relation(fields: [auteurId], references: [id], onDelete: SetNull)
-  post   Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  auteur  User?       @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+  post    Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent  Comment?    @relation("Replies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[]   @relation("Replies")
+  votes   CommentVote[]
+
+  @@index([postId])
+  @@index([parentId])
+}
+
+model CommentVote {
+  id        String @id @default(cuid())
+  userId    String
+  commentId String
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
 }
 
 model Notification {
   id         String   @id @default(cuid())
   userId     String
-  type       String   // "comment"
+  type       String   // "comment" | "reply"
   postId     String
   postTitre  String
   acteurNom  String
@@ -82,6 +118,9 @@ model Notification {
   creeLe     DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([lu])
 }
 
 model Report {
@@ -93,9 +132,159 @@ model Report {
   creeLe   DateTime @default(now())
 
   auteur User? @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+
+  @@index([targetId])
+}
+
+model Bookmark {
+  id     String   @id @default(cuid())
+  userId String
+  postId String
+  creeLe DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+}
+
+model Listing {
+  id            String   @id @default(cuid())
+  titre         String
+  description   String
+  prix          Int
+  type          String   // "unifamiliale" | "condo" | "duplex" | "triplex" | "quadruplex"
+  style         String?  // "maison_de_ville" | "cottage" | "bungalow" | "loft" etc.
+  quartierSlug  String
+  villeSlug     String   @default("montreal")
+  adresse       String
+  chambres      Int      @default(0)
+  sallesDeBain  Int      @default(0)
+  superficie    Int      @default(0) // pi²
+  superficieTerrain Int? // pi²
+  anneeConstruction Int?
+  stationnement String?  // "aucun" | "entree" | "garage_simple" | "garage_double" | "interieur"
+  chauffage     String?
+  eauChaude     String?
+  sousSol       String?
+  piscine       String?
+  taxesMunicipales Int?  // $ / an
+  taxesScolaires   Int?  // $ / an
+  fraisCondo       Int?  // $ / mois
+  lienVisite    String?  // URL visite virtuelle
+  anonyme       Boolean  @default(false)  // masquer le username du propriétaire
+  telephone     String?  // numéro affiché si le propriétaire le souhaite
+  statut        String   @default("active") // "active" | "vendu" | "retire"
+  nbVues        Int      @default(0)
+  nbClics       Int      @default(0)  // clics depuis la liste
+  auteurId      String
+  creeLe        DateTime @default(now())
+  modifieLe     DateTime @updatedAt
+
+  auteur    User              @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  images    ListingImage[]
+  documents ListingDocument[]
+  favoris   ListingFavorite[]
+  commentaires   ListingComment[]
+  prixHistorique ListingPriceHistory[]
+
+  @@index([villeSlug])
+  @@index([quartierSlug])
+  @@index([type])
+  @@index([statut])
+  @@index([prix])
+  @@index([creeLe])
+  @@index([auteurId])
+}
+
+model ListingImage {
+  id        String  @id @default(cuid())
+  listingId String
+  url       String
+  position  Int     @default(0)
+  principale Boolean @default(false)
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+}
+
+model ListingDocument {
+  id        String @id @default(cuid())
+  listingId String
+  nom       String
+  url       String
+  taille    String? // "2,4 Mo" etc.
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+}
+
+model ListingFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  creeLe    DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+}
+
+model ListingPriceHistory {
+  id        String   @id @default(cuid())
+  listingId String
+  prix      Int
+  evenement String   // "mise_en_vente" | "reduction" | "augmentation"
+  creeLe    DateTime @default(now())
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+}
+
+model ListingComment {
+  id         String   @id @default(cuid())
+  contenu    String
+  auteurNom  String
+  auteurId   String?
+  listingId  String
+  creeLe     DateTime @default(now())
+
+  auteur  User?   @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+}
+
+model SavedReport {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // "hypothecaire" | "plex" | "acheter_louer"
+  titre     String
+  donnees   String   // JSON string of all input values
+  resultats String   // JSON string of computed results
+  creeLe    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
 }
 
 model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  creeLe    DateTime @default(now())
+}
+
+model EmailVerificationToken {
   id        String   @id @default(cuid())
   email     String
   token     String   @unique

@@ -1,0 +1,37 @@
+.dm-disclaimer{font-size:12px;color:var(--text-tertiary);padding:10px 14px;border-radius:8px;border-left:3px solid var(--border-secondary);background:var(--bg-secondary);margin-bottom:28px;line-height:1.6}
+.dm-province-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+@media(max-width:600px){.dm-province-stats{grid-template-columns:1fr 1fr}}
+.dm-pstat{background:var(--bg-card);border:0.5px solid var(--border);border-radius:12px;padding:14px 16px}
+.dm-pstat-val{font-size:24px;font-weight:500;letter-spacing:-0.5px;margin-bottom:2px}
+.dm-pstat-lbl{font-size:11px;color:var(--text-tertiary)}
+.dm-pstat-sub{font-size:11px;color:var(--green);margin-top:2px}
+.dm-search-wrap{position:relative;margin-bottom:28px}
+.dm-search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--text-tertiary);fill:none;stroke-width:1.5}
+.dm-search-input{width:100%;padding:10px 12px 10px 38px;border:0.5px solid var(--border-secondary);border-radius:8px;font-size:14px;background:var(--bg-card);color:var(--text-primary);font-family:inherit;outline:none;transition:border-color 0.15s}
+.dm-search-input:focus{border-color:var(--green)}
+.dm-filters{display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.dm-filter-pill{font-size:13px;padding:6px 14px;border-radius:20px;border:0.5px solid var(--border-secondary);cursor:pointer;background:transparent;color:var(--text-tertiary);transition:all 0.15s;user-select:none}
+.dm-filter-pill:hover{background:var(--bg-secondary)}
+.dm-filter-pill.active{background:var(--green-light-bg);color:var(--green-text);border-color:transparent}
+.dm-region-section{margin-bottom:36px}
+.dm-region-header{display:flex;align-items:baseline;gap:10px;margin-bottom:16px;padding-bottom:10px;border-bottom:0.5px solid var(--border)}
+.dm-region-title{font-size:18px;font-weight:500}
+.dm-region-count{font-size:12px;color:var(--text-tertiary);padding:2px 8px;border-radius:20px;background:var(--bg-secondary)}
+.dm-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.dm-market-card{background:var(--bg-card);border:0.5px solid var(--border);border-radius:12px;padding:16px 18px;transition:border-color 0.15s}
+.dm-market-card:hover{border-color:var(--border-secondary)}
+.dm-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dm-card-name{font-size:14px;font-weight:500}
+.dm-card-trend{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.dm-trend-up{background:var(--green-light-bg);color:var(--green-text)}
+.dm-trend-hot{background:var(--red-bg);color:var(--red-text)}
+.dm-trend-stable{background:var(--bg-secondary);color:var(--text-tertiary)}
+.dm-card-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.dm-stat{display:flex;flex-direction:column;gap:2px}
+.dm-stat-val{font-size:14px;font-weight:500}
+.dm-stat-lbl{font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.3px}
+.dm-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text-tertiary)}
+.dm-market-badge{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500}
+.dm-badge-vendeur{background:var(--red-bg);color:var(--red-text)}
+.dm-badge-equilibre{background:var(--green-light-bg);color:var(--green-text)}
+.dm-badge-acheteur{background:var(--blue-bg);color:var(--blue-text)}

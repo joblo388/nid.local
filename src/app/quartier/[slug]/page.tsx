@@ -36,15 +36,31 @@ export default async function QuartierPage({ params }: Props) {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [dbPostsQuartier, allDbPosts, userVotes] = await Promise.all([
-    prisma.post.findMany({ where: { quartierSlug: slug }, orderBy: { nbVotes: "desc" } }),
-    prisma.post.findMany({ select: { villeSlug: true, quartierSlug: true, nbVues: true, nbCommentaires: true, id: true, titre: true, contenu: true, auteurNom: true, categorie: true, nbVotes: true, epingle: true, creeLe: true, auteurId: true } }),
+  const PAGE_SIZE = 20;
+  const whereQuartier = { quartierSlug: slug };
+  const orderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
+
+  const [dbPostsQuartier, totalQuartier, userVotes, userBookmarks, byVille, byQuartier, totaux] = await Promise.all([
+    prisma.post.findMany({ where: whereQuartier, orderBy, take: PAGE_SIZE }),
+    prisma.post.count({ where: whereQuartier }),
     userId ? prisma.vote.findMany({ where: { userId }, select: { postId: true } }) : [],
+    userId ? prisma.bookmark.findMany({ where: { userId }, select: { postId: true } }) : [],
+    prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
+    prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
+    prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
   ]);
 
   const postsQuartier = dbPostsQuartier.map(dbPostToAppPost);
-  const allPosts = allDbPosts.map(dbPostToAppPost);
-  const votedPostIds = new Set(userVotes.map((v) => v.postId));
+  const initialVotedPostIds = userVotes.map((v) => v.postId);
+  const initialBookmarkedPostIds = userBookmarks.map((b) => b.postId);
+
+  const sidebarStats = {
+    countsByVille: Object.fromEntries(byVille.map((r) => [r.villeSlug, r._count._all])),
+    countsByQuartier: Object.fromEntries(byQuartier.map((r) => [r.quartierSlug, r._count._all])),
+    totalPosts: totaux._count._all,
+    totalVues: totaux._sum.nbVues ?? 0,
+    totalReponses: totaux._sum.nbCommentaires ?? 0,
+  };
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
@@ -97,10 +113,16 @@ export default async function QuartierPage({ params }: Props) {
                 </Link>
               </div>
             ) : (
-              <PostsFiltres posts={postsQuartier} votedPostIds={votedPostIds} />
+              <PostsFiltres
+                initialPosts={postsQuartier}
+                initialTotal={totalQuartier}
+                initialVotedPostIds={initialVotedPostIds}
+                initialBookmarkedPostIds={initialBookmarkedPostIds}
+                quartierSlug={slug}
+              />
             )}
           </div>
-          <Sidebar villeSlug={quartier.villeSlug} posts={allPosts} />
+          <Sidebar villeSlug={quartier.villeSlug} stats={sidebarStats} />
         </div>
       </main>
     </div>

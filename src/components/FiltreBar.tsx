@@ -9,9 +9,12 @@ const categories: { value: Categorie | "tous"; label: string }[] = [
   { value: "vente", label: "Vente" },
   { value: "location", label: "Location" },
   { value: "question", label: "Questions" },
-  { value: "renovation", label: "Rénovation" },
+  { value: "renovation", label: "Conseils" },
   { value: "voisinage", label: "Voisinage" },
-  { value: "alerte", label: "Alertes" },
+  { value: "construction", label: "Construction" },
+  { value: "legal", label: "Légal" },
+  { value: "financement", label: "Financement" },
+  { value: "copropriete", label: "Co-propriété" },
 ];
 
 const tris = [
