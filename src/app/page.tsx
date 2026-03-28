@@ -18,7 +18,7 @@ export default async function HomePage() {
   const defaultOrderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
 
   const [dbPosts, total, userVotes, userBookmarks, sidebarStats] = await Promise.all([
-    prisma.post.findMany({ where: defaultWhere, orderBy: defaultOrderBy, take: PAGE_SIZE }),
+    prisma.post.findMany({ where: defaultWhere, orderBy: defaultOrderBy, take: PAGE_SIZE, include: { auteur: { select: { tag: true } } } }),
     prisma.post.count({ where: defaultWhere }),
     userId ? prisma.vote.findMany({ where: { userId }, select: { postId: true } }) : [],
     userId ? prisma.bookmark.findMany({ where: { userId }, select: { postId: true } }) : [],

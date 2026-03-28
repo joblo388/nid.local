@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
   const userId = session?.user?.id;
 
   const [dbPosts, total] = await Promise.all([
-    prisma.post.findMany({ where, orderBy, take: PAGE_SIZE, skip: (page - 1) * PAGE_SIZE }),
+    prisma.post.findMany({ where, orderBy, take: PAGE_SIZE, skip: (page - 1) * PAGE_SIZE, include: { auteur: { select: { tag: true } } } }),
     prisma.post.count({ where }),
   ]);
 

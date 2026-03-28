@@ -11,6 +11,7 @@ type UserData = {
   name: string | null;
   email: string | null;
   image: string | null;
+  tag: string | null;
   emailNotifComments: boolean;
   emailNotifReplies: boolean;
   emailNotifMentions: boolean;
@@ -25,6 +26,7 @@ export function ParametresForm({ user }: { user: UserData }) {
 
   const [username, setUsername] = useState(user.username ?? "");
   const [name, setName] = useState(user.name ?? "");
+  const [tag, setTag] = useState(user.tag ?? "");
   const [imagePreview, setImagePreview] = useState<string | null>(user.image);
   const [imageData, setImageData] = useState<string | null | undefined>(undefined);
 
@@ -81,7 +83,7 @@ export function ParametresForm({ user }: { user: UserData }) {
     setProfileError("");
     setLoadingProfile(true);
 
-    const body: Record<string, string | null> = { username, name };
+    const body: Record<string, string | null> = { username, name, tag: tag || null };
     if (imageData !== undefined) body.image = imageData;
 
     const res = await fetch("/api/user/settings", {
@@ -251,6 +253,33 @@ export function ParametresForm({ user }: { user: UserData }) {
             />
             <p className="text-[11px] mt-1" style={{ color: "var(--text-tertiary)" }}>
               Le courriel ne peut pas être modifié pour l&apos;instant.
+            </p>
+          </div>
+
+          {/* Tag professionnel */}
+          <div>
+            <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+              Tag professionnel (optionnel)
+            </label>
+            <select
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
+              className="w-full px-3 py-2 text-[13px] rounded-lg"
+              style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", border: "0.5px solid var(--border)" }}
+            >
+              <option value="">Aucun tag</option>
+              <option value="courtier">🏠 Courtier immobilier</option>
+              <option value="notaire">⚖️ Notaire</option>
+              <option value="finance">💰 Finance</option>
+              <option value="entrepreneur">🔨 Entrepreneur</option>
+              <option value="electricien">⚡ Électricien</option>
+              <option value="plombier">🔧 Plombier</option>
+              <option value="charpentier">🪵 Charpentier</option>
+              <option value="proprietaire">🏡 Propriétaire</option>
+              <option value="locataire">🔑 Locataire</option>
+            </select>
+            <p className="text-[11px] mt-1" style={{ color: "var(--text-tertiary)" }}>
+              Affiché à côté de votre nom sur vos posts pour ajouter de la crédibilité.
             </p>
           </div>
 

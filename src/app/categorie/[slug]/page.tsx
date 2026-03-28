@@ -119,6 +119,7 @@ export default async function CategoriePage({ params }: Props) {
     where: { categorie: slug },
     orderBy: [{ epingle: "desc" }, { nbVotes: "desc" }],
     take: 30,
+    include: { auteur: { select: { tag: true } } },
   });
   const posts = dbPosts.map(dbPostToAppPost);
 

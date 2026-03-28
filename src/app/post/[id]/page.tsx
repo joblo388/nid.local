@@ -57,7 +57,7 @@ export default async function PostPage({ params }: Props) {
   const { id } = await params;
 
   const [dbPost, dbComments, byVille, byQuartier, totaux, dbPoll] = await Promise.all([
-    prisma.post.findUnique({ where: { id } }),
+    prisma.post.findUnique({ where: { id }, include: { auteur: { select: { tag: true } } } }),
     prisma.comment.findMany({
       where: { postId: id, parentId: null },
       orderBy: { creeLe: "asc" },
@@ -185,6 +185,14 @@ export default async function PostPage({ params }: Props) {
                     >
                       {post.auteur}
                     </Link>
+                    {post.auteurTag && (
+                      <span
+                        className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none ml-1"
+                        style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)" }}
+                      >
+                        {post.auteurTag === "courtier" ? "Courtier" : post.auteurTag === "notaire" ? "Notaire" : post.auteurTag === "finance" ? "Finance" : post.auteurTag === "entrepreneur" ? "Entrepreneur" : post.auteurTag === "electricien" ? "Électricien" : post.auteurTag === "plombier" ? "Plombier" : post.auteurTag === "charpentier" ? "Charpentier" : post.auteurTag === "proprietaire" ? "Propriétaire" : post.auteurTag === "locataire" ? "Locataire" : post.auteurTag}
+                      </span>
+                    )}
                   </span>
                   <span>·</span>
                   <span>{dateStr}</span>

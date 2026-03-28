@@ -10,7 +10,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { username, name, image, currentPassword, newPassword,
+  const { username, name, image, tag, currentPassword, newPassword,
     emailNotifComments, emailNotifReplies, emailNotifMentions, emailNotifMessages, emailNotifAnnonces } = body;
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
@@ -24,6 +24,14 @@ export async function PATCH(req: NextRequest) {
   if (typeof emailNotifMentions === "boolean") updates.emailNotifMentions = emailNotifMentions;
   if (typeof emailNotifMessages === "boolean") updates.emailNotifMessages = emailNotifMessages;
   if (typeof emailNotifAnnonces === "boolean") updates.emailNotifAnnonces = emailNotifAnnonces;
+
+  // Professional tag
+  if (tag !== undefined) {
+    const validTags = ["finance", "notaire", "courtier", "entrepreneur", "electricien", "plombier", "charpentier", "locataire", "proprietaire", ""];
+    if (typeof tag === "string" && validTags.includes(tag)) {
+      updates.tag = tag || null;
+    }
+  }
 
   // Username change
   if (username !== undefined) {

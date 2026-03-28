@@ -40,6 +40,23 @@ const badgeLabels: Record<string, string> = {
   financement: "Financement", copropriete: "Co-propriété",
 };
 
+const tagLabels: Record<string, string> = {
+  courtier: "Courtier", notaire: "Notaire", finance: "Finance",
+  entrepreneur: "Entrepreneur", electricien: "Électricien", plombier: "Plombier",
+  charpentier: "Charpentier", proprietaire: "Propriétaire", locataire: "Locataire",
+};
+
+function AuthorTag({ tag }: { tag: string }) {
+  return (
+    <span
+      className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none"
+      style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)" }}
+    >
+      {tagLabels[tag] ?? tag}
+    </span>
+  );
+}
+
 function tempsRelatif(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60000);
@@ -160,6 +177,7 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
             </Link>
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
             <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{post.auteur}</span>
+            {post.auteurTag && <AuthorTag tag={post.auteurTag} />}
             {authorBadges && authorBadges.length > 0 && <BadgeDisplay badges={authorBadges} compact />}
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
             <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tempsRelatif(post.creeLe)}</span>

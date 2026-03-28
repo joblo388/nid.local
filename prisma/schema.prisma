@@ -17,6 +17,7 @@ model User {
   password      String?
   createdAt     DateTime  @default(now())
   role          String    @default("user")
+  tag           String?   // professional tag: "courtier", "notaire", "finance", etc.
 
   // Email notification preferences
   emailNotifComments Boolean @default(true)

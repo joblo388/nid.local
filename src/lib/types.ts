@@ -35,5 +35,6 @@ export type Post = {
   nbVues: number;
   epingle?: boolean;
   auteurId?: string | null;
+  auteurTag?: string | null;
   imageUrl?: string | null;
 };

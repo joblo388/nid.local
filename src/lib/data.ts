@@ -105,6 +105,7 @@ type DbPost = {
   contenu: string;
   auteurNom: string;
   auteurId?: string | null;
+  auteur?: { tag?: string | null } | null;
   quartierSlug: string;
   villeSlug: string;
   categorie: string;
@@ -144,6 +145,7 @@ export function dbPostToAppPost(p: DbPost): Post {
     contenu: p.contenu,
     auteur: p.auteurNom,
     auteurId: p.auteurId ?? null,
+    auteurTag: p.auteur?.tag ?? null,
     quartier,
     categorie: p.categorie as Categorie,
     creeLe: p.creeLe.toISOString(),

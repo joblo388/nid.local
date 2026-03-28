@@ -15,7 +15,7 @@ export default async function ParametresPage() {
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
-      id: true, username: true, name: true, email: true, image: true,
+      id: true, username: true, name: true, email: true, image: true, tag: true,
       emailNotifComments: true, emailNotifReplies: true, emailNotifMentions: true,
       emailNotifMessages: true, emailNotifAnnonces: true,
     },

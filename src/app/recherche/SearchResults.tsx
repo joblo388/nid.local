@@ -31,6 +31,7 @@ export async function SearchResults({ q }: { q: string }) {
       },
       orderBy: [{ epingle: "desc" }, { nbVotes: "desc" }],
       take: 30,
+      include: { auteur: { select: { tag: true } } },
     }),
     prisma.listing.findMany({
       where: {

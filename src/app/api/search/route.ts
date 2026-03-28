@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
     },
     orderBy: { nbVotes: "desc" },
     take: 30,
+    include: { auteur: { select: { tag: true } } },
   });
 
   return NextResponse.json(posts.map(dbPostToAppPost));

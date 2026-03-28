@@ -24,6 +24,7 @@ export default async function TendancesPage() {
     where: { creeLe: { gte: oneWeekAgo } },
     orderBy: [{ nbVotes: "desc" }, { nbCommentaires: "desc" }],
     take: 30,
+    include: { auteur: { select: { tag: true } } },
   });
 
   // Most discussed (by comment count)
@@ -31,6 +32,7 @@ export default async function TendancesPage() {
     where: { creeLe: { gte: oneWeekAgo } },
     orderBy: { nbCommentaires: "desc" },
     take: 10,
+    include: { auteur: { select: { tag: true } } },
   });
 
   // Most viewed
@@ -38,6 +40,7 @@ export default async function TendancesPage() {
     where: { creeLe: { gte: oneWeekAgo } },
     orderBy: { nbVues: "desc" },
     take: 10,
+    include: { auteur: { select: { tag: true } } },
   });
 
   const allIds = [...new Set([...dbPosts, ...dbMostDiscussed, ...dbMostViewed].map((p) => p.id))];

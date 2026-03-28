@@ -36,7 +36,7 @@ export default async function VillePage({ params }: Props) {
   const orderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
 
   const [dbPostsVille, totalVille, userVotes, userBookmarks, byVille, byQuartier, totaux] = await Promise.all([
-    prisma.post.findMany({ where: whereVille, orderBy, take: PAGE_SIZE }),
+    prisma.post.findMany({ where: whereVille, orderBy, take: PAGE_SIZE, include: { auteur: { select: { tag: true } } } }),
     prisma.post.count({ where: whereVille }),
     userId ? prisma.vote.findMany({ where: { userId }, select: { postId: true } }) : [],
     userId ? prisma.bookmark.findMany({ where: { userId }, select: { postId: true } }) : [],

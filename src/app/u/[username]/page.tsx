@@ -36,6 +36,7 @@ export default async function ProfilPage({ params }: Props) {
     prisma.post.findMany({
       where: { auteurId: user.id },
       orderBy: { creeLe: "desc" },
+      include: { auteur: { select: { tag: true } } },
     }),
     prisma.comment.findMany({
       where: { auteurId: user.id },
