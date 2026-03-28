@@ -452,7 +452,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
           {subsLoaded && subscribedSlugs.length > 0 && (
             <button
               onClick={toggleMesQuartiers}
-              className="px-3 py-1 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap"
+              className="px-3 py-1 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap min-h-[36px]"
               style={
                 mesQuartiersActive
                   ? { background: "var(--green)", color: "#fff" }

@@ -105,6 +105,10 @@ body {
     font-family: inherit;
     text-decoration: none;
     padding: 4px 12px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 72px;
+    text-align: center;
   }
   .bottom-nav a.active, .bottom-nav button.active {
     color: var(--green);

@@ -338,7 +338,7 @@ export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
             >
               {CRITERIA.map((c) => (
                 <div key={c.key} className="flex items-center justify-between">
-                  <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
+                  <span className="text-[12px] shrink-0 w-20 truncate" style={{ color: "var(--text-secondary)" }}>
                     {c.label}
                   </span>
                   <StarRatingInput

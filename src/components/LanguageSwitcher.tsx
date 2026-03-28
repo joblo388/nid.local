@@ -12,10 +12,10 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <span className="flex items-center gap-0.5 select-none" style={{ fontSize: "12px" }}>
+    <span className="flex items-center gap-0.5 select-none" style={{ fontSize: "12px", minHeight: "44px" }}>
       <button
         onClick={() => setLang("fr")}
-        className="transition-opacity hover:opacity-70 px-0.5"
+        className="transition-opacity hover:opacity-70 px-1.5 py-1"
         style={{
           color: locale === "fr" ? "var(--green)" : "var(--text-tertiary)",
           fontWeight: locale === "fr" ? 700 : 400,
@@ -31,7 +31,7 @@ export function LanguageSwitcher() {
       <span style={{ color: "var(--text-tertiary)", fontSize: "10px" }}>/</span>
       <button
         onClick={() => setLang("en")}
-        className="transition-opacity hover:opacity-70 px-0.5"
+        className="transition-opacity hover:opacity-70 px-1.5 py-1"
         style={{
           color: locale === "en" ? "var(--green)" : "var(--text-tertiary)",
           fontWeight: locale === "en" ? 700 : 400,

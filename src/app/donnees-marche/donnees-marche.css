@@ -59,3 +59,4 @@
 .dm-chart-tooltip-row{display:flex;align-items:center;gap:5px;font-size:11px;margin-top:2px}
 .dm-chart-tooltip-label{color:var(--text-secondary);min-width:75px}
 .dm-chart-tooltip-val{font-weight:600;color:var(--text-primary)}
+@media(max-width:480px){.dm-chart-tooltip{max-width:calc(100vw - 20px);font-size:11px}}

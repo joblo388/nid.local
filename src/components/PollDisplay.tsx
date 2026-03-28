@@ -160,7 +160,7 @@ export function PollDisplay({ pollId }: { pollId: string }) {
                       </svg>
                     )}
                     <span
-                      className="text-[13px] font-medium break-words"
+                      className="text-[12px] md:text-[13px] font-medium break-words"
                       style={{ color: isSelected ? "var(--green-text)" : "var(--text-primary)", overflowWrap: "break-word", wordBreak: "break-word" }}
                     >
                       {option.label}
@@ -184,7 +184,7 @@ export function PollDisplay({ pollId }: { pollId: string }) {
               type="button"
               disabled={voting}
               onClick={() => handleVote(option.id)}
-              className="w-full text-left rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all disabled:opacity-50"
+              className="w-full text-left rounded-lg px-3 py-2.5 text-[12px] md:text-[13px] font-medium transition-all disabled:opacity-50"
               style={{
                 background: "var(--bg-secondary)",
                 border: "0.5px solid var(--border)",

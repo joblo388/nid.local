@@ -10,10 +10,10 @@ function BadgePill({ badge }: { badge: Badge }) {
       style={{ background: c.bg, color: c.text, border: "0.5px solid var(--border)" }}
     >
       <span>{badge.icon}</span>
-      <span>{badge.nom}</span>
+      <span className="whitespace-nowrap">{badge.nom}</span>
       {/* Tooltip */}
       <span
-        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 rounded-md text-[10px] font-normal whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50"
+        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 rounded-md text-[10px] font-normal max-w-[200px] text-center whitespace-normal opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50"
         style={{
           background: "var(--text-primary)",
           color: "var(--bg-card)",

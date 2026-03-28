@@ -152,7 +152,7 @@ export function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarke
           {post.imageUrl && <PostImage src={post.imageUrl} />}
 
           {/* Footer */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4 flex-wrap">
             {/* Vote count — mobile only (inline in footer) */}
             <span className="flex md:hidden items-center gap-1 text-[12px] font-medium" style={{ color: "var(--text-tertiary)" }}>
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

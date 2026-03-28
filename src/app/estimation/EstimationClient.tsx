@@ -304,7 +304,7 @@ export function EstimationClient() {
               style={{
                 width: "100%", padding: "8px 10px", fontSize: 13, borderRadius: 8,
                 border: "0.5px solid var(--border)", background: "var(--bg-secondary)", color: "var(--text-primary)",
-                outline: "none",
+
               }}
             >
               {villes.map((v) => (
@@ -324,7 +324,7 @@ export function EstimationClient() {
               style={{
                 width: "100%", padding: "8px 10px", fontSize: 13, borderRadius: 8,
                 border: "0.5px solid var(--border)", background: "var(--bg-secondary)", color: "var(--text-primary)",
-                outline: "none",
+
               }}
             >
               {hasVilleMarket && villeEntry && (
@@ -347,7 +347,7 @@ export function EstimationClient() {
               style={{
                 width: "100%", padding: "8px 10px", fontSize: 13, borderRadius: 8,
                 border: "0.5px solid var(--border)", background: "var(--bg-secondary)", color: "var(--text-primary)",
-                outline: "none",
+
               }}
             >
               <option value="unifamiliale">Unifamiliale</option>
@@ -371,7 +371,7 @@ export function EstimationClient() {
               style={{
                 width: "100%", padding: "8px 10px", fontSize: 13, borderRadius: 8,
                 border: "0.5px solid var(--border)", background: "var(--bg-secondary)", color: "var(--text-primary)",
-                outline: "none",
+
               }}
             />
           </div>
@@ -387,7 +387,7 @@ export function EstimationClient() {
               style={{
                 width: "100%", padding: "8px 10px", fontSize: 13, borderRadius: 8,
                 border: "0.5px solid var(--border)", background: "var(--bg-secondary)", color: "var(--text-primary)",
-                outline: "none",
+
               }}
             >
               {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -407,7 +407,7 @@ export function EstimationClient() {
               style={{
                 width: "100%", padding: "8px 10px", fontSize: 13, borderRadius: 8,
                 border: "0.5px solid var(--border)", background: "var(--bg-secondary)", color: "var(--text-primary)",
-                outline: "none",
+
               }}
             >
               {[1, 2, 3, 4].map((n) => (
@@ -429,7 +429,7 @@ export function EstimationClient() {
               style={{
                 width: "100%", padding: "8px 10px", fontSize: 13, borderRadius: 8,
                 border: "0.5px solid var(--border)", background: "var(--bg-secondary)", color: "var(--text-primary)",
-                outline: "none",
+
               }}
             />
           </div>
@@ -445,7 +445,7 @@ export function EstimationClient() {
               style={{
                 width: "100%", padding: "8px 10px", fontSize: 13, borderRadius: 8,
                 border: "0.5px solid var(--border)", background: "var(--bg-secondary)", color: "var(--text-primary)",
-                outline: "none",
+
               }}
             >
               <option value="excellent">Excellent</option>

@@ -268,8 +268,8 @@
 .cmp-floating-clear{font-size:11px;padding:4px 8px;border-radius:20px;background:rgba(255,255,255,0.2);border:none;color:white;cursor:pointer;font-family:inherit;transition:background 0.15s}
 .cmp-floating-clear:hover{background:rgba(255,255,255,0.35)}
 
-@media(max-width:640px){
-  .cmp-floating-bar{bottom:70px;padding:8px 16px;font-size:12px}
+@media(max-width:768px){
+  .cmp-floating-bar{bottom:80px;padding:8px 16px;font-size:12px}
 }
 
 @media(prefers-color-scheme:dark){
@@ -280,4 +280,4 @@
 
 /* --- Mobile bottom nav padding --- */
 .mp-container{box-sizing:border-box}
-@media(max-width:640px){.mp-container{padding-bottom:70px}}
+@media(max-width:640px){.mp-container{padding-bottom:70px}.cmp-grid{min-width:500px}}
