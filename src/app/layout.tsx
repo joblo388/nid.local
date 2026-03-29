@@ -24,6 +24,8 @@ const geist = Geist({
 
 const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nidlocal.com";
 
+export const viewport = { themeColor: "#D4742A" };
+
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
@@ -64,7 +66,6 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
   manifest: "/manifest.json",
-  themeColor: "#D4742A",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
