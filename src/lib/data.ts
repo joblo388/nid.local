@@ -37,7 +37,6 @@ export const villes: Ville[] = [
   { slug: "saint-constant",           nom: "Saint-Constant",           region: "Grand Montréal" },
   { slug: "saint-eustache",           nom: "Saint-Eustache",           region: "Grand Montréal" },
   { slug: "saint-hyacinthe",          nom: "Saint-Hyacinthe",          region: "Grand Montréal" },
-  { slug: "saint-jean-sur-richelieu", nom: "Saint-Jean-sur-Richelieu", region: "Grand Montréal" },
   { slug: "saint-jerome",             nom: "Saint-Jérôme",             region: "Grand Montréal" },
   { slug: "saint-lambert",            nom: "Saint-Lambert",            region: "Grand Montréal" },
   { slug: "sainte-julie",             nom: "Sainte-Julie",             region: "Grand Montréal" },
@@ -97,7 +96,7 @@ export const villes: Ville[] = [
   // ── Montérégie ──────────────────────────────────────────────────────────
   { slug: "cowansville",               nom: "Cowansville",               region: "Montérégie" },
   { slug: "granby",                     nom: "Granby",                     region: "Montérégie" },
-  { slug: "saint-jean-sur-richelieu-m", nom: "Saint-Jean-sur-Richelieu", region: "Montérégie" },
+  { slug: "saint-jean-sur-richelieu", nom: "Saint-Jean-sur-Richelieu", region: "Montérégie" },
   { slug: "salaberry-de-valleyfield",   nom: "Salaberry-de-Valleyfield",   region: "Montérégie" },
   { slug: "sorel-tracy",               nom: "Sorel-Tracy",               region: "Montérégie" },
 

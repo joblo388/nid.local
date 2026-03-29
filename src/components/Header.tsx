@@ -50,6 +50,7 @@ export function Header() {
     : [
         { href: "/", label: t("nav.fil") },
         { href: "/tendances", label: t("nav.tendances") },
+        { href: "/villes", label: t("nav.villes") },
         { href: "/ressources", label: "Outils" },
         { href: "/annonces", label: t("nav.annonces") },
       ];
