@@ -419,7 +419,6 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
       ? subscribedSlugs.join(",")
       : undefined;
     fetchPosts({ villeSlug, quartierSlug, categorie, tri, page: 1, subscribedQuartiers: subQ });
-    listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [villeSlug, quartierSlug, categorie, tri, mesQuartiersActive]);
 
