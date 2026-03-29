@@ -84,15 +84,11 @@ export async function POST(req: NextRequest) {
   if (!titre?.trim() || titre.trim().length < 5) {
     return NextResponse.json({ error: "Le titre doit avoir au moins 5 caractères." }, { status: 400 });
   }
-  if (!contenu?.trim() || contenu.trim().length < 20) {
+  if (!poll && (!contenu?.trim() || contenu.trim().length < 20)) {
     return NextResponse.json({ error: "Le contenu doit avoir au moins 20 caractères." }, { status: 400 });
   }
-  if (!quartierSlug || !quartierBySlug[quartierSlug]) {
-    return NextResponse.json({ error: "Quartier invalide." }, { status: 400 });
-  }
-  if (!villeSlug || !villeBySlug[villeSlug]) {
-    return NextResponse.json({ error: "Ville invalide." }, { status: 400 });
-  }
+  const finalQuartierSlug = quartierSlug && quartierBySlug[quartierSlug] ? quartierSlug : "plateau-mont-royal";
+  const finalVilleSlug = villeSlug && villeBySlug[villeSlug] ? villeSlug : "montreal";
   if (!CATEGORIES.includes(categorie)) {
     return NextResponse.json({ error: "Catégorie invalide." }, { status: 400 });
   }
@@ -103,11 +99,11 @@ export async function POST(req: NextRequest) {
   const post = await prisma.post.create({
     data: {
       titre: titre.trim(),
-      contenu: contenu.trim(),
+      contenu: (contenu?.trim() || titre.trim()),
       auteurNom,
       auteurId,
-      quartierSlug,
-      villeSlug,
+      quartierSlug: finalQuartierSlug,
+      villeSlug: finalVilleSlug,
       categorie,
       imageUrl: typeof imageUrl === "string" && (imageUrl.startsWith("data:image/") || imageUrl.startsWith("https://")) ? imageUrl : null,
     },

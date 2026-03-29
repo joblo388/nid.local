@@ -112,11 +112,6 @@ export function NouveauPostForm() {
     e.preventDefault();
     setErreur("");
 
-    if (!quartierSlug) {
-      setErreur("Veuillez sélectionner un quartier.");
-      return;
-    }
-
     // Validate poll options if poll is active
     if (showPoll) {
       const filledOptions = pollOptions.filter((o) => o.trim());
@@ -128,7 +123,7 @@ export function NouveauPostForm() {
 
     setLoading(true);
     try {
-      const payload: Record<string, unknown> = { titre, contenu, villeSlug, quartierSlug, categorie, imageUrl: imageData, _hp: hp };
+      const payload: Record<string, unknown> = { titre, contenu: showPoll ? (contenu || titre) : contenu, villeSlug, quartierSlug: quartierSlug || undefined, categorie, imageUrl: showPoll ? null : imageData, _hp: hp };
       if (showPoll) {
         const filledOptions = pollOptions.filter((o) => o.trim()).map((o) => o.trim());
         if (filledOptions.length >= 2) {
@@ -174,6 +169,32 @@ export function NouveauPostForm() {
         </div>
       )}
 
+      {/* Mode: Discussion ou Sondage */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setShowPoll(false)}
+          className="flex-1 py-2.5 rounded-xl text-[13px] font-semibold transition-colors"
+          style={!showPoll
+            ? { background: "var(--green)", color: "#fff" }
+            : { background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
+          }
+        >
+          Discussion
+        </button>
+        <button
+          type="button"
+          onClick={() => { setShowPoll(true); setPollOptions(["", ""]); }}
+          className="flex-1 py-2.5 rounded-xl text-[13px] font-semibold transition-colors"
+          style={showPoll
+            ? { background: "var(--green)", color: "#fff" }
+            : { background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
+          }
+        >
+          Sondage
+        </button>
+      </div>
+
       {/* Catégorie */}
       <div>
         <label className="block text-[12px] font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
@@ -218,26 +239,28 @@ export function NouveauPostForm() {
         />
       </div>
 
-      {/* Contenu */}
-      <div>
-        <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Description
-        </label>
-        <MarkdownEditor
-          value={contenu}
-          onChange={setContenu}
-          placeholder="Décrivez votre question, annonce ou situation en détail…"
-          required
-          minLength={20}
-          rows={6}
-        />
-      </div>
+      {/* Contenu — only for discussions */}
+      {!showPoll && (
+        <div>
+          <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+            Description
+          </label>
+          <MarkdownEditor
+            value={contenu}
+            onChange={setContenu}
+            placeholder="Décrivez votre question, annonce ou situation en détail…"
+            required
+            minLength={20}
+            rows={6}
+          />
+        </div>
+      )}
 
-      {/* Localisation */}
+      {/* Localisation (optionnel) */}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Ville
+            Ville <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>(optionnel)</span>
           </label>
           <select
             value={villeSlug}
@@ -245,31 +268,34 @@ export function NouveauPostForm() {
             className="w-full px-3 py-2.5 rounded-xl text-[13px] outline-none"
             style={{ background: "var(--bg-secondary)", border: "1.5px solid var(--border)", color: "var(--text-primary)" }}
           >
+            <option value="">— Aucune —</option>
             {villes.map((v) => (
               <option key={v.slug} value={v.slug}>{v.nom}</option>
             ))}
           </select>
         </div>
-        <div>
-          <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Quartier
-          </label>
-          <select
-            value={quartierSlug}
-            onChange={(e) => setQuartierSlug(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-xl text-[13px] outline-none"
-            style={{ background: "var(--bg-secondary)", border: "1.5px solid var(--border)", color: "var(--text-primary)" }}
-          >
-            <option value="">— Choisir —</option>
-            {quartiersDispo.map((q) => (
-              <option key={q.slug} value={q.slug}>{q.nom}</option>
-            ))}
-          </select>
-        </div>
+        {villeSlug && quartiersDispo.length > 0 && (
+          <div>
+            <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+              Quartier <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>(optionnel)</span>
+            </label>
+            <select
+              value={quartierSlug}
+              onChange={(e) => setQuartierSlug(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl text-[13px] outline-none"
+              style={{ background: "var(--bg-secondary)", border: "1.5px solid var(--border)", color: "var(--text-primary)" }}
+            >
+              <option value="">— Aucun —</option>
+              {quartiersDispo.map((q) => (
+                <option key={q.slug} value={q.slug}>{q.nom}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      {/* Image */}
-      <div>
+      {/* Image — only for discussions */}
+      {!showPoll && <div>
         <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
           Image <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>(optionnel · max 2 MB)</span>
         </label>
@@ -300,31 +326,12 @@ export function NouveauPostForm() {
           </button>
         )}
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageFile} />
-      </div>
+      </div>}
 
-      {/* Sondage */}
-      <div>
-        <button
-          type="button"
-          onClick={() => {
-            setShowPoll(!showPoll);
-            if (!showPoll) setPollOptions(["", ""]);
-          }}
-          className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-[13px] transition-opacity hover:opacity-80"
-          style={{
-            background: showPoll ? "var(--green-light-bg)" : "var(--bg-secondary)",
-            color: showPoll ? "var(--green-text)" : "var(--text-secondary)",
-            border: showPoll ? "1.5px solid var(--green)" : "0.5px solid var(--border)",
-          }}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          {showPoll ? "Retirer le sondage" : "Ajouter un sondage"}
-        </button>
-
-        {showPoll && (
-          <div className="mt-3 space-y-2">
+      {/* Sondage options — only when poll mode is active */}
+      {showPoll && (
+        <div>
+          <div className="space-y-2">
             <label className="block text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
               Options du sondage <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>(2 à 5 options)</span>
             </label>
@@ -374,8 +381,8 @@ export function NouveauPostForm() {
               </button>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Honeypot */}
       <div style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, overflow: "hidden" }} aria-hidden="true" tabIndex={-1}>
