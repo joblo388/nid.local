@@ -19,7 +19,7 @@ export default function RessourcesPage() {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
-      <main className="max-w-[600px] mx-auto px-4 py-6 pb-24">
+      <main className="max-w-[1100px] mx-auto px-4 py-6 pb-24">
         <h1
           className="text-[20px] font-bold mb-2"
           style={{ color: "var(--text-primary)" }}
@@ -30,18 +30,18 @@ export default function RessourcesPage() {
           Calculatrices, données de marché et outils pour vos projets immobiliers.
         </p>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {ressourcesUtiles.map((r) => (
             <Link
               key={r.href}
               href={r.href}
-              className="flex items-center gap-4 p-4 rounded-xl transition-colors hover-bg"
+              className="flex items-center gap-3 p-4 rounded-xl transition-colors hover-bg card-hover-lift"
               style={{
                 background: "var(--bg-card)",
                 border: "0.5px solid var(--border)",
               }}
             >
-              <span className="text-[24px] shrink-0">{icons[r.href] ?? "📄"}</span>
+              <span className="text-[28px] shrink-0">{icons[r.href] ?? "📄"}</span>
               <div className="min-w-0">
                 <p
                   className="text-[14px] font-medium"
@@ -58,20 +58,6 @@ export default function RessourcesPage() {
                   </p>
                 )}
               </div>
-              <svg
-                className="w-4 h-4 shrink-0 ml-auto"
-                style={{ color: "var(--text-tertiary)" }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
             </Link>
           ))}
         </div>
