@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { villes } from "@/lib/data";
 import { useToast } from "@/components/Toast";
+import { Header } from "@/components/Header";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -630,8 +631,9 @@ export default function RepertoirePage() {
   }
 
   return (
+    <>
+    <Header />
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "20px 20px 100px" }}>
-      {/* Header */}
       <div className="mb-5">
         <h1
           style={{
@@ -827,5 +829,6 @@ export default function RepertoirePage() {
         }
       `}</style>
     </div>
+    </>
   );
 }
