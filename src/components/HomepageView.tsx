@@ -505,32 +505,46 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
   return (
     <PullToRefresh onRefresh={handlePullToRefresh}>
-      {/* Barre de catégories — sticky sous le header (desktop only) */}
-      <div className="hidden md:block sticky z-40" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
-        <div className="max-w-[1100px] mx-auto px-5">
-          <div className="flex gap-1 overflow-x-auto py-2 items-center" style={{ scrollbarWidth: "none" }}>
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => setCategorie(cat.value)}
-                className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
-                style={
-                  categorie === cat.value
-                    ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
-                    : { color: "var(--text-secondary)" }
-                }
-              >
-                {cat.label}
-              </button>
-            ))}
-            <span className="mx-1" style={{ color: "var(--border-secondary)" }}>|</span>
-            <Link
-              href="/villes"
-              className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-opacity hover:opacity-70"
-              style={{ color: "var(--green)" }}
+      {/* Barre ville + catégories — sticky sous le header */}
+      <div className="sticky z-40" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
+        <div className="max-w-[1100px] mx-auto px-3 md:px-5">
+          <div className="flex gap-2 py-2 items-center">
+            {/* Ville selector */}
+            <select
+              value={villeSlug}
+              onChange={(e) => { setVilleSlug(e.target.value); setQuartierSlug("tous"); }}
+              className="px-2.5 py-1.5 rounded-lg text-[12px] font-semibold shrink-0"
+              style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)", cursor: "pointer" }}
             >
-              Villes →
-            </Link>
+              {villes.map((v) => (
+                <option key={v.slug} value={v.slug}>{v.nom}</option>
+              ))}
+            </select>
+            {/* Catégories — desktop */}
+            <div className="hidden md:flex gap-1 overflow-x-auto flex-1 items-center" style={{ scrollbarWidth: "none" }}>
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => setCategorie(cat.value)}
+                  className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
+                  style={
+                    categorie === cat.value
+                      ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
+                      : { color: "var(--text-secondary)" }
+                  }
+                >
+                  {cat.label}
+                </button>
+              ))}
+              <span className="mx-1" style={{ color: "var(--border-secondary)" }}>|</span>
+              <Link
+                href="/villes"
+                className="px-2 py-1.5 rounded-lg text-[12px] font-medium whitespace-nowrap shrink-0 transition-opacity hover:opacity-70"
+                style={{ color: "var(--green)" }}
+              >
+                Quartiers →
+              </Link>
+            </div>
           </div>
         </div>
       </div>
