@@ -507,77 +507,25 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
   return (
     <PullToRefresh onRefresh={handlePullToRefresh}>
-      {/* Barres de navigation — sticky sous le header (desktop only) */}
-      <div className="hidden md:block sticky z-40" style={{ top: "52px" }}>
-        <VilleBar selected={mesQuartiersActive ? "" : villeSlug} onSelect={selectVille} />
-        {!mesQuartiersActive && hasQuartiers && (
-          <QuartierBar villeSlug={villeSlug} selected={quartierSlug} onSelect={(s) => setQuartierSlug(s)} />
-        )}
-        {mesQuartiersActive && (
-          <div style={{ background: "var(--bg-secondary)", borderBottom: "0.5px solid var(--border)" }}>
-            <div className="max-w-[1100px] mx-auto px-5">
-              <div className="flex gap-1.5 overflow-x-auto py-1.5" style={{ scrollbarWidth: "none" }}>
-                {subscribedSlugs.map((slug) => {
-                  const q = quartiers.find((qq) => qq.slug === slug);
-                  if (!q) return null;
-                  return (
-                    <span
-                      key={slug}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium whitespace-nowrap shrink-0"
-                      style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${q.couleur}`} />
-                      {q.nom}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
+      {/* Barre de catégories — sticky sous le header (desktop only) */}
+      <div className="hidden md:block sticky z-40" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
+        <div className="max-w-[1100px] mx-auto px-5">
+          <div className="flex gap-1 overflow-x-auto py-2" style={{ scrollbarWidth: "none" }}>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.value}
+                onClick={() => setCategorie(cat.value)}
+                className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
+                style={
+                  categorie === cat.value
+                    ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
+                    : { color: "var(--text-secondary)" }
+                }
+              >
+                {cat.label}
+              </button>
+            ))}
           </div>
-        )}
-      </div>
-
-      {/* Breadcrumb (desktop only) */}
-      <div className="hidden md:block" style={{ borderBottom: "0.5px solid var(--border)" }}>
-        <div
-          className="max-w-[1100px] mx-auto px-5 py-2 flex items-center justify-between"
-        >
-          <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-            {mesQuartiersActive ? (
-              <span className="font-medium" style={{ color: "var(--green-text)" }}>Mes quartiers</span>
-            ) : (
-              <>
-                <span>Province de Qu{"\u00e9"}bec</span>
-                <span>/</span>
-                <button
-                  onClick={() => setQuartierSlug("tous")}
-                  className="transition-opacity hover:opacity-70"
-                  style={{ color: quartierActif ? "var(--text-secondary)" : "var(--green-text)" }}
-                >
-                  {villeActive?.nom}
-                </button>
-                {quartierActif && (
-                  <>
-                    <span>/</span>
-                    <span className="font-medium" style={{ color: "var(--green-text)" }}>{quartierActif.nom}</span>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-          {subsLoaded && subscribedSlugs.length > 0 && (
-            <button
-              onClick={toggleMesQuartiers}
-              className="px-3 py-1 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap min-h-[36px]"
-              style={
-                mesQuartiersActive
-                  ? { background: "var(--green)", color: "#fff" }
-                  : { background: "var(--bg-card)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
-              }
-            >
-              {mesQuartiersActive ? "Mes quartiers \u2713" : "Mes quartiers"}
-            </button>
-          )}
         </div>
       </div>
 
@@ -602,23 +550,6 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
               )}
             </div>
 
-            {/* Filtres catégorie (desktop only) */}
-            <div className="hidden md:flex items-center gap-1 flex-wrap">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setCategorie(cat.value)}
-                  className="px-2 py-1 text-[11px] md:px-3 md:py-1.5 md:text-[12px] rounded-lg font-medium transition-colors whitespace-nowrap"
-                  style={
-                    categorie === cat.value
-                      ? { background: "var(--green)", color: "#fff" }
-                      : { background: "var(--bg-card)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
-                  }
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
 
             {/* En-tête + tri */}
             <div className="flex items-center justify-between">
