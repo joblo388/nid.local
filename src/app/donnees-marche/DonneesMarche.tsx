@@ -113,27 +113,26 @@ export function DonneesMarche() {
         <div className="dm-pstat"><div className="dm-pstat-val">42%</div><div className="dm-pstat-lbl">Ratio ventes/inscriptions</div><div className="dm-pstat-sub">Marché équilibré</div></div>
       </div>
 
-      {/* Ville bar — same style as forum */}
+      {/* Ville selector */}
       <div style={{ marginBottom: 16 }}>
-        <div className="flex items-center gap-1 flex-wrap py-2">
-          <button
-            onClick={() => { setVilleSlug("tous"); setSearch(""); }}
-            className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
-            style={villeSlug === "tous" ? { background: "var(--green)", color: "#fff" } : { color: "var(--text-secondary)" }}
-          >
-            Tout
-          </button>
-          {villes.map((v) => (
-            <button
-              key={v.slug}
-              onClick={() => { setVilleSlug(v.slug); setSearch(""); }}
-              className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
-              style={villeSlug === v.slug ? { background: "var(--green-light-bg)", color: "var(--green-text)" } : { color: "var(--text-secondary)" }}
-            >
-              {v.nom}
-            </button>
-          ))}
-        </div>
+        <select
+          value={villeSlug}
+          onChange={(e) => { setVilleSlug(e.target.value); setSearch(""); }}
+          className="px-4 py-2.5 rounded-xl text-[14px] font-medium w-full"
+          style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "0.5px solid var(--border)", cursor: "pointer" }}
+        >
+          <option value="tous">Toutes les villes du Québec</option>
+          {(() => {
+            const regions = [...new Set(villes.map((v) => v.region))];
+            return regions.map((region) => (
+              <optgroup key={region} label={region}>
+                {villes.filter((v) => v.region === region).map((v) => (
+                  <option key={v.slug} value={v.slug}>{v.nom}</option>
+                ))}
+              </optgroup>
+            ));
+          })()}
+        </select>
       </div>
 
       {/* Search */}
