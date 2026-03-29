@@ -41,7 +41,7 @@ const badgeLabels: Record<string, string> = {
   question: "Question", vente: "Vente", location: "Location",
   renovation: "Conseil", voisinage: "Voisinage",
   construction: "Construction", legal: "Légal",
-  financement: "Financement", copropriete: "Co-propriété",
+  financement: "Financement", copropriete: "Condo",
 };
 
 const tagLabels: Record<string, string> = {

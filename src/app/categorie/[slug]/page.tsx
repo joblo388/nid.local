@@ -76,9 +76,9 @@ const CATEGORIES: Record<string, CatInfo> = {
     keywords: ["hypothèque québec", "taux hypothécaire montréal", "mise de fonds québec", "financement immobilier", "SCHL"],
   },
   copropriete: {
-    label: "Co-propriété",
+    label: "Condo",
     description: "Vie en copropriété au Québec — syndicats, charges, règlements, assemblées et gestion d'immeubles.",
-    seoTitle: "Co-propriété au Québec — Syndicats et gestion | nid.local",
+    seoTitle: "Condo au Québec — Syndicats et gestion | nid.local",
     seoDescription: "Discussions sur la vie en copropriété au Québec. Syndicats, charges de condo, règlements et gestion d'immeubles sur nid.local.",
     keywords: ["copropriété québec", "syndicat condo montréal", "charges condo québec", "gestion copropriété"],
   },

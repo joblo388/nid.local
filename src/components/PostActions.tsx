@@ -15,7 +15,7 @@ const CATEGORIES: { value: Categorie; label: string }[] = [
   { value: "construction", label: "Construction" },
   { value: "legal", label: "Légal" },
   { value: "financement", label: "Financement" },
-  { value: "copropriete", label: "Co-propriété" },
+  { value: "copropriete", label: "Condo" },
 ];
 
 type Props = {

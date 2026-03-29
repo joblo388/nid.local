@@ -17,7 +17,7 @@ const CATEGORIES = [
   { value: "construction", label: "Construction" },
   { value: "legal", label: "Légal" },
   { value: "financement", label: "Financement" },
-  { value: "copropriete", label: "Co-propriété" },
+  { value: "copropriete", label: "Condo" },
 ];
 
 export function NouveauPostForm() {

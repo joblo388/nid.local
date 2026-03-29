@@ -88,7 +88,7 @@ const CATEGORIES: { value: Categorie | "tous"; label: string }[] = [
   { value: "construction", label: "Construction" },
   { value: "legal", label: "Légal" },
   { value: "financement", label: "Financement" },
-  { value: "copropriete", label: "Co-propriété" },
+  { value: "copropriete", label: "Condo" },
 ];
 
 const TRIS = [
@@ -508,7 +508,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
       {/* Barre de catégories — sticky sous le header (desktop only) */}
       <div className="hidden md:block sticky z-40" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
         <div className="max-w-[1100px] mx-auto px-5">
-          <div className="flex gap-1 overflow-x-auto py-2" style={{ scrollbarWidth: "none" }}>
+          <div className="flex gap-1 overflow-x-auto py-2 items-center" style={{ scrollbarWidth: "none" }}>
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.value}
@@ -523,6 +523,14 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                 {cat.label}
               </button>
             ))}
+            <span className="mx-1" style={{ color: "var(--border-secondary)" }}>|</span>
+            <Link
+              href="/villes"
+              className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-opacity hover:opacity-70"
+              style={{ color: "var(--green)" }}
+            >
+              Villes →
+            </Link>
           </div>
         </div>
       </div>
