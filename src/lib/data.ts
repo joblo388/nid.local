@@ -243,11 +243,13 @@ export const ressourcesUtiles = [
   { label: "Calculatrice hypothécaire", href: "/calculatrice-hypothecaire", description: "Estimez vos paiements mensuels" },
   { label: "Capacité d'emprunt", href: "/capacite-emprunt", description: "Calculez votre budget maximal" },
   { label: "Calculateur plex", href: "/calculateur-plex", description: "Analysez la rentabilité d'un plex" },
+  { label: "Taxe de bienvenue", href: "/taxe-bienvenue", description: "Calculez vos droits de mutation" },
   { label: "Acheter ou louer?", href: "/acheter-ou-louer", description: "Comparez les deux scénarios" },
   { label: "Estimation de valeur", href: "/estimation", description: "Estimez la valeur de votre propriété" },
   { label: "Suggestions", href: "/suggestions", description: "Proposez des améliorations" },
   { label: "Répertoire professionnel", href: "/repertoire", description: "Trouvez un professionnel de confiance" },
   { label: "Comparer des quartiers", href: "/comparer-quartiers", description: "Comparez les quartiers côte à côte" },
+  { label: "Guide premier achat", href: "/guide-premier-achat", description: "Tout savoir pour votre premier achat" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
