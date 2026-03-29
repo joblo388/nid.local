@@ -207,15 +207,18 @@ function CommentItem({
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
-            {comment.auteurNom}
-          </span>
-          {comment.auteurTag && (
+          {comment.auteurTag ? (
             <span
-              className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none"
-              style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)" }}
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] leading-none"
+              style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--green)" }}
             >
-              {tagLabels[comment.auteurTag] ?? comment.auteurTag}
+              <span className="font-medium" style={{ color: "var(--text-primary)" }}>{comment.auteurNom}</span>
+              <span style={{ color: "var(--green-text)" }}>·</span>
+              <span className="font-medium" style={{ color: "var(--green-text)" }}>{tagLabels[comment.auteurTag] ?? comment.auteurTag}</span>
+            </span>
+          ) : (
+            <span className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+              {comment.auteurNom}
             </span>
           )}
           <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{dateStr}</span>

@@ -50,13 +50,18 @@ const tagLabels: Record<string, string> = {
   charpentier: "Charpentier", proprietaire: "Propriétaire", locataire: "Locataire",
 };
 
-function AuthorTag({ tag }: { tag: string }) {
+function AuthorWithTag({ name, tag }: { name: string; tag?: string | null }) {
+  if (!tag) {
+    return <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{name}</span>;
+  }
   return (
     <span
-      className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium leading-none"
-      style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)" }}
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] leading-none"
+      style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--green)" }}
     >
-      {tagLabels[tag] ?? tag}
+      <span className="font-medium" style={{ color: "var(--text-primary)" }}>{name}</span>
+      <span style={{ color: "var(--green-text)" }}>·</span>
+      <span className="font-medium" style={{ color: "var(--green-text)" }}>{tagLabels[tag] ?? tag}</span>
     </span>
   );
 }
@@ -186,10 +191,7 @@ export const PostCard = React.memo(function PostCard({ post, searchQuery = "", h
               {post.quartier.nom}
             </Link>
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
-            <span className="inline-flex items-center gap-1">
-              <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{post.auteur}</span>
-              {post.auteurTag && <span className="hidden md:inline"><AuthorTag tag={post.auteurTag} /></span>}
-            </span>
+            <AuthorWithTag name={post.auteur} tag={post.auteurTag} />
             {authorLevel && <span className="hidden md:inline"><UserLevel levelName={authorLevel.name} levelColor={authorLevel.color} compact /></span>}
             {authorBadges && authorBadges.length > 0 && <span className="hidden md:inline"><BadgeDisplay badges={authorBadges} compact /></span>}
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
