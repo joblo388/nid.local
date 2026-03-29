@@ -263,7 +263,7 @@ type Props = {
 };
 
 export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, initialBookmarkedPostIds, sidebarStats }: Props) {
-  const [villeSlug, setVilleSlug] = useState("montreal");
+  const [villeSlug, setVilleSlug] = useState("");
   const [quartierSlug, setQuartierSlug] = useState("tous");
   const [categorie, setCategorie] = useState<string>("tous");
   const [tri, setTri] = useState<"recent" | "populaire" | "actif">("populaire");
@@ -364,12 +364,12 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
     }
     try {
       const qsObj: Record<string, string> = {
-        villeSlug: params.villeSlug,
         quartierSlug: params.quartierSlug,
         categorie: params.categorie,
         tri: params.tri,
         page: String(params.page),
       };
+      if (params.villeSlug) qsObj.villeSlug = params.villeSlug;
       if (params.subscribedQuartiers) {
         qsObj.subscribedQuartiers = params.subscribedQuartiers;
       }
@@ -516,6 +516,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
               className="px-2.5 py-1.5 rounded-lg text-[12px] font-semibold shrink-0"
               style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)", cursor: "pointer" }}
             >
+              <option value="">Toutes les villes</option>
               {villes.map((v) => (
                 <option key={v.slug} value={v.slug}>{v.nom}</option>
               ))}
@@ -536,13 +537,12 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                   {cat.label}
                 </button>
               ))}
-              <span className="mx-1" style={{ color: "var(--border-secondary)" }}>|</span>
               <Link
                 href="/villes"
-                className="px-2 py-1.5 rounded-lg text-[12px] font-medium whitespace-nowrap shrink-0 transition-opacity hover:opacity-70"
-                style={{ color: "var(--green)" }}
+                className="px-3 py-1.5 rounded-lg text-[12px] font-semibold whitespace-nowrap shrink-0 transition-opacity hover:opacity-90 ml-auto"
+                style={{ background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }}
               >
-                Quartiers →
+                Villes & quartiers
               </Link>
             </div>
           </div>

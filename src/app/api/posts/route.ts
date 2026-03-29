@@ -9,7 +9,7 @@ const PAGE_SIZE = 20;
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const villeSlug = searchParams.get("villeSlug") ?? "montreal";
+  const villeSlug = searchParams.get("villeSlug") || null;
   const quartierSlug = searchParams.get("quartierSlug");
   const categorie = searchParams.get("categorie");
   const tri = searchParams.get("tri") ?? "populaire";
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
         ...(categorie && categorie !== "tous" ? { categorie } : {}),
       }
     : {
-        villeSlug,
+        ...(villeSlug ? { villeSlug } : {}),
         ...(quartierSlug && quartierSlug !== "tous" ? { quartierSlug } : {}),
         ...(categorie && categorie !== "tous" ? { categorie } : {}),
       };

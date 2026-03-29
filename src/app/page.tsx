@@ -14,7 +14,7 @@ export default async function HomePage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const defaultWhere = { villeSlug: "montreal" };
+  const defaultWhere = {};
   const defaultOrderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
 
   const [dbPosts, total, userVotes, userBookmarks, sidebarStats] = await Promise.all([
