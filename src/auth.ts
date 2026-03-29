@@ -83,9 +83,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 name: user.name ?? candidate,
                 username: candidate,
                 image: user.image ?? null,
+                emailVerified: new Date(),
               },
               select: { id: true, username: true },
             });
+            // Send welcome email (fire-and-forget)
+            import("@/lib/email").then(({ sendEmail, welcomeEmailContent }) => {
+              sendEmail({ to: user.email!, subject: "Bienvenue sur nid.local — Votre communauté immobilière", html: welcomeEmailContent() }).catch(() => {});
+            }).catch(() => {});
           } else {
             // Update photo from Google on every login
             if (user.image) {
