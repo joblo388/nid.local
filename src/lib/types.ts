@@ -20,8 +20,7 @@ export type Categorie =
   | "construction"
   | "legal"
   | "financement"
-  | "copropriete"
-  | "ama";
+  | "copropriete";
 
 export type Post = {
   id: string;

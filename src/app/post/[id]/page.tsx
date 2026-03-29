@@ -46,13 +46,11 @@ const badgeStyles: Record<string, { bg: string; color: string }> = {
   location:  { bg: "#EEE9FB",              color: "#5B31B3" },
   renovation:{ bg: "var(--amber-bg)",      color: "var(--amber-text)" },
   voisinage: { bg: "var(--bg-secondary)",  color: "var(--text-secondary)" },
-  ama:       { bg: "#EEE9FB",              color: "#5B31B3" },
 };
 
 const badgeLabels: Record<string, string> = {
   alerte: "Alerte", question: "Question", vente: "Vente",
   location: "Location", renovation: "Conseil", voisinage: "Voisinage",
-  ama: "AMA",
 };
 
 export default async function PostPage({ params }: Props) {
@@ -152,30 +150,6 @@ export default async function PostPage({ params }: Props) {
                   {post.quartier.nom}
                 </Link>
               </div>
-
-              {post.categorie === "ama" && (
-                <div
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg mb-4"
-                  style={{ background: "#EEE9FB", border: "1px solid #D4C5F9" }}
-                >
-                  <svg className="w-5 h-5 shrink-0" style={{ color: "#5B31B3" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div>
-                    <p className="text-[13px] font-semibold" style={{ color: "#5B31B3" }}>
-                      Session AMA — Posez vos questions à {post.auteur}
-                    </p>
-                    {post.auteurTag && (
-                      <span
-                        className="inline-flex items-center mt-1 px-2 py-0.5 rounded-md text-[11px] font-semibold leading-none"
-                        style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)" }}
-                      >
-                        {post.auteurTag === "courtier" ? "Courtier" : post.auteurTag === "notaire" ? "Notaire" : post.auteurTag === "finance" ? "Finance" : post.auteurTag === "entrepreneur" ? "Entrepreneur" : post.auteurTag === "electricien" ? "Électricien" : post.auteurTag === "plombier" ? "Plombier" : post.auteurTag === "charpentier" ? "Charpentier" : post.auteurTag === "proprietaire" ? "Propriétaire" : post.auteurTag === "locataire" ? "Locataire" : post.auteurTag}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
 
               <h1 className="text-[18px] font-bold mb-4 leading-snug" style={{ color: "var(--text-primary)" }}>
                 {post.titre}
