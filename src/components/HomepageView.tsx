@@ -505,8 +505,8 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
   return (
     <PullToRefresh onRefresh={handlePullToRefresh}>
-      {/* Barre ville + catégories — sticky sous le header */}
-      <div className="sticky z-40" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
+      {/* Barre ville + catégories — sticky sous le header, hidden on desktop (sidebar takes over) */}
+      <div className="sticky z-40 lg:hidden" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
         <div className="max-w-[1100px] mx-auto px-3 md:px-5">
           <div className="flex gap-2 py-2 items-center">
             {/* Ville selector */}

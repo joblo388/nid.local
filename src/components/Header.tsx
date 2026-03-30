@@ -59,9 +59,9 @@ export function Header() {
       className="sticky top-0 z-50"
       style={{ background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}
     >
-      <div className="max-w-[1100px] mx-auto px-5 h-[52px] flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link href={isMarketplace ? "/annonces" : "/"} className="flex items-center gap-2 shrink-0">
+      <div className="max-w-[1100px] lg:max-w-none mx-auto px-5 h-[52px] flex items-center justify-between gap-4">
+        {/* Logo — hidden on lg+ where LeftSidebar has the logo */}
+        <Link href={isMarketplace ? "/annonces" : "/"} className="flex lg:hidden items-center gap-2 shrink-0">
           <span className="text-[18px] font-black tracking-tight leading-none">
             <span style={{ color: "var(--text-primary)" }}>nid</span>
             <span style={{ color: "var(--green)" }}>.local</span>
@@ -74,8 +74,8 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Nav desktop */}
-        <nav className="hidden md:flex items-center gap-5 text-[13px] font-medium">
+        {/* Nav desktop — hidden on lg+ where LeftSidebar takes over */}
+        <nav className="hidden md:flex lg:hidden items-center gap-5 text-[13px] font-medium">
           {navLinks.map((l) => (
             <Link
               key={l.href}

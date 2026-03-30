@@ -439,7 +439,7 @@ export function LeftSidebar() {
     <aside
       className="w-[248px] shrink-0 fixed left-0 top-0 h-screen overflow-y-auto hidden lg:flex flex-col z-40"
       style={{
-        background: "var(--bg-card)",
+        background: "var(--bg-page)",
         borderRight: "0.5px solid var(--border)",
         scrollbarWidth: "thin",
         scrollbarColor: "var(--border) transparent",
@@ -451,7 +451,7 @@ export function LeftSidebar() {
       <div
         className="sticky top-0 z-10 flex items-center gap-2 px-[18px] h-[52px] shrink-0"
         style={{
-          background: "var(--bg-card)",
+          background: "var(--bg-page)",
           borderBottom: "0.5px solid var(--border)",
         }}
       >
