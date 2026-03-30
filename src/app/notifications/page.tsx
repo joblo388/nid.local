@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Notifications — nid.local" };
+export const metadata = { title: "Notifications" };
 
 function tempsRelatif(dateStr: Date): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -36,7 +36,7 @@ export default async function NotificationsPage() {
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
       <main className="max-w-[600px] mx-auto px-5 py-8">
-        <h1 className="text-[20px] font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-[22px] font-bold mb-6" style={{ color: "var(--text-primary)" }}>
           Notifications
         </h1>
 

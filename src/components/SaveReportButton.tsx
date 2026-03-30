@@ -72,7 +72,7 @@ export function SaveReportButton({ type, getDonnees, getResultats, getTitre }: P
       {saved ? (
         <>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
-          Sauvegardé — voir dans mon profil
+          Sauvegardé! Voir dans mon profil
         </>
       ) : (
         <>

@@ -249,6 +249,9 @@ export const ressourcesUtiles = [
   { label: "Répertoire professionnel", href: "/repertoire", description: "Trouvez un professionnel de confiance" },
   { label: "Comparer des quartiers", href: "/comparer-quartiers", description: "Comparez les quartiers côte à côte" },
   { label: "Guide premier achat", href: "/guide-premier-achat", description: "Tout savoir pour votre premier achat" },
+  { label: "Premier acheteur", href: "/premier-acheteur", description: "RAP, CELIAPP et programmes d'aide" },
+  { label: "Frais d'achat", href: "/frais-achat", description: "Tous les frais lors de l'achat d'une propriété" },
+  { label: "Lexique immobilier", href: "/lexique", description: "Vocabulaire et termes immobiliers expliqués" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

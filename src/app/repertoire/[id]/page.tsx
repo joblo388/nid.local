@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props) {
   if (!profile) return {};
   const excerpt = profile.description.slice(0, 155).replace(/\s\S*$/, "") + "...";
   return {
-    title: `${profile.nomEntreprise} — Repertoire — nid.local`,
+    title: `${profile.nomEntreprise} | Répertoire`,
     description: excerpt,
     openGraph: {
       title: profile.nomEntreprise,
@@ -35,7 +35,7 @@ export default async function ProProfilePage({ params }: Props) {
   return (
     <>
       <Header />
-      <main style={{ maxWidth: "700px", margin: "0 auto", padding: "20px 20px 100px" }}>
+      <main className="max-w-[700px] mx-auto px-5 py-6 pb-20 md:pb-6">
         <ProProfileDetail profileId={id} />
       </main>
     </>

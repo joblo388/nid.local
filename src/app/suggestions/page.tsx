@@ -4,7 +4,7 @@ import { SuggestionForm } from "./SuggestionForm";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Suggestions — nid.local",
+  title: "Suggestions",
   description: "Envoyez vos suggestions pour améliorer nid.local",
 };
 
@@ -20,9 +20,9 @@ export default function SuggestionsPage() {
         </nav>
 
         <div className="rounded-xl p-6" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-          <h1 className="text-[20px] font-bold mb-2" style={{ color: "var(--text-primary)" }}>Suggestions</h1>
+          <h1 className="text-[22px] font-bold mb-2" style={{ color: "var(--text-primary)" }}>Suggestions</h1>
           <p className="text-[13px] mb-5" style={{ color: "var(--text-tertiary)", lineHeight: 1.6 }}>
-            Une idée pour améliorer nid.local? Un bug à signaler? Des données de marché manquantes? Envoyez-nous votre suggestion — l&apos;équipe lit tout.
+            Une idée pour améliorer nid.local? Un bug à signaler? Des données de marché manquantes? Envoyez-nous votre suggestion, l&apos;équipe lit tout.
           </p>
           <SuggestionForm />
         </div>

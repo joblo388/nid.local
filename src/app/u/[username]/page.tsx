@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { dbPostToAppPost, quartierBySlug, villeBySlug } from "@/lib/data";
 import { getUserBadges, badgeCouleurs } from "@/lib/badges";
+import { BadgeIcon } from "@/components/BadgeDisplay";
 import { getUserPoints } from "@/lib/points";
 import { UserLevel } from "@/components/UserLevel";
 import { ProfileListingCard } from "@/components/ProfileListingCard";
@@ -21,7 +22,7 @@ type Props = { params: Promise<{ username: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { username } = await params;
-  return { title: `@${username} — nid.local` };
+  return { title: `@${username}` };
 }
 
 export default async function ProfilPage({ params }: Props) {
@@ -97,7 +98,7 @@ export default async function ProfilPage({ params }: Props) {
             {displayName[0].toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>
+            <h1 className="text-[22px] font-bold" style={{ color: "var(--text-primary)" }}>
               @{displayName}
             </h1>
             <p className="text-[12px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
@@ -151,7 +152,7 @@ export default async function ProfilPage({ params }: Props) {
                     className="flex items-center gap-1.5 px-2 py-1 rounded-lg"
                     style={{ background: c.bg, border: "0.5px solid var(--border)" }}
                   >
-                    <span className="text-[13px]">{badge.icon}</span>
+                    <span className="text-[13px] flex items-center"><BadgeIcon name={badge.icon} /></span>
                     <div>
                       <p className="text-[11px] font-semibold leading-tight" style={{ color: c.text }}>{badge.nom}</p>
                       <p className="text-[10px] leading-tight" style={{ color: "var(--text-tertiary)" }}>{badge.description}</p>

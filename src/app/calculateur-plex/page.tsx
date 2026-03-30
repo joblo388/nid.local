@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { CommunityCTA } from "@/components/CommunityCTA";
 import { CalculateurPlex } from "./CalculateurPlex";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
@@ -9,7 +10,7 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/calculateur-plex`;
 
 export const metadata: Metadata = {
-  title: "Calculateur plex Québec 2026 — MRB, cashflow et rendement",
+  title: "Calculateur plex Québec 2026 | MRB, cashflow et rendement",
   description:
     "Calculez gratuitement le MRB, cashflow mensuel, rendement sur mise de fonds et prise de valeur sur 5 ans pour un duplex, triplex ou quadruplex au Québec. Résultats instantanés.",
   keywords: [
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Calculateur plex Québec 2026 — MRB, cashflow et rendement",
+    title: "Calculateur plex Québec 2026 | MRB, cashflow et rendement",
     description: "Calculez le MRB, cashflow et rendement sur mise de fonds pour un duplex, triplex ou quadruplex au Québec.",
     url: PAGE_URL,
     siteName: "nid.local",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Calculateur plex Québec 2026 — MRB, cashflow et rendement",
+    title: "Calculateur plex Québec 2026 | MRB, cashflow et rendement",
     description: "MRB, cashflow mensuel, rendement et projection 5 ans pour les plex au Québec. Gratuit et instantané.",
   },
 };
@@ -45,7 +46,7 @@ const jsonLd = {
     },
     {
       "@type": "WebApplication",
-      name: "Calculateur plex Québec — nid.local",
+      name: "Calculateur plex Québec | nid.local",
       url: PAGE_URL,
       description: "Calculez le MRB, cashflow mensuel, rendement sur mise de fonds et prise de valeur sur 5 ans pour un duplex, triplex ou quadruplex au Québec.",
       applicationCategory: "FinanceApplication",
@@ -165,23 +166,25 @@ export default async function CalculateurPlexPage() {
               </dl>
             </div>
 
-            {/* CTA */}
-            <div className="rounded-xl p-6 text-center space-y-3" style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--border)" }}>
-              <h2 className="text-[15px] font-bold" style={{ color: "var(--green-text)" }}>
-                Vous cherchez un plex à acheter?
-              </h2>
-              <p className="text-[13px] leading-relaxed" style={{ color: "var(--green-text)", opacity: 0.85 }}>
-                Parcourez les annonces immobilières publiées directement par les propriétaires sur nid.local — duplex, triplex et quadruplex disponibles.
-              </p>
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                <Link href="/annonces" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style={{ background: "var(--green)" }}>
-                  Voir les annonces →
-                </Link>
-                <Link href="/nouveau-post" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-opacity hover:opacity-80" style={{ background: "var(--bg-card)", color: "var(--green-text)", border: "0.5px solid var(--border)" }}>
-                  Poser une question
-                </Link>
+            {/* Outils connexes */}
+            <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+              <div className="grid sm:grid-cols-3 gap-3">
+                {[
+                  { href: "/calculatrice-hypothecaire", label: "Calculatrice hypoth\u00e9caire", desc: "Calculez votre paiement mensuel et la prime SCHL." },
+                  { href: "/donnees-marche", label: "Donn\u00e9es de march\u00e9", desc: "Prix m\u00e9dians et tendances par ville et quartier au Qu\u00e9bec." },
+                  { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d\u2019une propri\u00e9t\u00e9 dans votre quartier." },
+                ].map((tool) => (
+                  <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
+                    <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
+                    <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
+                  </Link>
+                ))}
               </div>
             </div>
+
+            {/* CTA */}
+            <CommunityCTA contexte="plex" />
           </div>
 
           {/* Sidebar */}
@@ -235,7 +238,7 @@ export default async function CalculateurPlexPage() {
               </p>
             </div>
 
-            <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local — Fait au Québec</p>
+            <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local | Fait au Québec</p>
           </aside>
         </div>
       </main>

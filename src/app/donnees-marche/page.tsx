@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { CommunityCTA } from "@/components/CommunityCTA";
 import { DonneesMarche } from "./DonneesMarche";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
@@ -9,7 +10,7 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/donnees-marche`;
 
 export const metadata: Metadata = {
-  title: "Prix immobilier Québec 2026 — Données de marché par ville et quartier",
+  title: "Prix immobilier Québec 2026 | Données de marché par ville et quartier",
   description: "Prix médians des maisons, condos et plex au Québec en 2026. Tendances, délais de vente et conditions de marché par arrondissement de Montréal, Rive-Sud, Rive-Nord et régions.",
   keywords: [
     "prix immobilier québec 2026", "prix maison montréal", "prix condo montréal 2026",
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Prix immobilier Québec 2026 — Données par ville et quartier",
+    title: "Prix immobilier Québec 2026 | Données par ville et quartier",
     description: "Prix médians, délais de vente et tendances immobilières au Québec. Montréal, Laval, Rive-Sud, Rive-Nord et régions.",
     url: PAGE_URL, siteName: "nid.local", locale: "fr_CA", type: "website",
   },
@@ -32,7 +33,7 @@ const jsonLd = {
       { "@type": "ListItem", position: 1, name: "nid.local", item: BASE_URL },
       { "@type": "ListItem", position: 2, name: "Données de marché", item: PAGE_URL },
     ]},
-    { "@type": "WebPage", name: "Prix immobilier Québec 2026", url: PAGE_URL, description: "Données de marché immobilier au Québec — prix médians, tendances et délais par ville et quartier.", inLanguage: "fr-CA" },
+    { "@type": "WebPage", name: "Prix immobilier Québec 2026", url: PAGE_URL, description: "Données de marché immobilier au Québec : prix médians, tendances et délais par ville et quartier.", inLanguage: "fr-CA" },
     { "@type": "FAQPage", mainEntity: [
       { "@type": "Question", name: "Quel est le prix médian d'une maison au Québec en 2026?", acceptedAnswer: { "@type": "Answer", text: "Le prix médian provincial est de 485 000 $ en 2026, en hausse de 7% par rapport à 2025. Pour une unifamiliale, le médian est de 536 000 $ (+8%) et pour un condo, 404 000 $ (+3%). À Montréal, les prix varient de 425 000 $ (Montréal-Nord) à 1 485 000 $ (Outremont) selon l'arrondissement." }},
       { "@type": "Question", name: "Quels quartiers de Montréal augmentent le plus en 2026?", acceptedAnswer: { "@type": "Answer", text: "Les quartiers avec les plus fortes hausses en 2026 sont Hochelaga-Maisonneuve (+9,2%), Montréal-Nord (+8,9%), Le Sud-Ouest/Griffintown (+8,5%) et Verdun (+7,8%). Les quartiers plus établis comme le Plateau (+4,2%) et Outremont (+2,1%) connaissent des hausses plus modérées." }},
@@ -52,7 +53,7 @@ export default async function DonneesPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
         <Header />
-        <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-6">
+        <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-6 pb-20 md:pb-6">
           <nav className="flex items-center gap-1.5 text-[12px] mb-5" style={{ color: "var(--text-tertiary)" }}>
             <Link href="/" className="transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>nid.local</Link>
             <span>/</span>
@@ -62,17 +63,50 @@ export default async function DonneesPage() {
           <div className="flex gap-5 items-start">
             <div className="flex-1 min-w-0 space-y-5">
               <div>
-                <h1 className="text-[22px] font-bold leading-snug mb-2" style={{ color: "var(--text-primary)" }}>Données de marché — Québec 2026</h1>
+                <h1 className="text-[22px] font-bold leading-snug mb-2" style={{ color: "var(--text-primary)" }}>Données de marché | Québec 2026</h1>
                 <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                   Prix médians, délais de vente et tendances par ville et arrondissement. Sources : APCIQ, Centris, Royal LePage.
                 </p>
               </div>
 
-              <div className="dm-disclaimer">
+              <div className="rounded-xl p-4 text-[12px] leading-relaxed" style={{ background: "var(--amber-bg)", color: "var(--amber-text)", border: "0.5px solid var(--border)" }}>
                 Ces données sont issues de sources publiques pour 2025-2026 et sont présentées à titre indicatif. Les prix varient selon le secteur précis, l&apos;état de la propriété et les conditions du marché. Mise à jour : mars 2026.
               </div>
 
               <DonneesMarche />
+
+              {/* Données par ville */}
+              <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Données de marché par ville</h2>
+                <p className="text-[12px] leading-relaxed mb-2" style={{ color: "var(--text-secondary)" }}>
+                  Consultez les données détaillées pour chaque ville du Québec.
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {[
+                    { slug: "montreal", nom: "Montréal" },
+                    { slug: "quebec", nom: "Québec" },
+                    { slug: "laval", nom: "Laval" },
+                    { slug: "longueuil", nom: "Longueuil" },
+                    { slug: "sherbrooke", nom: "Sherbrooke" },
+                    { slug: "gatineau", nom: "Gatineau" },
+                    { slug: "trois-rivieres", nom: "Trois-Rivières" },
+                    { slug: "saguenay", nom: "Saguenay" },
+                    { slug: "levis", nom: "Lévis" },
+                    { slug: "terrebonne", nom: "Terrebonne" },
+                    { slug: "rimouski", nom: "Rimouski" },
+                    { slug: "drummondville", nom: "Drummondville" },
+                  ].map((v) => (
+                    <Link
+                      key={v.slug}
+                      href={`/donnees-marche/${v.slug}`}
+                      className="px-3 py-2 rounded-lg text-[12px] font-medium transition-colors hover-bg text-center"
+                      style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)", color: "var(--text-primary)" }}
+                    >
+                      {v.nom}
+                    </Link>
+                  ))}
+                </div>
+              </div>
 
               {/* FAQ */}
               <div className="rounded-xl p-6 space-y-4" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
@@ -92,17 +126,25 @@ export default async function DonneesPage() {
                 </dl>
               </div>
 
-              {/* CTA */}
-              <div className="rounded-xl p-6 text-center space-y-3" style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--border)" }}>
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--green-text)" }}>Prêt à acheter ou vendre?</h2>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--green-text)", opacity: 0.85 }}>
-                  Parcourez les annonces publiées par des propriétaires ou calculez votre capacité d&apos;emprunt.
-                </p>
-                <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <Link href="/annonces" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style={{ background: "var(--green)" }}>Voir les annonces →</Link>
-                  <Link href="/capacite-emprunt" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-opacity hover:opacity-80" style={{ background: "var(--bg-card)", color: "var(--green-text)", border: "0.5px solid var(--border)" }}>Calculer ma capacité</Link>
+              {/* Outils connexes */}
+              <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {[
+                    { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d\u2019une propri\u00e9t\u00e9 dans votre quartier." },
+                    { href: "/comparer-quartiers", label: "Comparer les quartiers", desc: "Comparez les prix, tendances et profil de deux quartiers." },
+                    { href: "/calculateur-plex", label: "Calculateur plex", desc: "MRB, cashflow et rendement pour un duplex, triplex ou quadruplex." },
+                  ].map((tool) => (
+                    <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
+                      <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
+                      <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
+                    </Link>
+                  ))}
                 </div>
               </div>
+
+              {/* CTA */}
+              <CommunityCTA contexte="donnees" />
             </div>
 
             {/* Sidebar */}
@@ -118,7 +160,7 @@ export default async function DonneesPage() {
                 <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}><h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Ressources utiles</h3></div>
                 <ul>{ressources.map((r, i) => (<li key={r.label} style={{ borderBottom: i < ressources.length - 1 ? "0.5px solid var(--border)" : "none" }}><Link href={r.href} className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg"><span className="text-[13px]" style={{ color: "var(--text-primary)" }}>{r.label}</span><svg className="w-3 h-3 shrink-0" style={{ color: "var(--text-tertiary)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></Link></li>))}</ul>
               </div>
-              <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local — Fait au Québec</p>
+              <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local | Fait au Québec</p>
             </aside>
           </div>
         </main>

@@ -633,7 +633,7 @@ export default function RepertoirePage() {
   return (
     <>
     <Header />
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "20px 20px 100px" }}>
+    <div className="max-w-[1100px] mx-auto px-5 py-6 pb-20 md:pb-6">
       <div className="mb-5">
         <h1
           style={{

@@ -53,6 +53,7 @@ model User {
   proVotes            ProVote[]
   proComments         ProComment[]
   viewHistory         ViewHistory[]
+  pageViews           PageView[]
 }
 
 model Post {
@@ -570,4 +571,20 @@ model ViewHistory {
   @@index([userId])
   @@index([userId, targetType])
   @@unique([userId, targetType, targetId])
+}
+
+model PageView {
+  id        String   @id @default(cuid())
+  page      String   // URL path: "/calculatrice-hypothecaire", "/capacite-emprunt", etc.
+  ip        String?
+  userAgent String?
+  referrer  String?
+  userId    String?
+  creeLe    DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([page])
+  @@index([creeLe])
+  @@index([userId])
 }

@@ -64,7 +64,7 @@ export default async function AdminPage() {
         {/* Posts épinglés */}
         <div>
           <h2 className="text-[14px] font-bold mb-3" style={{ color: "var(--text-primary)" }}>
-            Posts récents — gestion épingle
+            Posts récents | gestion épingle
           </h2>
           <div
             className="rounded-xl overflow-hidden"

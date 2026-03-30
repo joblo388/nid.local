@@ -60,7 +60,7 @@ const TOOLS = [
       wrapSelection(t, "_", "_", "texte en italique", cb),
   },
   {
-    label: "—",
+    label: "•",
     title: "Liste à puces",
     style: {},
     action: (t: HTMLTextAreaElement, cb: (v: string) => void) =>

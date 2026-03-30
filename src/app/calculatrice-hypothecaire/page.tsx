@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { CommunityCTA } from "@/components/CommunityCTA";
 import { CalculatriceClient } from "./CalculatriceClient";
 import { SaveHypoButton } from "@/components/SaveHypoButton";
 import { prisma } from "@/lib/prisma";
@@ -10,7 +11,7 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/calculatrice-hypothecaire`;
 
 export const metadata: Metadata = {
-  title: "Calculatrice hypothécaire Québec 2026 — Estimez votre paiement mensuel",
+  title: "Calculatrice hypothécaire Québec 2026 | Paiement mensuel",
   description:
     "Calculez gratuitement votre paiement hypothécaire mensuel selon les taux du marché québécois. Mise de fonds, prime SCHL, plex et amortissement inclus. Résultats instantanés.",
   keywords: [
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Calculatrice hypothécaire Québec 2026 — Estimez votre paiement mensuel",
+    title: "Calculatrice hypothécaire Québec 2026 | Paiement mensuel",
     description:
       "Calculez votre paiement mensuel, les intérêts totaux et la prime SCHL selon votre mise de fonds et les taux du jour.",
     url: PAGE_URL,
@@ -55,7 +56,7 @@ const jsonLd = {
     },
     {
       "@type": "WebApplication",
-      "name": "Calculatrice hypothécaire Québec — nid.local",
+      "name": "Calculatrice hypothécaire Québec | nid.local",
       "url": PAGE_URL,
       "description":
         "Calculez votre paiement hypothécaire mensuel avec les taux du marché québécois. Inclut la prime SCHL, les règles de mise de fonds pour unifamilial, condo et plex.",
@@ -164,7 +165,7 @@ export default async function CalculatriceHypothecairePage() {
                   Calculatrice hypothécaire Québec
                 </h1>
                 <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Estimez votre paiement mensuel selon les taux du marché québécois. Calculs conformes aux règles canadiennes&nbsp;—
+                  Estimez votre paiement mensuel selon les taux du marché québécois. Calculs conformes aux règles canadiennes :
                   composition semestrielle, prime SCHL, mise de fonds minimale et règles plex incluses.
                 </p>
               </div>
@@ -249,7 +250,7 @@ export default async function CalculatriceHypothecairePage() {
                       textColor: "var(--red-text)",
                     },
                     {
-                      titre: "Plex — règles spéciales",
+                      titre: "Plex | règles spéciales",
                       texte: "Duplex occupant : 5% minimum. Triplex/quadruplex occupant : 10% minimum. Non-occupant : 20% minimum. 5 logements et plus : financement commercial uniquement.",
                       couleur: "var(--green-light-bg)",
                       textColor: "var(--green-text)",
@@ -315,35 +316,25 @@ export default async function CalculatriceHypothecairePage() {
                 </dl>
               </div>
 
-              {/* CTA community */}
-              <div
-                className="rounded-xl p-6 text-center space-y-3"
-                style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--border)" }}
-              >
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--green-text)" }}>
-                  Des questions sur votre projet immobilier au Québec?
-                </h2>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--green-text)", opacity: 0.85 }}>
-                  Rejoignez la communauté nid.local — posez vos questions, échangez avec des acheteurs et propriétaires
-                  de votre quartier, et partagez votre expérience.
-                </p>
-                <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <Link
-                    href="/"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
-                    style={{ background: "var(--green)" }}
-                  >
-                    Voir les discussions immobilières →
-                  </Link>
-                  <Link
-                    href="/nouveau-post"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-opacity hover:opacity-80"
-                    style={{ background: "var(--bg-card)", color: "var(--green-text)", border: "0.5px solid var(--border)" }}
-                  >
-                    Poser une question
-                  </Link>
+              {/* Outils connexes */}
+              <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {[
+                    { href: "/capacite-emprunt", label: "Capacit\u00e9 d\u2019emprunt", desc: "Calculez combien vous pouvez emprunter selon vos revenus et dettes." },
+                    { href: "/taxe-bienvenue", label: "Taxe de bienvenue", desc: "Estimez les droits de mutation pour votre achat au Qu\u00e9bec." },
+                    { href: "/acheter-ou-louer", label: "Acheter ou louer?", desc: "Comparez le co\u00fbt r\u00e9el d\u2019acheter vs louer sur votre horizon." },
+                  ].map((tool) => (
+                    <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
+                      <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
+                      <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
+                    </Link>
+                  ))}
                 </div>
               </div>
+
+              {/* CTA community */}
+              <CommunityCTA contexte="hypotheque" />
             </div>
 
             {/* Sidebar */}
@@ -423,7 +414,7 @@ export default async function CalculatriceHypothecairePage() {
                   À propos de l&apos;outil
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Les calculs respectent les règles canadiennes — composition semestrielle, règles SCHL et OSFI.
+                  Les calculs respectent les règles canadiennes : composition semestrielle, règles SCHL et OSFI.
                   Les taux affichés sont indicatifs.
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
@@ -432,7 +423,7 @@ export default async function CalculatriceHypothecairePage() {
               </div>
 
               <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>
-                © 2026 nid.local — Fait au Québec
+                © 2026 nid.local | Fait au Québec
               </p>
             </aside>
           </div>

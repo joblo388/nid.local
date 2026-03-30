@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props) {
   if (!quartier) return {};
   const ville = villeBySlug[quartier.villeSlug];
   return {
-    title: `${quartier.nom} — nid.local`,
+    title: quartier.nom,
     description: `Discussions immobilières dans le quartier ${quartier.nom}${ville ? ` à ${ville.nom}` : ""}. Ventes, locations, questions et alertes de voisinage.`,
   };
 }
@@ -96,7 +96,7 @@ export default async function QuartierPage({ params }: Props) {
               <span className={`w-3 h-3 rounded-full ${quartier.couleur}`} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2.5">
-                  <h1 className="text-[18px] font-bold" style={{ color: "var(--text-primary)" }}>
+                  <h1 className="text-[22px] font-bold" style={{ color: "var(--text-primary)" }}>
                     {quartier.nom}
                   </h1>
                   {userId && (

@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { ComparerView } from "./ComparerView";
 
 export const metadata: Metadata = {
-  title: "Comparer des annonces — nid.local",
+  title: "Comparer des annonces",
   description: "Comparaison côte à côte de propriétés sur nid.local",
 };
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { CommunityCTA } from "@/components/CommunityCTA";
 import { EstimationClient } from "./EstimationClient";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
@@ -9,26 +10,29 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/estimation`;
 
 export const metadata: Metadata = {
-  title: "Estimation de valeur immobiliere Quebec 2026 — Estimez votre propriete",
+  title: "Combien vaut ma maison? | Estimation gratuite Québec 2026",
   description:
-    "Estimez gratuitement la valeur de votre propriete au Quebec. Basee sur les donnees medianes du marche par quartier, type de propriete, superficie et etat. Resultats instantanes.",
+    "Estimez gratuitement la valeur de votre maison, condo ou plex au Québec. Comparez l'évaluation municipale vs le prix du marché et obtenez la valeur marchande réelle de votre propriété en quelques clics. Résultats instantanés basés sur les données médianes par quartier.",
   keywords: [
-    "estimation valeur propriete",
-    "estimation immobiliere quebec",
-    "valeur maison quebec",
     "combien vaut ma maison",
+    "estimation maison gratuite",
+    "valeur marchande maison québec",
+    "évaluation municipale vs valeur marchande",
+    "estimation valeur propriété",
+    "estimation immobilière québec",
+    "valeur maison québec",
     "estimation prix maison",
-    "evaluation immobiliere",
-    "prix propriete quebec",
-    "valeur condo quebec",
+    "évaluation immobilière",
+    "prix propriété québec",
+    "valeur condo québec",
     "estimation plex",
-    "valeur marchande propriete",
+    "valeur marchande propriété",
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Estimation de valeur immobiliere Quebec 2026 — Estimez votre propriete",
+    title: "Combien vaut ma maison? | Estimation gratuite Québec 2026",
     description:
-      "Estimez la valeur de votre propriete selon les donnees medianes du marche quebecois par quartier et type de propriete.",
+      "Estimez gratuitement la valeur de votre maison, condo ou plex au Québec. Comparez l'évaluation municipale vs le prix du marché.",
     url: PAGE_URL,
     siteName: "nid.local",
     locale: "fr_CA",
@@ -36,9 +40,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Estimation de valeur immobiliere Quebec 2026",
+    title: "Combien vaut ma maison? | Estimation gratuite Québec 2026",
     description:
-      "Estimez gratuitement la valeur de votre propriete au Quebec. Donnees de marche par quartier, ajustements personnalises.",
+      "Estimez gratuitement la valeur de votre maison, condo ou plex au Québec. Comparez l'évaluation municipale vs le prix du marché.",
   },
 };
 
@@ -54,10 +58,10 @@ const jsonLd = {
     },
     {
       "@type": "WebApplication",
-      "name": "Estimation de valeur immobiliere Quebec — nid.local",
+      "name": "Combien vaut ma maison? | Estimation gratuite Québec 2026",
       "url": PAGE_URL,
       "description":
-        "Estimez la valeur de votre propriete au Quebec selon les donnees medianes du marche par quartier, type de propriete, superficie, chambres, salles de bain, annee de construction et etat.",
+        "Estimez la valeur de votre propriété au Québec selon les données médianes du marché par quartier, type de propriété, superficie, chambres, salles de bain, année de construction et état.",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "All",
       "inLanguage": "fr-CA",
@@ -69,26 +73,26 @@ const jsonLd = {
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Comment est calculee l'estimation de valeur?",
+          "name": "Comment est calculée l'estimation de valeur?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "L'estimation se base sur le prix median du marche pour votre quartier et type de propriete, puis applique des ajustements pour la superficie, le nombre de chambres et salles de bain, l'annee de construction et l'etat general. Le resultat est une estimation indicative avec une fourchette de +/- 10%.",
+            "text": "L'estimation se base sur le prix médian du marché pour votre quartier et type de propriété, puis applique des ajustements pour la superficie, le nombre de chambres et salles de bain, l'année de construction et l'état général. Le résultat est une estimation indicative avec une fourchette de +/- 10%.",
           },
         },
         {
           "@type": "Question",
-          "name": "Quelle est la precision de cette estimation?",
+          "name": "Quelle est la précision de cette estimation?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Cette estimation est fournie a titre indicatif seulement. La valeur reelle peut varier en fonction de l'emplacement exact, des renovations effectuees, du terrain, de la vue et des conditions du marche. Pour une evaluation precise, consultez un evaluateur agree ou un courtier immobilier.",
+            "text": "Cette estimation est fournie à titre indicatif seulement. La valeur réelle peut varier en fonction de l'emplacement exact, des rénovations effectuées, du terrain, de la vue et des conditions du marché. Pour une évaluation précise, consultez un évaluateur agréé ou un courtier immobilier.",
           },
         },
         {
           "@type": "Question",
-          "name": "Quels types de propriete sont supportes?",
+          "name": "Quels types de propriété sont supportés?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "L'outil supporte les maisons unifamiliales, les condos, les duplex, les triplex et les quadruplex. Les donnees de marche couvrent plus de 50 quartiers a travers le Quebec, incluant Montreal, Quebec, Laval, Longueuil, Sherbrooke, Gatineau et d'autres villes.",
+            "text": "L'outil supporte les maisons unifamiliales, les condos, les duplex, les triplex et les quadruplex. Les données de marché couvrent plus de 50 quartiers à travers le Québec, incluant Montréal, Québec, Laval, Longueuil, Sherbrooke, Gatineau et d'autres villes.",
           },
         },
       ],
@@ -128,11 +132,12 @@ export default async function EstimationPage() {
             <div className="flex-1 min-w-0 space-y-5">
               <div>
                 <h1 className="text-[22px] font-bold leading-snug mb-2" style={{ color: "var(--text-primary)" }}>
-                  Estimation de valeur
+                  Combien vaut ma maison? | Estimation gratuite
                 </h1>
                 <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Estimez la valeur de votre propriete selon les donnees medianes du marche quebecois. Selectionnez votre
-                  quartier, le type de propriete et ses caracteristiques pour obtenir une estimation personnalisee.
+                  Obtenez une estimation gratuite de la valeur marchande de votre maison, condo ou plex au Québec.
+                  Notre outil compare l&apos;évaluation municipale vs le prix du marché réel pour vous donner un portrait
+                  juste. Sélectionnez votre quartier, le type de propriété et ses caractéristiques pour une estimation personnalisée.
                 </p>
               </div>
 
@@ -156,18 +161,18 @@ export default async function EstimationPage() {
                   {[
                     {
                       n: "1",
-                      titre: "Selectionnez votre quartier",
-                      texte: "Choisissez la ville et le quartier de votre propriete. Les donnees de marche specifiques a votre secteur sont utilisees comme base.",
+                      titre: "Sélectionnez votre quartier",
+                      texte: "Choisissez la ville et le quartier de votre propriété. Les données de marché spécifiques à votre secteur sont utilisées comme base.",
                     },
                     {
                       n: "2",
-                      titre: "Decrivez votre propriete",
-                      texte: "Entrez le type, la superficie, le nombre de chambres et de salles de bain, l'annee de construction et l'etat general.",
+                      titre: "Décrivez votre propriété",
+                      texte: "Entrez le type, la superficie, le nombre de chambres et de salles de bain, l'année de construction et l'état général.",
                     },
                     {
                       n: "3",
                       titre: "Obtenez votre estimation",
-                      texte: "L'outil calcule la valeur estimee avec une ventilation des ajustements appliques et une fourchette de prix.",
+                      texte: "L'outil calcule la valeur estimée avec une ventilation des ajustements appliqués et une fourchette de prix.",
                     },
                   ].map((step) => (
                     <div key={step.n} className="flex gap-3">
@@ -198,25 +203,25 @@ export default async function EstimationPage() {
                   {[
                     {
                       titre: "Superficie",
-                      texte: "La superficie est comparee a la moyenne pour le type de propriete (unifamiliale ~1 200 pi², condo ~800 pi², plex ~2 400 pi²). L'ajustement est proportionnel a l'ecart.",
+                      texte: "La superficie est comparée à la moyenne pour le type de propriété (unifamiliale ~1 200 pi², condo ~800 pi², plex ~2 400 pi²). L'ajustement est proportionnel à l'écart.",
                       couleur: "var(--blue-bg)",
                       textColor: "var(--blue-text)",
                     },
                     {
                       titre: "Chambres et salles de bain",
-                      texte: "Chaque chambre supplementaire au-dela de 2 ajoute 3% a la valeur de base. Chaque salle de bain supplementaire au-dela de 1 ajoute 2%.",
+                      texte: "Chaque chambre supplémentaire au-delà de 2 ajoute 3% à la valeur de base. Chaque salle de bain supplémentaire au-delà de 1 ajoute 2%.",
                       couleur: "var(--green-light-bg)",
                       textColor: "var(--green-text)",
                     },
                     {
-                      titre: "Annee de construction",
-                      texte: "Les constructions recentes (moins de 5 ans) beneficient d'une prime de 5%. Les proprietes de plus de 60 ans subissent un rabais de 6%.",
+                      titre: "Année de construction",
+                      texte: "Les constructions récentes (moins de 5 ans) bénéficient d'une prime de 5%. Les propriétés de plus de 60 ans subissent un rabais de 6%.",
                       couleur: "var(--amber-bg)",
                       textColor: "var(--amber-text)",
                     },
                     {
-                      titre: "Etat general",
-                      texte: "Excellent : +5%, Bon : aucun ajustement, Moyen : -5%, A renover : -15%. L'etat reflete la condition generale de la propriete.",
+                      titre: "État général",
+                      texte: "Excellent : +5%, Bon : aucun ajustement, Moyen : -5%, À rénover : -15%. L'état reflète la condition générale de la propriété.",
                       couleur: "var(--red-bg)",
                       textColor: "var(--red-text)",
                     },
@@ -237,25 +242,25 @@ export default async function EstimationPage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
-                  Questions frequentes
+                  Questions fréquentes
                 </h2>
                 <dl className="space-y-4">
                   {[
                     {
-                      q: "Comment est calculee la valeur estimee?",
-                      r: "L'estimation part du prix median du marche pour votre quartier et type de propriete, puis applique des ajustements bases sur la superficie, le nombre de chambres et de salles de bain, l'annee de construction et l'etat general. La fourchette affichee represente +/- 10% de la valeur estimee.",
+                      q: "Comment est calculée la valeur estimée?",
+                      r: "L'estimation part du prix médian du marché pour votre quartier et type de propriété, puis applique des ajustements basés sur la superficie, le nombre de chambres et de salles de bain, l'année de construction et l'état général. La fourchette affichée représente +/- 10% de la valeur estimée.",
                     },
                     {
-                      q: "Est-ce que cette estimation remplace une evaluation professionnelle?",
-                      r: "Non. Cette estimation est fournie a titre indicatif seulement. Pour une transaction immobiliere, une evaluation par un evaluateur agree ou une analyse comparative de marche par un courtier immobilier est fortement recommandee.",
+                      q: "Est-ce que cette estimation remplace une évaluation professionnelle?",
+                      r: "Non. Cette estimation est fournie à titre indicatif seulement. Pour une transaction immobilière, une évaluation par un évaluateur agréé ou une analyse comparative de marché par un courtier immobilier est fortement recommandée.",
                     },
                     {
-                      q: "D'ou proviennent les donnees de marche?",
-                      r: "Les prix medians utilises sont bases sur les donnees du marche immobilier quebecois disponibles dans notre section Donnees de marche. Ils couvrent plus de 50 quartiers a travers les principales villes du Quebec.",
+                      q: "D'où proviennent les données de marché?",
+                      r: "Les prix médians utilisés sont basés sur les données du marché immobilier québécois disponibles dans notre section Données de marché. Ils couvrent plus de 50 quartiers à travers les principales villes du Québec.",
                     },
                     {
-                      q: "Mon quartier n'apparait pas dans la liste. Que faire?",
-                      r: "Si votre quartier n'est pas disponible, selectionnez la ville la plus proche. L'outil utilisera les donnees moyennes disponibles pour cette ville. Pour une estimation plus precise, consultez un courtier immobilier local.",
+                      q: "Mon quartier n'apparaît pas dans la liste. Que faire?",
+                      r: "Si votre quartier n'est pas disponible, sélectionnez la ville la plus proche. L'outil utilisera les données moyennes disponibles pour cette ville. Pour une estimation plus précise, consultez un courtier immobilier local.",
                     },
                   ].map((item) => (
                     <div key={item.q} className="pb-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
@@ -270,34 +275,25 @@ export default async function EstimationPage() {
                 </dl>
               </div>
 
-              {/* CTA */}
-              <div
-                className="rounded-xl p-6 text-center space-y-3"
-                style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--border)" }}
-              >
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--green-text)" }}>
-                  Vous connaissez maintenant la valeur estimee de votre propriete
-                </h2>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--green-text)", opacity: 0.85 }}>
-                  Calculez votre paiement hypothecaire, explorez les annonces ou echangez avec la communaute.
-                </p>
-                <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <Link
-                    href="/calculatrice-hypothecaire"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
-                    style={{ background: "var(--green)" }}
-                  >
-                    Calculatrice hypothecaire →
-                  </Link>
-                  <Link
-                    href="/annonces"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-opacity hover:opacity-80"
-                    style={{ background: "var(--bg-card)", color: "var(--green-text)", border: "0.5px solid var(--border)" }}
-                  >
-                    Voir les annonces
-                  </Link>
+              {/* Outils connexes */}
+              <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {[
+                    { href: "/donnees-marche", label: "Donn\u00e9es de march\u00e9", desc: "Prix m\u00e9dians et tendances par ville et quartier au Qu\u00e9bec." },
+                    { href: "/comparer-quartiers", label: "Comparer les quartiers", desc: "Comparez les prix, tendances et profil de deux quartiers." },
+                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypoth\u00e9caire", desc: "Estimez votre paiement mensuel selon les taux du march\u00e9." },
+                  ].map((tool) => (
+                    <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
+                      <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
+                      <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
+                    </Link>
+                  ))}
                 </div>
               </div>
+
+              {/* CTA */}
+              <CommunityCTA contexte="estimation" />
             </div>
 
             {/* Sidebar */}
@@ -374,19 +370,19 @@ export default async function EstimationPage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                  A propos de l&apos;outil
+                  À propos de l&apos;outil
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  L&apos;estimation utilise les prix medians du marche par quartier et applique des ajustements bases sur les
-                  caracteristiques de votre propriete.
+                  L&apos;estimation utilise les prix médians du marché par quartier et applique des ajustements basés sur les
+                  caractéristiques de votre propriété.
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Pour une evaluation officielle, consultez un <strong>evaluateur agree</strong> ou un <strong>courtier immobilier</strong>.
+                  Pour une évaluation officielle, consultez un <strong>évaluateur agréé</strong> ou un <strong>courtier immobilier</strong>.
                 </p>
               </div>
 
               <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>
-                © 2026 nid.local — Fait au Quebec
+                © 2026 nid.local | Fait au Québec
               </p>
             </aside>
           </div>

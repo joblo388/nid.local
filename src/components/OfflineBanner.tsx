@@ -52,7 +52,7 @@ export function OfflineBanner() {
           flexShrink: 0,
         }}
       />
-      Mode hors-ligne — les calculatrices restent disponibles
+      Mode hors-ligne : les calculatrices restent disponibles
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { VillesView } from "./VillesView";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Villes et quartiers — nid.local",
+  title: "Villes et quartiers",
   description: "Parcourez les discussions immobilières par ville et quartier au Québec.",
 };
 

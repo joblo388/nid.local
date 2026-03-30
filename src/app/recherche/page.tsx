@@ -7,7 +7,7 @@ type Props = { searchParams: Promise<{ q?: string }> };
 export async function generateMetadata({ searchParams }: Props) {
   const { q } = await searchParams;
   return {
-    title: q ? `"${q}" — nid.local` : "Recherche — nid.local",
+    title: q ? `"${q}" | Recherche` : "Recherche",
   };
 }
 
@@ -17,7 +17,7 @@ export default async function RecherchePage({ searchParams }: Props) {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
-      <main className="max-w-[1100px] mx-auto px-5 py-6 max-w-[700px]">
+      <main className="max-w-[700px] mx-auto px-5 py-6">
         <h1 className="text-[18px] font-bold mb-5" style={{ color: "var(--text-primary)" }}>
           {q ? (
             <>Résultats pour <span style={{ color: "var(--green)" }}>&ldquo;{q}&rdquo;</span></>

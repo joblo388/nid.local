@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Tendances — nid.local",
+  title: "Tendances",
   description: "Les discussions les plus actives cette semaine sur nid.local",
 };
 

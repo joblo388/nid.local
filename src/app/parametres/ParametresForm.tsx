@@ -268,15 +268,15 @@ export function ParametresForm({ user }: { user: UserData }) {
               style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", border: "0.5px solid var(--border)" }}
             >
               <option value="">Aucun tag</option>
-              <option value="courtier">🏠 Courtier immobilier</option>
-              <option value="notaire">⚖️ Notaire</option>
-              <option value="finance">💰 Finance</option>
-              <option value="entrepreneur">🔨 Entrepreneur</option>
-              <option value="electricien">⚡ Électricien</option>
-              <option value="plombier">🔧 Plombier</option>
-              <option value="charpentier">🪵 Charpentier</option>
-              <option value="proprietaire">🏡 Propriétaire</option>
-              <option value="locataire">🔑 Locataire</option>
+              <option value="courtier">Courtier immobilier</option>
+              <option value="notaire">Notaire</option>
+              <option value="finance">Finance</option>
+              <option value="entrepreneur">Entrepreneur</option>
+              <option value="electricien">Électricien</option>
+              <option value="plombier">Plombier</option>
+              <option value="charpentier">Charpentier</option>
+              <option value="proprietaire">Propriétaire</option>
+              <option value="locataire">Locataire</option>
             </select>
             <p className="text-[11px] mt-1" style={{ color: "var(--text-tertiary)" }}>
               Affiché à côté de votre nom sur vos posts pour ajouter de la crédibilité.

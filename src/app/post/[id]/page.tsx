@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props) {
   if (!post) return {};
   const excerpt = post.contenu.slice(0, 155).replace(/\s\S*$/, "") + "…";
   return {
-    title: `${post.titre} — nid.local`,
+    title: post.titre,
     description: excerpt,
     openGraph: {
       title: post.titre,
@@ -115,6 +115,38 @@ export default async function PostPage({ params }: Props) {
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       {/* Track view client-side so ISR cache hits still count */}
       <ViewTracker postId={id} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "DiscussionForumPosting",
+          headline: post.titre,
+          text: post.contenu.slice(0, 500),
+          author: { "@type": "Person", name: post.auteur },
+          datePublished: post.creeLe,
+          url: `https://nidlocal.com/post/${id}`,
+          interactionStatistic: [
+            { "@type": "InteractionCounter", interactionType: "https://schema.org/CommentAction", userInteractionCount: post.nbCommentaires },
+            { "@type": "InteractionCounter", interactionType: "https://schema.org/LikeAction", userInteractionCount: post.nbVotes },
+          ],
+          comment: comments.slice(0, 5).map((c) => ({
+            "@type": "Comment",
+            text: c.contenu.slice(0, 300),
+            author: { "@type": "Person", name: c.auteurNom },
+            datePublished: c.creeLe,
+          })),
+          isPartOf: {
+            "@type": "DiscussionForum",
+            name: "nid.local",
+            url: "https://nidlocal.com",
+          },
+          about: {
+            "@type": "Place",
+            name: post.quartier.nom,
+          },
+          inLanguage: "fr-CA",
+        }) }}
+      />
       <ScrollProgress />
       <Header />
       <main className="max-w-[1100px] mx-auto px-3 md:px-5 py-4 md:py-5">
@@ -151,7 +183,7 @@ export default async function PostPage({ params }: Props) {
                 </Link>
               </div>
 
-              <h1 className="text-[18px] font-bold mb-4 leading-snug" style={{ color: "var(--text-primary)" }}>
+              <h1 className="text-[22px] font-bold mb-4 leading-snug" style={{ color: "var(--text-primary)" }}>
                 {post.titre}
               </h1>
 

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Quartiers — nid.local",
+  title: "Quartiers",
   description: "Tous les quartiers par ville sur nid.local.",
 };
 
@@ -23,7 +23,7 @@ export default async function QuartiersPage() {
       <Header />
       <main className="max-w-[1100px] mx-auto px-5 py-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-[20px] font-bold" style={{ color: "var(--text-primary)" }}>
+          <h1 className="text-[22px] font-bold" style={{ color: "var(--text-primary)" }}>
             Quartiers
           </h1>
           <Link href="/villes" className="text-[13px] font-medium transition-opacity hover:opacity-70"

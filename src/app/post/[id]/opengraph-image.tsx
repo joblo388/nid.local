@@ -64,8 +64,8 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
               <span style={{ fontSize: 14, color: "#6e6c67" }}>▲ {post.nbVotes}</span>
-              <span style={{ fontSize: 14, color: "#6e6c67" }}>💬 {post.nbCommentaires}</span>
-              <span style={{ fontSize: 14, color: "#6e6c67" }}>👁 {post.nbVues}</span>
+              <span style={{ fontSize: 14, color: "#6e6c67" }}>{post.nbCommentaires} commentaires</span>
+              <span style={{ fontSize: 14, color: "#6e6c67" }}>{post.nbVues} vues</span>
             </div>
           </div>
         </div>

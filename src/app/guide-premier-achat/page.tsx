@@ -8,7 +8,7 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/guide-premier-achat`;
 
 export const metadata: Metadata = {
-  title: "Guide du premier achat immobilier au Québec 2026 — Étape par étape",
+  title: "Guide du premier achat immobilier au Québec 2026 | Étape par étape",
   description:
     "Tout ce que vous devez savoir pour acheter votre première maison au Québec. Mise de fonds, préapprobation, inspection, notaire, SCHL et plus.",
   keywords: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Guide du premier achat immobilier au Québec 2026 — Étape par étape",
+    title: "Guide du premier achat immobilier au Québec 2026 | Étape par étape",
     description:
       "Tout ce que vous devez savoir pour acheter votre première maison au Québec. Mise de fonds, préapprobation, inspection, notaire, SCHL et plus.",
     url: PAGE_URL,
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Guide du premier achat immobilier au Québec 2026",
     description:
-      "Mise de fonds, préapprobation, inspection, notaire, SCHL — tout ce qu'il faut savoir pour votre premier achat.",
+      "Mise de fonds, préapprobation, inspection, notaire, SCHL : tout ce qu'il faut savoir pour votre premier achat.",
   },
 };
 
@@ -84,7 +84,7 @@ const jsonLd = {
     },
     {
       "@type": "Article",
-      headline: "Guide du premier achat immobilier au Québec 2026 — Étape par étape",
+      headline: "Guide du premier achat immobilier au Québec 2026 | Étape par étape",
       description:
         "Tout ce que vous devez savoir pour acheter votre première maison au Québec. Mise de fonds, préapprobation, inspection, notaire, SCHL et plus.",
       url: PAGE_URL,
@@ -122,14 +122,14 @@ const sections = [
           votre situation financière. C&apos;est la fondation de tout le processus.
         </p>
 
-        <h3>Évaluer sa situation financière</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Évaluer sa situation financière</h2>
         <p>
           Faites le portrait complet de vos finances : revenus stables, dettes existantes (auto, prêt
           étudiant, cartes de crédit), épargne disponible et dépenses mensuelles. Les prêteurs
           analyseront ces éléments pour déterminer combien ils sont prêts à vous prêter.
         </p>
 
-        <h3>Les ratios d&apos;endettement (ABD et ATD)</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Les ratios d&apos;endettement (ABD et ATD)</h2>
         <p>
           Deux ratios déterminent votre capacité d&apos;emprunt :
         </p>
@@ -169,11 +169,11 @@ const sections = [
       <>
         <p>
           La mise de fonds est le montant que vous payez comptant à l&apos;achat. Plus elle est
-          élevée, moins votre hypothèque sera importante — et plus vous économiserez en intérêts et
+          élevée, moins votre hypothèque sera importante, et plus vous économiserez en intérêts et
           en assurance.
         </p>
 
-        <h3>Les minimums au Canada</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Les minimums au Canada</h2>
         <div className="overflow-x-auto mt-2 mb-3">
           <table className="w-full text-[12px]" style={{ color: "var(--text-primary)" }}>
             <thead>
@@ -203,7 +203,7 @@ const sections = [
           </table>
         </div>
 
-        <h3>Le RAP — Régime d&apos;accession à la propriété</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Le RAP | Régime d&apos;accession à la propriété</h2>
         <p>
           Le RAP vous permet de retirer jusqu&apos;à <strong>35 000 $</strong> de vos REER par
           personne (70 000 $ en couple) sans payer d&apos;impôt, à condition de les rembourser sur
@@ -215,7 +215,7 @@ const sections = [
           <li>Le remboursement commence la 2e année suivant le retrait (1/15 par an).</li>
         </ul>
 
-        <h3>Le CELIAPP — Compte d&apos;épargne libre d&apos;impôt pour l&apos;achat</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Le CELIAPP | Compte d&apos;épargne libre d&apos;impôt pour l&apos;achat</h2>
         <p>
           Depuis 2023, le CELIAPP permet de cotiser jusqu&apos;à <strong>8 000 $ par an</strong>{" "}
           (maximum à vie de 40 000 $). Les cotisations sont déductibles d&apos;impôt (comme un REER)
@@ -251,7 +251,7 @@ const sections = [
           visites.
         </p>
 
-        <h3>Documents nécessaires</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Documents nécessaires</h2>
         <ul>
           <li>Preuves de revenus (talons de paie, avis de cotisation, T4/Relevé 1)</li>
           <li>Relevés bancaires des 3 derniers mois</li>
@@ -261,7 +261,7 @@ const sections = [
           <li>Lettre d&apos;emploi confirmant le poste et le salaire</li>
         </ul>
 
-        <h3>Durée de validité</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Durée de validité</h2>
         <p>
           Une préapprobation est généralement valide pour <strong>90 à 120 jours</strong>. Elle
           garantit un taux d&apos;intérêt pendant cette période, ce qui vous protège contre les
@@ -269,7 +269,7 @@ const sections = [
           (au taux du jour).
         </p>
 
-        <h3>Courtier hypothécaire vs banque</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Courtier hypothécaire vs banque</h2>
         <p>
           Un <strong>courtier hypothécaire</strong> magasine auprès de plusieurs prêteurs pour vous
           obtenir le meilleur taux et les meilleures conditions. Ses services sont généralement
@@ -293,23 +293,23 @@ const sections = [
           essentiels (quartier, type de propriété, nombre de chambres, budget) et restez discipliné.
         </p>
 
-        <h3>Où chercher?</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Où chercher?</h2>
         <ul>
           <li>
-            <strong>Centris.ca</strong> — Le site officiel de la Fédération des chambres immobilières
+            <strong>Centris.ca</strong> : le site officiel de la Fédération des chambres immobilières
             du Québec. Toutes les propriétés listées par un courtier y apparaissent.
           </li>
           <li>
-            <strong>Realtor.ca</strong> — Le portail pancanadien avec un excellent moteur de recherche
+            <strong>Realtor.ca</strong> : le portail pancanadien avec un excellent moteur de recherche
             par carte.
           </li>
           <li>
-            <strong>nid.local</strong> — Notre marketplace permet aux propriétaires de publier
+            <strong>nid.local</strong> : notre marketplace permet aux propriétaires de publier
             directement leurs annonces sans commission. Idéal pour les ventes entre particuliers.
           </li>
         </ul>
 
-        <h3>Lors des visites : quoi regarder</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Lors des visites : quoi regarder</h2>
         <ul>
           <li>
             <strong>Extérieur</strong> : état de la toiture, revêtement, fondation (fissures?),
@@ -352,14 +352,14 @@ const sections = [
           impliqué).
         </p>
 
-        <h3>La promesse d&apos;achat</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>La promesse d&apos;achat</h2>
         <p>
           C&apos;est un document juridique engageant. Elle contient le prix offert, les conditions, la
           date de prise de possession souhaitée et un délai pour la réponse du vendeur. Une fois
           acceptée par les deux parties, elle devient un contrat.
         </p>
 
-        <h3>Les conditions essentielles</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Les conditions essentielles</h2>
         <ul>
           <li>
             <strong>Condition d&apos;inspection</strong> : vous donne le droit de faire inspecter la
@@ -376,7 +376,7 @@ const sections = [
           </li>
         </ul>
 
-        <h3>Négociation</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Négociation</h2>
         <p>
           Le prix affiché n&apos;est qu&apos;un point de départ. Analysez les comparables récents du
           quartier, le temps de mise en marché et l&apos;état de la propriété. En marché d&apos;acheteur,
@@ -397,14 +397,14 @@ const sections = [
           <strong> jamais</strong> cette étape.
         </p>
 
-        <h3>Pourquoi c&apos;est essentiel</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Pourquoi c&apos;est essentiel</h2>
         <p>
           Un inspecteur certifié examine la propriété de fond en comble et produit un rapport
           détaillé. Ce rapport peut vous permettre de renégocier le prix, de demander des
           réparations, ou de vous retirer de la transaction si les problèmes sont trop importants.
         </p>
 
-        <h3>Quoi vérifier</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Quoi vérifier</h2>
         <ul>
           <li>
             <strong>Fondation</strong> : fissures, infiltrations d&apos;eau, signes de mouvement
@@ -430,7 +430,7 @@ const sections = [
           </li>
         </ul>
 
-        <h3>Coût moyen</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Coût moyen</h2>
         <p>
           Comptez entre <strong>500 $ et 800 $</strong> selon la taille et le type de propriété. Pour
           un condo, c&apos;est souvent moins cher (300 à 500 $). C&apos;est un investissement
@@ -459,7 +459,7 @@ const sections = [
           lui qui officialise le transfert de propriété et s&apos;assure que tout est en règle.
         </p>
 
-        <h3>Le rôle du notaire</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Le rôle du notaire</h2>
         <ul>
           <li>Vérifier les titres de propriété (pas de vices cachés juridiques, servitudes, hypothèques non radiées).</li>
           <li>Préparer l&apos;acte de vente et l&apos;acte hypothécaire.</li>
@@ -468,14 +468,14 @@ const sections = [
           <li>Publier la transaction au Registre foncier du Québec.</li>
         </ul>
 
-        <h3>Coût moyen</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Coût moyen</h2>
         <p>
           Les honoraires du notaire varient de <strong>1 500 $ à 2 500 $</strong> selon la complexité
           de la transaction. Ce montant inclut généralement les frais de publication au Registre
           foncier et les débours. Demandez une estimation écrite à l&apos;avance.
         </p>
 
-        <h3>Documents à apporter chez le notaire</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Documents à apporter chez le notaire</h2>
         <ul>
           <li>Pièces d&apos;identité (2 pièces dont une avec photo)</li>
           <li>Preuve d&apos;assurance habitation</li>
@@ -571,7 +571,7 @@ const sections = [
           des clés. Voici les étapes essentielles pour bien démarrer.
         </p>
 
-        <h3>Changement d&apos;adresse</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Changement d&apos;adresse</h2>
         <ul>
           <li>
             <strong>Service québécois de changement d&apos;adresse (SQCA)</strong> : un formulaire
@@ -582,14 +582,14 @@ const sections = [
           <li>Banque, employeur, assurances, abonnements.</li>
         </ul>
 
-        <h3>Assurance habitation</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Assurance habitation</h2>
         <p>
           Vous devriez déjà avoir votre assurance en place (c&apos;est une condition du prêteur).
           Assurez-vous d&apos;avoir une couverture adéquate pour la valeur de reconstruction, pas
           seulement la valeur marchande. Comparez au moins 3 soumissions.
         </p>
 
-        <h3>Budget d&apos;entretien annuel</h3>
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Budget d&apos;entretien annuel</h2>
         <p>
           La règle générale est de prévoir <strong>1 à 2 % de la valeur de la propriété</strong> par
           an pour l&apos;entretien et les réparations. Pour une maison de 450 000 $, cela représente
@@ -793,7 +793,7 @@ export default async function GuidePremierAchatPage() {
                   style={{ color: "var(--green-text)", opacity: 0.85 }}
                 >
                   Commencez par calculer votre capacité d&apos;emprunt, puis explorez les annonces
-                  publiées par des propriétaires sur nid.local — sans commission.
+                  publiées par des propriétaires sur nid.local, sans commission.
                 </p>
                 <div className="flex items-center justify-center gap-3 flex-wrap">
                   <Link
@@ -975,7 +975,7 @@ export default async function GuidePremierAchatPage() {
                 className="text-[11px] text-center px-2"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                © 2026 nid.local — Fait au Québec
+                © 2026 nid.local | Fait au Québec
               </p>
             </aside>
           </div>

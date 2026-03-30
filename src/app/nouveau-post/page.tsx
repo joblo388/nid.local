@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { NouveauPostForm } from "./NouveauPostForm";
 
 export const metadata = {
-  title: "Nouvelle discussion — nid.local",
+  title: "Nouvelle discussion",
 };
 
 export default async function NouveauPostPage() {
@@ -27,7 +27,7 @@ export default async function NouveauPostPage() {
           className="rounded-xl p-6"
           style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
         >
-          <h1 className="text-[18px] font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+          <h1 className="text-[22px] font-bold mb-6" style={{ color: "var(--text-primary)" }}>
             Nouvelle discussion
           </h1>
           <NouveauPostForm />

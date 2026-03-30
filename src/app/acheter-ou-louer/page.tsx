@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { CommunityCTA } from "@/components/CommunityCTA";
 import { AcheterOuLouer } from "./AcheterOuLouer";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
@@ -9,9 +10,9 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/acheter-ou-louer`;
 
 export const metadata: Metadata = {
-  title: "Acheter ou louer au Québec en 2026 — Comparateur gratuit",
+  title: "Acheter ou louer au Québec en 2026 | Comparateur gratuit",
   description:
-    "Comparez gratuitement le coût réel d'acheter versus louer au Québec sur votre horizon de temps. Hypothèque, taxes, appréciation, épargne — tous les facteurs sont pris en compte.",
+    "Comparez gratuitement le coût réel d'acheter versus louer au Québec sur votre horizon de temps. Hypothèque, taxes, appréciation et épargne. Tous les facteurs sont pris en compte.",
   keywords: [
     "acheter ou louer québec", "acheter ou louer montréal", "comparateur acheter louer",
     "calculateur acheter vs louer", "coût achat vs location québec", "vaut-il mieux acheter ou louer",
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Acheter ou louer au Québec en 2026 — Comparateur gratuit",
+    title: "Acheter ou louer au Québec en 2026 | Comparateur gratuit",
     description: "Comparez le coût réel d'acheter vs louer au Québec. Hypothèque, taxes, appréciation et épargne inclus.",
     url: PAGE_URL,
     siteName: "nid.local",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Acheter ou louer au Québec en 2026?",
-    description: "Comparateur gratuit — coût réel sur votre horizon de temps, avec tous les facteurs financiers.",
+    description: "Comparateur gratuit : coût réel sur votre horizon de temps, avec tous les facteurs financiers.",
   },
 };
 
@@ -45,7 +46,7 @@ const jsonLd = {
     },
     {
       "@type": "WebApplication",
-      name: "Acheter ou louer au Québec — nid.local",
+      name: "Acheter ou louer au Québec | nid.local",
       url: PAGE_URL,
       description: "Comparez le coût réel d'acheter versus louer au Québec. Prise en compte de l'hypothèque, taxes, appréciation, coût d'opportunité et épargne du locataire.",
       applicationCategory: "FinanceApplication",
@@ -95,7 +96,7 @@ export default async function AcheterOuLouerPage() {
                   Acheter ou louer au Québec?
                 </h1>
                 <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Comparez le coût réel d&apos;acheter versus louer sur votre horizon de temps. Hypothèque, taxes, appréciation, coût d&apos;opportunité et épargne du locataire — tous les facteurs sont pris en compte.
+                  Comparez le coût réel d&apos;acheter versus louer sur votre horizon de temps. Hypothèque, taxes, appréciation, coût d&apos;opportunité et épargne du locataire. Tous les facteurs sont pris en compte.
                 </p>
               </div>
 
@@ -162,23 +163,25 @@ export default async function AcheterOuLouerPage() {
                 </dl>
               </div>
 
-              {/* CTA */}
-              <div className="rounded-xl p-6 text-center space-y-3" style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--border)" }}>
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--green-text)" }}>
-                  Prêt à passer à l&apos;action?
-                </h2>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--green-text)", opacity: 0.85 }}>
-                  Parcourez les annonces immobilières publiées par des propriétaires sur nid.local, ou posez vos questions à la communauté.
-                </p>
-                <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <Link href="/annonces" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90" style={{ background: "var(--green)" }}>
-                    Voir les annonces →
-                  </Link>
-                  <Link href="/calculatrice-hypothecaire" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-opacity hover:opacity-80" style={{ background: "var(--bg-card)", color: "var(--green-text)", border: "0.5px solid var(--border)" }}>
-                    Calculatrice hypothécaire
-                  </Link>
+              {/* Outils connexes */}
+              <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {[
+                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypoth\u00e9caire", desc: "Estimez votre paiement mensuel selon les taux du march\u00e9." },
+                    { href: "/capacite-emprunt", label: "Capacit\u00e9 d\u2019emprunt", desc: "D\u00e9couvrez combien vous pouvez emprunter selon vos revenus." },
+                    { href: "/donnees-marche", label: "Donn\u00e9es de march\u00e9", desc: "Prix m\u00e9dians et tendances par ville et quartier au Qu\u00e9bec." },
+                  ].map((tool) => (
+                    <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
+                      <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
+                      <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
+                    </Link>
+                  ))}
                 </div>
               </div>
+
+              {/* CTA */}
+              <CommunityCTA contexte="achat" />
             </div>
 
             {/* Sidebar */}
@@ -231,7 +234,7 @@ export default async function AcheterOuLouerPage() {
                 </p>
               </div>
 
-              <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local — Fait au Québec</p>
+              <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local | Fait au Québec</p>
             </aside>
           </div>
         </main>

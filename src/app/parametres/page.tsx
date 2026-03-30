@@ -6,7 +6,7 @@ import { ParametresForm } from "./ParametresForm";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Paramètres — nid.local" };
+export const metadata = { title: "Paramètres" };
 
 export default async function ParametresPage() {
   const session = await auth();
@@ -26,7 +26,7 @@ export default async function ParametresPage() {
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
       <main className="max-w-[600px] mx-auto px-5 py-8">
-        <h1 className="text-[20px] font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-[22px] font-bold mb-6" style={{ color: "var(--text-primary)" }}>
           Paramètres du compte
         </h1>
         <ParametresForm user={user} />

@@ -59,6 +59,23 @@ export default async function HomePage() {
         url: "https://nidlocal.com",
         logo: "https://nidlocal.com/favicon.ico",
         sameAs: [],
+        inLanguage: "fr-CA",
+        areaServed: {
+          "@type": "AdministrativeArea",
+          name: "Québec, Canada",
+        },
+        address: {
+          "@type": "PostalAddress",
+          addressRegion: "QC",
+          addressCountry: "CA",
+        },
+      },
+      {
+        "@type": "DiscussionForum",
+        name: "nid.local",
+        url: "https://nidlocal.com",
+        description: "Forum immobilier communautaire du Québec. Discussions entre propriétaires, acheteurs et locataires.",
+        inLanguage: "fr-CA",
       },
     ],
   };

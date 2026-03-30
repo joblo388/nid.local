@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { CommunityCTA } from "@/components/CommunityCTA";
 import { TaxeBienvenueClient } from "./TaxeBienvenueClient";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
@@ -9,26 +10,26 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/taxe-bienvenue`;
 
 export const metadata: Metadata = {
-  title: "Calculateur de taxe de bienvenue Quebec 2026 — Droits de mutation",
+  title: "Calculateur de taxe de bienvenue Québec 2026 | Droits de mutation",
   description:
-    "Calculez la taxe de bienvenue (droits de mutation immobiliere) pour votre achat au Quebec. Montreal, Laval, Quebec et toutes les villes.",
+    "Calculez la taxe de bienvenue (droits de mutation immobilière) pour votre achat au Québec. Montréal, Laval, Québec et toutes les villes.",
   keywords: [
     "taxe de bienvenue",
     "droits de mutation",
     "calculateur",
-    "Quebec",
-    "Montreal",
-    "droits de mutation immobiliere",
-    "taxe de bienvenue Quebec",
-    "taxe de bienvenue Montreal",
-    "taxe mutation immobiliere",
+    "Québec",
+    "Montréal",
+    "droits de mutation immobilière",
+    "taxe de bienvenue Québec",
+    "taxe de bienvenue Montréal",
+    "taxe mutation immobilière",
     "calculateur taxe bienvenue",
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Calculateur de taxe de bienvenue Quebec 2026 — Droits de mutation",
+    title: "Calculateur de taxe de bienvenue Québec 2026 | Droits de mutation",
     description:
-      "Calculez la taxe de bienvenue (droits de mutation immobiliere) pour votre achat au Quebec. Montreal, Laval, Quebec et toutes les villes.",
+      "Calculez la taxe de bienvenue (droits de mutation immobilière) pour votre achat au Québec. Montréal, Laval, Québec et toutes les villes.",
     url: PAGE_URL,
     siteName: "nid.local",
     locale: "fr_CA",
@@ -36,9 +37,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Calculateur de taxe de bienvenue Quebec 2026",
+    title: "Calculateur de taxe de bienvenue Québec 2026",
     description:
-      "Calculez la taxe de bienvenue pour votre achat immobilier au Quebec. Taux par tranche, surcharge Montreal, exemptions premier achat.",
+      "Calculez la taxe de bienvenue pour votre achat immobilier au Québec. Taux par tranche, surcharge Montréal, exemptions premier achat.",
   },
 };
 
@@ -54,10 +55,10 @@ const jsonLd = {
     },
     {
       "@type": "WebApplication",
-      name: "Calculateur de taxe de bienvenue Quebec — nid.local",
+      name: "Calculateur de taxe de bienvenue Québec | nid.local",
       url: PAGE_URL,
       description:
-        "Calculez les droits de mutation immobiliere (taxe de bienvenue) pour votre achat au Quebec. Taux par tranche, surcharge Montreal, exemptions premier acheteur.",
+        "Calculez les droits de mutation immobilière (taxe de bienvenue) pour votre achat au Québec. Taux par tranche, surcharge Montréal, exemptions premier acheteur.",
       applicationCategory: "FinanceApplication",
       operatingSystem: "All",
       inLanguage: "fr-CA",
@@ -69,18 +70,18 @@ const jsonLd = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "Qu'est-ce que la taxe de bienvenue au Quebec?",
+          name: "Qu'est-ce que la taxe de bienvenue au Québec?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "La taxe de bienvenue, officiellement appelee droits de mutation immobiliere, est un impot preleve par les municipalites du Quebec lors du transfert de propriete d'un immeuble. Elle est calculee sur la base de la plus elevee entre le prix d'achat et la valeur inscrite au role d'evaluation municipale. Cette taxe est payable une seule fois, lors de l'achat.",
+            text: "La taxe de bienvenue, officiellement appelée droits de mutation immobilière, est un impôt prélevé par les municipalités du Québec lors du transfert de propriété d'un immeuble. Elle est calculée sur la base de la plus élevée entre le prix d'achat et la valeur inscrite au rôle d'évaluation municipale. Cette taxe est payable une seule fois, lors de l'achat.",
           },
         },
         {
           "@type": "Question",
-          name: "Comment est calculee la taxe de bienvenue?",
+          name: "Comment est calculée la taxe de bienvenue?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "La taxe de bienvenue est calculee par tranches progressives : 0,5% sur les premiers 58 900 $, 1,0% de 58 900 $ a 294 600 $, et 1,5% sur le montant excedant 294 600 $. A Montreal, des taux plus eleves s'appliquent au-dela de 500 000 $, avec une taxe supplementaire de 0,5% a 1,5% selon le prix.",
+            text: "La taxe de bienvenue est calculée par tranches progressives : 0,5% sur les premiers 58 900 $, 1,0% de 58 900 $ à 294 600 $, et 1,5% sur le montant excédant 294 600 $. À Montréal, des taux plus élevés s'appliquent au-delà de 500 000 $, avec une taxe supplémentaire de 0,5% à 1,5% selon le prix.",
           },
         },
         {
@@ -88,7 +89,7 @@ const jsonLd = {
           name: "Y a-t-il des exemptions pour les premiers acheteurs?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Certaines municipalites du Quebec offrent des programmes de remboursement partiel ou total de la taxe de bienvenue pour les premiers acheteurs. Ces programmes varient d'une ville a l'autre. Par exemple, certaines villes remboursent la taxe pour les proprietes en dessous d'un certain seuil de prix. Verifiez aupres de votre municipalite pour connaitre les conditions specifiques.",
+            text: "Certaines municipalités du Québec offrent des programmes de remboursement partiel ou total de la taxe de bienvenue pour les premiers acheteurs. Ces programmes varient d'une ville à l'autre. Par exemple, certaines villes remboursent la taxe pour les propriétés en dessous d'un certain seuil de prix. Vérifiez auprès de votre municipalité pour connaître les conditions spécifiques.",
           },
         },
         {
@@ -96,7 +97,7 @@ const jsonLd = {
           name: "Quand doit-on payer la taxe de bienvenue?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "La taxe de bienvenue doit etre payee dans les 90 jours suivant la reception du compte envoye par la municipalite, qui est emis apres l'enregistrement de l'acte de vente au Bureau de la publicite des droits. En cas de retard, des interets de penalite s'appliquent. Le montant ne peut pas etre finance dans l'hypotheque — il doit etre paye separement.",
+            text: "La taxe de bienvenue doit être payée dans les 90 jours suivant la réception du compte envoyé par la municipalité, qui est émis après l'enregistrement de l'acte de vente au Bureau de la publicité des droits. En cas de retard, des intérêts de pénalité s'appliquent. Le montant ne peut pas être financé dans l'hypothèque, il doit être payé séparément.",
           },
         },
       ],
@@ -136,11 +137,11 @@ export default async function TaxeBienvenuePage() {
             <div className="flex-1 min-w-0 space-y-5">
               <div>
                 <h1 className="text-[22px] font-bold leading-snug mb-2" style={{ color: "var(--text-primary)" }}>
-                  Calculateur de taxe de bienvenue Quebec
+                  Calculateur de taxe de bienvenue Québec
                 </h1>
                 <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Calculez les droits de mutation immobiliere pour votre achat au Quebec. Taux par tranche, surcharge
-                  Montreal et exemptions pour premiers acheteurs inclus.
+                  Calculez les droits de mutation immobilière pour votre achat au Québec. Taux par tranche, surcharge
+                  Montréal et exemptions pour premiers acheteurs inclus.
                 </p>
               </div>
 
@@ -165,17 +166,17 @@ export default async function TaxeBienvenuePage() {
                     {
                       n: "1",
                       titre: "Base de calcul",
-                      texte: "La taxe est calculee sur le montant le plus eleve entre le prix d'achat et la valeur au role d'evaluation municipale multipliee par le facteur comparatif.",
+                      texte: "La taxe est calculée sur le montant le plus élevé entre le prix d'achat et la valeur au rôle d'évaluation municipale multipliée par le facteur comparatif.",
                     },
                     {
                       n: "2",
                       titre: "Taux par tranche",
-                      texte: "Les taux sont progressifs : 0,5% sur les premiers 58 900 $, puis 1,0% et 1,5% sur les tranches suivantes. Montreal applique des taux plus eleves au-dela de 500 000 $.",
+                      texte: "Les taux sont progressifs : 0,5% sur les premiers 58 900 $, puis 1,0% et 1,5% sur les tranches suivantes. Montréal applique des taux plus élevés au-delà de 500 000 $.",
                     },
                     {
                       n: "3",
                       titre: "Paiement unique",
-                      texte: "La taxe est payable une seule fois dans les 90 jours suivant la reception du compte. Elle ne peut pas etre ajoutee a votre hypotheque.",
+                      texte: "La taxe est payable une seule fois dans les 90 jours suivant la réception du compte. Elle ne peut pas être ajoutée à votre hypothèque.",
                     },
                   ].map((step) => (
                     <div key={step.n} className="flex gap-3">
@@ -200,31 +201,31 @@ export default async function TaxeBienvenuePage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
-                  Baremes des droits de mutation au Quebec 2026
+                  Barèmes des droits de mutation au Québec 2026
                 </h2>
                 <div className="space-y-3">
                   {[
                     {
                       titre: "Taux de base (toutes les villes)",
-                      texte: "0,5% sur les premiers 58 900 $, 1,0% de 58 900 $ a 294 600 $, 1,5% au-dela de 294 600 $.",
+                      texte: "0,5% sur les premiers 58 900 $, 1,0% de 58 900 $ à 294 600 $, 1,5% au-delà de 294 600 $.",
                       couleur: "var(--blue-bg)",
                       textColor: "var(--blue-text)",
                     },
                     {
-                      titre: "Taux Montreal (au-dela de 500 000 $)",
-                      texte: "2,0% de 500 000 $ a 1 000 000 $, 2,5% au-dela de 1 000 000 $. Ces taux remplacent le 1,5% de base.",
+                      titre: "Taux Montréal (au-delà de 500 000 $)",
+                      texte: "2,0% de 500 000 $ à 1 000 000 $, 2,5% au-delà de 1 000 000 $. Ces taux remplacent le 1,5% de base.",
                       couleur: "var(--amber-bg)",
                       textColor: "var(--amber-text)",
                     },
                     {
-                      titre: "Taxe supplementaire de Montreal",
-                      texte: "En plus des droits de base, Montreal preleve une surtaxe : 0,5% de 500 000 $ a 1 000 000 $, 1,0% de 1 M$ a 2 M$, 1,5% au-dela de 2 M$.",
+                      titre: "Taxe supplémentaire de Montréal",
+                      texte: "En plus des droits de base, Montréal prélève une surtaxe : 0,5% de 500 000 $ à 1 000 000 $, 1,0% de 1 M$ à 2 M$, 1,5% au-delà de 2 M$.",
                       couleur: "var(--red-bg)",
                       textColor: "var(--red-text)",
                     },
                     {
                       titre: "Exemptions possibles",
-                      texte: "Certaines municipalites offrent un remboursement de la taxe pour les premiers acheteurs. Le transfert entre conjoints et certains liens de parente directs peuvent aussi etre exemptes.",
+                      texte: "Certaines municipalités offrent un remboursement de la taxe pour les premiers acheteurs. Le transfert entre conjoints et certains liens de parenté directs peuvent aussi être exemptés.",
                       couleur: "var(--green-light-bg)",
                       textColor: "var(--green-text)",
                     },
@@ -238,7 +239,7 @@ export default async function TaxeBienvenuePage() {
                   ))}
                 </div>
                 <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                  Ces baremes sont a titre informatif. Consultez votre notaire pour les montants exacts applicables a votre transaction.
+                  Ces barèmes sont à titre informatif. Consultez votre notaire pour les montants exacts applicables à votre transaction.
                 </p>
               </div>
 
@@ -248,25 +249,25 @@ export default async function TaxeBienvenuePage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
-                  Questions frequentes sur la taxe de bienvenue
+                  Questions fréquentes sur la taxe de bienvenue
                 </h2>
                 <dl className="space-y-4">
                   {[
                     {
-                      q: "Qu'est-ce que la taxe de bienvenue au Quebec?",
-                      r: "La taxe de bienvenue, officiellement appelee droits de mutation immobiliere, est un impot preleve par les municipalites lors du transfert de propriete d'un immeuble. Elle est calculee sur la base de la plus elevee entre le prix d'achat et la valeur inscrite au role d'evaluation municipale. Cette taxe est payable une seule fois, lors de l'achat.",
+                      q: "Qu'est-ce que la taxe de bienvenue au Québec?",
+                      r: "La taxe de bienvenue, officiellement appelée droits de mutation immobilière, est un impôt prélevé par les municipalités lors du transfert de propriété d'un immeuble. Elle est calculée sur la base de la plus élevée entre le prix d'achat et la valeur inscrite au rôle d'évaluation municipale. Cette taxe est payable une seule fois, lors de l'achat.",
                     },
                     {
-                      q: "Comment est calculee la taxe de bienvenue?",
-                      r: "La taxe est calculee par tranches progressives : 0,5% sur les premiers 58 900 $, 1,0% de 58 900 $ a 294 600 $, et 1,5% sur le montant excedant 294 600 $. A Montreal, des taux plus eleves s'appliquent au-dela de 500 000 $, avec une taxe supplementaire de 0,5% a 1,5% selon le prix.",
+                      q: "Comment est calculée la taxe de bienvenue?",
+                      r: "La taxe est calculée par tranches progressives : 0,5% sur les premiers 58 900 $, 1,0% de 58 900 $ à 294 600 $, et 1,5% sur le montant excédant 294 600 $. À Montréal, des taux plus élevés s'appliquent au-delà de 500 000 $, avec une taxe supplémentaire de 0,5% à 1,5% selon le prix.",
                     },
                     {
                       q: "Y a-t-il des exemptions pour les premiers acheteurs?",
-                      r: "Certaines municipalites offrent un remboursement partiel ou total de la taxe de bienvenue pour les premiers acheteurs. Ces programmes varient d'une ville a l'autre. De plus, les transferts entre conjoints et certains liens de parente directs peuvent etre exemptes de la taxe.",
+                      r: "Certaines municipalités offrent un remboursement partiel ou total de la taxe de bienvenue pour les premiers acheteurs. Ces programmes varient d'une ville à l'autre. De plus, les transferts entre conjoints et certains liens de parenté directs peuvent être exemptés de la taxe.",
                     },
                     {
                       q: "Quand doit-on payer la taxe de bienvenue?",
-                      r: "La taxe doit etre payee dans les 90 jours suivant la reception du compte envoye par la municipalite, apres l'enregistrement de l'acte de vente. Le montant ne peut pas etre finance dans l'hypotheque — il doit etre paye separement. En cas de retard, des interets de penalite s'appliquent.",
+                      r: "La taxe doit être payée dans les 90 jours suivant la réception du compte envoyé par la municipalité, après l'enregistrement de l'acte de vente. Le montant ne peut pas être financé dans l'hypothèque, il doit être payé séparément. En cas de retard, des intérêts de pénalité s'appliquent.",
                     },
                   ].map((item) => (
                     <div key={item.q} className="pb-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
@@ -281,35 +282,25 @@ export default async function TaxeBienvenuePage() {
                 </dl>
               </div>
 
-              {/* CTA community */}
-              <div
-                className="rounded-xl p-6 text-center space-y-3"
-                style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--border)" }}
-              >
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--green-text)" }}>
-                  Des questions sur votre projet immobilier au Quebec?
-                </h2>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--green-text)", opacity: 0.85 }}>
-                  Rejoignez la communaute nid.local — posez vos questions, echangez avec des acheteurs et proprietaires
-                  de votre quartier, et partagez votre experience.
-                </p>
-                <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <Link
-                    href="/"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
-                    style={{ background: "var(--green)" }}
-                  >
-                    Voir les discussions immobilieres →
-                  </Link>
-                  <Link
-                    href="/nouveau-post"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-opacity hover:opacity-80"
-                    style={{ background: "var(--bg-card)", color: "var(--green-text)", border: "0.5px solid var(--border)" }}
-                  >
-                    Poser une question
-                  </Link>
+              {/* Outils connexes */}
+              <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {[
+                    { href: "/frais-achat", label: "Frais d\u2019achat", desc: "Liste compl\u00e8te des frais \u00e0 pr\u00e9voir lors de l\u2019achat d\u2019une propri\u00e9t\u00e9." },
+                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypoth\u00e9caire", desc: "Estimez votre paiement mensuel et la prime SCHL." },
+                    { href: "/premier-acheteur", label: "Guide premier acheteur", desc: "CELIAPP, RAP et aide financi\u00e8re pour votre premier achat." },
+                  ].map((tool) => (
+                    <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
+                      <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
+                      <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
+                    </Link>
+                  ))}
                 </div>
               </div>
+
+              {/* CTA community */}
+              <CommunityCTA contexte="taxe" />
             </div>
 
             {/* Sidebar */}
@@ -386,11 +377,11 @@ export default async function TaxeBienvenuePage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                  A propos de l&apos;outil
+                  À propos de l&apos;outil
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Les calculs sont bases sur les baremes de droits de mutation immobiliere du Quebec en vigueur en 2026.
-                  La taxe supplementaire de Montreal est incluse automatiquement.
+                  Les calculs sont basés sur les barèmes de droits de mutation immobilière du Québec en vigueur en 2026.
+                  La taxe supplémentaire de Montréal est incluse automatiquement.
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                   Pour le montant exact, consultez votre <strong>notaire</strong>.
@@ -398,7 +389,7 @@ export default async function TaxeBienvenuePage() {
               </div>
 
               <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>
-                &copy; 2026 nid.local — Fait au Quebec
+                &copy; 2026 nid.local | Fait au Québec
               </p>
             </aside>
           </div>

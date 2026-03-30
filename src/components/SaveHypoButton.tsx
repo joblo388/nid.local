@@ -31,7 +31,7 @@ export function SaveHypoButton() {
         getTitre={() => {
           const prix = readDOM("price");
           const pmt = readText("payment");
-          return `Hypothèque ${prix} $ — ${pmt} $ / mois`;
+          return `Hypothèque ${prix} $ | ${pmt} $ / mois`;
         }}
       />
     </div>

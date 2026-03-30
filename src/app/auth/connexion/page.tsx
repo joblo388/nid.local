@@ -47,7 +47,7 @@ function ConnexionForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--bg-page)" }}>
+    <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "var(--bg-page)" }}>
       <div className="w-full max-w-[400px]">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -62,7 +62,7 @@ function ConnexionForm() {
 
         {/* Card */}
         <div
-          className="rounded-2xl p-6 space-y-4"
+          className="rounded-xl p-6 space-y-4"
           style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
         >
           {/* Google */}

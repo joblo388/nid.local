@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props) {
   const ville = villeBySlug[slug];
   if (!ville) return {};
   return {
-    title: `${ville.nom} — nid.local`,
+    title: ville.nom,
     description: `Forum immobilier de ${ville.nom}. Questions, annonces et discussions par quartier.`,
   };
 }

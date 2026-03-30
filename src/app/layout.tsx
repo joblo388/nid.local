@@ -12,6 +12,8 @@ import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { NotificationPermission } from "@/components/NotificationPermission";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { PageViewTracker } from "@/components/PageViewTracker";
+import { LeftSidebar } from "@/components/LeftSidebar";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import "./globals.css";
@@ -29,7 +31,7 @@ export const viewport = { themeColor: "#D4742A" };
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "nid.local — Forum immobilier Québec | Acheter, vendre, louer",
+    default: "nid.local | Forum immobilier Québec | Acheter, vendre, louer",
     template: "%s | nid.local",
   },
   description:
@@ -46,16 +48,20 @@ export const metadata: Metadata = {
     locale: "fr_CA",
     url: BASE_URL,
     siteName: "nid.local",
-    title: "nid.local — Forum immobilier Québec",
+    title: "nid.local | Forum immobilier Québec",
     description: "Le forum immobilier québécois. Discussions, marketplace sans commission, calculatrices et données de marché.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "nid.local — Forum immobilier Québec",
+    title: "nid.local | Forum immobilier Québec",
     description: "Discussions entre propriétaires, acheteurs et locataires au Québec.",
   },
   alternates: {
     canonical: BASE_URL,
+    languages: {
+      "fr-CA": BASE_URL,
+      "x-default": BASE_URL,
+    },
     types: {
       "application/rss+xml": `${BASE_URL}/rss.xml`,
     },
@@ -87,11 +93,24 @@ export default function RootLayout({
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-C0LY69FTWR');
+          fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(function(d){
+            if(d.ip==='67.218.223.166'){
+              window['ga-disable-G-C0LY69FTWR']=true;
+            }
+            gtag('config', 'G-C0LY69FTWR');
+          }).catch(function(){gtag('config', 'G-C0LY69FTWR');});
         `}</Script>
       </head>
       <body className="min-h-screen" suppressHydrationWarning>
-          <SessionProvider><ThemeProvider><ToastProvider><LightboxProvider><ConfettiProvider><PageTransition>{children}</PageTransition><BottomNav /><CommandPalette /></ConfettiProvider></LightboxProvider></ToastProvider></ThemeProvider></SessionProvider>
+          <SessionProvider><ThemeProvider><ToastProvider><LightboxProvider><ConfettiProvider>
+            <LeftSidebar />
+            <div className="lg:ml-[248px]">
+              <PageTransition>{children}</PageTransition>
+              <BottomNav />
+              <CommandPalette />
+            </div>
+          </ConfettiProvider></LightboxProvider></ToastProvider></ThemeProvider></SessionProvider>
+          <PageViewTracker />
           <OnboardingTour />
           <NotificationPermission />
           <ServiceWorkerRegister />

@@ -15,7 +15,7 @@ export function ShareCalculation({ getData, label }: { getData: () => Record<str
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: label ?? "Calcul — nid.local", url });
+        await navigator.share({ title: label ?? "Calcul | nid.local", url });
         return;
       } catch {
         // User cancelled or share failed — fall through to clipboard
