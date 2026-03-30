@@ -18,9 +18,10 @@ const CATEGORIES = [
   { slug: "renovation", label: "Conseils" },
   { slug: "voisinage", label: "Voisinage" },
   { slug: "construction", label: "Construction" },
-  { slug: "legal", label: "Legal" },
+  { slug: "legal", label: "Légal" },
   { slug: "financement", label: "Financement" },
-  { slug: "copropriete", label: "Copropriete" },
+  { slug: "copropriete", label: "TAL" },
+  { slug: "condo", label: "Condo" },
 ];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
@@ -46,26 +47,24 @@ function writeLS(key: string, val: string[]) {
 
 function FeedIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="1" width="14" height="14" rx="3" /><line x1="4" y1="5" x2="12" y2="5" /><line x1="4" y1="8" x2="12" y2="8" /><line x1="4" y1="11" x2="8" y2="11" />
     </svg>
   );
 }
 
 function TrendingIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-      <polyline points="16 7 22 7 22 13" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="1,12 5,6 9,9 13,2" /><polyline points="13,2 13,6 9,2" />
     </svg>
   );
 }
 
 function ClockIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="6" /><polyline points="8,5 8,8 10.5,10" />
     </svg>
   );
 }
@@ -145,95 +144,80 @@ function PlusIcon() {
 
 function CatVenteIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="1" x2="12" y2="23" />
-      <path d="M17 5H9.5A3.5 3.5 0 006 8.5 3.5 3.5 0 009.5 12H14.5A3.5 3.5 0 0118 15.5 3.5 3.5 0 0114.5 19H6" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6L9 2z" /><polyline points="9,2 9,6 13,6" />
     </svg>
   );
 }
 
 function CatLocationIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M15 3h6v6" />
-      <path d="M10 14L21 3" />
-      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="8" width="14" height="7" rx="1" /><polyline points="1,8 8,1 15,8" /><line x1="6" y1="15" x2="6" y2="10" /><line x1="10" y1="15" x2="10" y2="10" />
     </svg>
   );
 }
 
 function CatQuestionsIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-      <line x1="12" y1="17" x2="12.01" y2="17" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="6" /><path d="M6.3 6.3a2 2 0 113.4 1.4C9 8.4 8 9 8 10" /><circle cx="8" cy="12.5" r=".7" fill="currentColor" />
     </svg>
   );
 }
 
 function CatConseilsIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94L6.73 20.17a2.12 2.12 0 01-3-3l6.8-6.8a6 6 0 017.94-7.94L14.7 6.3z" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 2a5 5 0 00-5 5c0 2 1 3.5 2.5 4.5V14h5v-2.5C12 10.5 13 9 13 7a5 5 0 00-5-5z" />
     </svg>
   );
 }
 
 function CatVoisinageIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 00-3-3.87" />
-      <path d="M16 3.13a4 4 0 010 7.75" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="5" cy="6" r="2" /><circle cx="11" cy="6" r="2" /><path d="M1 14c0-2.2 1.8-4 4-4s4 1.8 4 4" /><path d="M11 10c2.2 0 4 1.8 4 4" />
     </svg>
   );
 }
 
 function CatConstructionIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="6" width="20" height="12" rx="2" />
-      <path d="M12 12h.01" />
-      <path d="M17 12h.01" />
-      <path d="M7 12h.01" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="8" width="14" height="7" rx="1" /><polyline points="1,8 8,1 15,8" />
     </svg>
   );
 }
 
 function CatLegalIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="3" x2="12" y2="21" />
-      <polyline points="1 14 5 10 9 14" />
-      <polyline points="15 14 19 10 23 14" />
-      <line x1="5" y1="10" x2="12" y2="3" />
-      <line x1="19" y1="10" x2="12" y2="3" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 1v14M4 5l-3 5h6L4 5zM12 5l-3 5h6L12 5z" /><line x1="2" y1="15" x2="14" y2="15" />
     </svg>
   );
 }
 
 function CatFinancementIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="5" width="20" height="14" rx="2" />
-      <line x1="2" y1="10" x2="22" y2="10" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="6" /><path d="M8 5v1.5m0 3V11m-2-5.5h3a1 1 0 010 2H7a1 1 0 000 2h3" />
     </svg>
   );
 }
 
-function CatCoproIcon() {
+function CatTalIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="2" width="16" height="20" rx="2" />
-      <path d="M9 22V18H15V22" />
-      <path d="M8 6H10" />
-      <path d="M14 6H16" />
-      <path d="M8 10H10" />
-      <path d="M14 10H16" />
-      <path d="M8 14H10" />
-      <path d="M14 14H16" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="3" width="14" height="10" rx="2" /><path d="M5 3V2m6 1V2" /><line x1="1" y1="7" x2="15" y2="7" />
+    </svg>
+  );
+}
+
+function CatCondoIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="12" height="12" rx="2" /><line x1="2" y1="7" x2="14" y2="7" /><line x1="7" y1="2" x2="7" y2="14" />
     </svg>
   );
 }
@@ -247,7 +231,8 @@ const CAT_ICONS: Record<string, () => React.JSX.Element> = {
   construction: CatConstructionIcon,
   legal: CatLegalIcon,
   financement: CatFinancementIcon,
-  copropriete: CatCoproIcon,
+  copropriete: CatTalIcon,
+  condo: CatCondoIcon,
 };
 
 // ─── Section wrapper (collapsible) ──────────────────────────────────────────────
