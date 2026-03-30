@@ -13,7 +13,7 @@ import { NotificationPermission } from "@/components/NotificationPermission";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { PageViewTracker } from "@/components/PageViewTracker";
-import { LeftSidebar } from "@/components/LeftSidebar";
+import { LeftSidebarWrapper } from "@/components/LeftSidebarWrapper";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import "./globals.css";
@@ -103,7 +103,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen" suppressHydrationWarning>
           <SessionProvider><ThemeProvider><ToastProvider><LightboxProvider><ConfettiProvider>
-            <LeftSidebar />
+            <LeftSidebarWrapper />
             <div className="lg:ml-[248px]">
               <PageTransition>{children}</PageTransition>
               <BottomNav />
