@@ -518,7 +518,21 @@ export function LeftSidebar() {
           <span className="shrink-0" style={{ color: isActiveWithQuery("/?tri=recent") ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <ClockIcon />
           </span>
-          <span className="truncate">Recent</span>
+          <span className="truncate">Récent</span>
+        </Link>
+
+        <Link
+          href="/ressources"
+          className={navItemClass(isActive("/ressources"))}
+          style={navItemStyle(isActive("/ressources"))}
+          onClick={() => addRecent("nav:outils:Outils")}
+        >
+          <span className="shrink-0" style={{ color: isActive("/ressources") ? "var(--green-text)" : "var(--text-tertiary)" }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="3" width="14" height="10" rx="2" /><path d="M5 3V2m6 1V2" /><line x1="1" y1="7" x2="15" y2="7" /><line x1="5" y1="10" x2="7" y2="10" />
+            </svg>
+          </span>
+          <span className="truncate">Outils</span>
         </Link>
       </div>
 

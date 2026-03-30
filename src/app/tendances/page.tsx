@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { dbPostToAppPost } from "@/lib/data";
+import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
 import { Header } from "@/components/Header";
 import { PostCard } from "@/components/PostCard";
 import { auth } from "@/auth";
@@ -168,6 +168,29 @@ export default async function TendancesPage() {
               </svg>
               Voir les annonces
             </Link>
+
+            <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+              <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Ressources utiles</h3>
+              </div>
+              <ul>
+                {ressourcesUtiles.map((r, i) => (
+                  <li key={r.label} style={{ borderBottom: i < ressourcesUtiles.length - 1 ? "0.5px solid var(--border)" : "none" }}>
+                    <Link href={r.href} className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg">
+                      <div className="min-w-0">
+                        <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>{r.label}</span>
+                        {"description" in r && r.description && (
+                          <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>{r.description}</p>
+                        )}
+                      </div>
+                      <svg className="w-3 h-3 shrink-0 ml-2" style={{ color: "var(--text-tertiary)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </aside>
         </div>
       </main>
