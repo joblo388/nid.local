@@ -429,6 +429,7 @@ export function LeftSidebar() {
         scrollbarWidth: "thin",
         scrollbarColor: "var(--border) transparent",
       }}
+      suppressHydrationWarning
     >
       {/* ═══════════════════════════════════════════════════════════════════════
           1. Logo bar
