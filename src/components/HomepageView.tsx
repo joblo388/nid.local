@@ -555,8 +555,8 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
           {/* Fil */}
           <div className="flex-1 min-w-0 space-y-3">
 
-            {/* En-tête + tri */}
-            <div className="flex items-center justify-between">
+            {/* En-tête + tri (hidden on lg+ where sidebar handles navigation) */}
+            <div className="flex items-center justify-between lg:hidden">
               <div className="hidden md:flex items-center gap-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
                   Discussions{" "}
