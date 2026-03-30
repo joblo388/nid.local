@@ -550,7 +550,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
       </div>
 
       {/* Contenu principal */}
-      <main className="flex-1 max-w-[1100px] mx-auto w-full px-3 md:px-5 py-4 md:py-5">
+      <main className="flex-1 max-w-[1100px] lg:max-w-none mx-auto w-full px-3 md:px-5 lg:px-8 py-4 md:py-5">
         <div className="flex gap-5 items-start">
           {/* Fil */}
           <div className="flex-1 min-w-0 space-y-3">
