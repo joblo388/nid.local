@@ -27,14 +27,23 @@ export async function generateMetadata({ params }: Props) {
   const post = await prisma.post.findUnique({ where: { id } });
   if (!post) return {};
   const excerpt = post.contenu.slice(0, 155).replace(/\s\S*$/, "") + "…";
+  const url = `https://nidlocal.com/post/${id}`;
   return {
     title: post.titre,
     description: excerpt,
+    alternates: { canonical: url },
     openGraph: {
       title: post.titre,
       description: excerpt,
       type: "article",
+      url,
       siteName: "nid.local",
+      locale: "fr_CA",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.titre,
+      description: excerpt,
     },
   };
 }

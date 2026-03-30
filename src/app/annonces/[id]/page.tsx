@@ -23,12 +23,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = `${listing.titre}. ${listing.adresse}. ${prix}.`;
   const imageUrl = listing.images[0]?.url;
 
+  const url = `https://nidlocal.com/annonces/${id}`;
   return {
     title,
     description,
+    alternates: { canonical: url },
     openGraph: {
       title,
       description,
+      url,
+      locale: "fr_CA",
+      siteName: "nid.local",
       ...(imageUrl && { images: [{ url: imageUrl, width: 1200, height: 630 }] }),
     },
     twitter: {
