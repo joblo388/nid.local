@@ -171,7 +171,7 @@ export function Header() {
           ) : session ? (
             <>
               <span className="hidden md:flex items-center gap-2">
-                <CommandPaletteTrigger />
+                <span className="lg:hidden"><CommandPaletteTrigger /></span>
                 <ThemeToggle />
                 <LanguageSwitcher />
               </span>
@@ -258,7 +258,7 @@ export function Header() {
           ) : (
             <>
               <span className="hidden md:flex items-center gap-2">
-                <CommandPaletteTrigger />
+                <span className="lg:hidden"><CommandPaletteTrigger /></span>
                 <ThemeToggle />
                 <LanguageSwitcher />
               </span>
