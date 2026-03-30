@@ -456,19 +456,19 @@ export function LeftSidebar() {
         }}
       >
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-[17px] font-bold tracking-tight leading-none">
+          <span className="text-[18px] font-black tracking-tight leading-none">
             <span style={{ color: "var(--text-primary)" }}>nid</span>
             <span style={{ color: "var(--green)" }}>.local</span>
           </span>
         </Link>
         <span
-          className="text-[10px] font-semibold px-2 py-0.5 rounded-full select-none"
+          className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md select-none"
           style={{
-            background: "var(--amber-bg)",
-            color: "var(--amber-text)",
+            background: "var(--blue-bg)",
+            color: "var(--blue-text)",
           }}
         >
-          COMMUNAUTE
+          COMMUNAUTÉ
         </span>
       </div>
 
