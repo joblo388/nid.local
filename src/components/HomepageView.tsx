@@ -555,22 +555,6 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
           {/* Fil */}
           <div className="flex-1 min-w-0 space-y-3">
 
-            {/* Recherche (desktop only) */}
-            <div className="hidden md:block relative" ref={searchRef}>
-              <SearchBar
-                value={searchQuery}
-                onChange={(q) => { handleSearchChange(q); setSearchFocused(true); }}
-              />
-              {searchFocused && searchResults.length > 0 && (
-                <SearchDropdown
-                  results={searchResults}
-                  query={searchQuery}
-                  onSelect={() => { setSearchFocused(false); handleSearchChange(""); }}
-                />
-              )}
-            </div>
-
-
             {/* En-tête + tri */}
             <div className="flex items-center justify-between">
               <div className="hidden md:flex items-center gap-3">
