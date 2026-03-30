@@ -60,7 +60,7 @@ export function Header() {
       className="sticky top-0 z-50"
       style={{ background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}
     >
-      <div className="mx-auto px-5 h-[52px] flex items-center justify-between gap-4">
+      <div className="mx-auto px-5 h-[52px] flex items-center gap-4 justify-between">
         {/* Logo — hidden on lg+ where LeftSidebar has the logo */}
         <Link href={isMarketplace ? "/annonces" : "/"} className="flex lg:hidden items-center gap-2 shrink-0">
           <span className="text-[18px] font-black tracking-tight leading-none">
@@ -89,8 +89,10 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Search bar — centered, opens spotlight */}
-        <SearchBarSpotlight />
+        {/* Search bar — centered */}
+        <div className="flex-1 flex justify-center">
+          <SearchBarSpotlight />
+        </div>
 
         {/* Right zone */}
         <div className="flex items-center gap-2">

@@ -7,7 +7,7 @@ export function SearchBarSpotlight() {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <div className="hidden lg:block flex-1 max-w-[480px] h-[36px]" />;
+    return <div className="hidden lg:block w-full max-w-[480px] h-[36px]" />;
   }
 
   return (
@@ -17,7 +17,7 @@ export function SearchBarSpotlight() {
           new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
         )
       }
-      className="hidden lg:flex items-center gap-2 flex-1 max-w-[480px] px-4 py-2 rounded-xl transition-colors hover:opacity-80"
+      className="hidden lg:flex items-center gap-2 w-full max-w-[480px] px-4 py-2 rounded-xl transition-colors hover:opacity-80"
       style={{
         background: "var(--bg-secondary)",
         border: "0.5px solid var(--border)",
