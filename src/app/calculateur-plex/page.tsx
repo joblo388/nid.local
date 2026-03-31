@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { CommunityCTA } from "@/components/CommunityCTA";
 import { CalculateurPlex } from "./CalculateurPlex";
+import { CalcActions } from "@/components/CalcActions";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
 import type { Metadata } from "next";
@@ -105,6 +106,7 @@ export default async function CalculateurPlexPage() {
             {/* Calculator */}
             <div className="rounded-xl p-6" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
               <CalculateurPlex />
+              <CalcActions />
             </div>
 
             {/* How to use */}

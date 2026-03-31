@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -329,6 +329,102 @@ function CommentItem({
   );
 }
 
+// ─── GuestCommentPrompt ─────────────────────────────────────────────────────
+
+function GuestCommentPrompt({ postId, hasComments }: { postId: string; hasComments: boolean }) {
+  const pathname = usePathname();
+  const [pendingText, setPendingText] = useState("");
+  const [showOverlay, setShowOverlay] = useState(false);
+  const storageKey = `pending_reply_${postId}`;
+  const callbackUrl = encodeURIComponent(pathname);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) setPendingText(saved);
+    } catch {}
+  }, [storageKey]);
+
+  function savePendingText() {
+    try {
+      if (pendingText.trim()) localStorage.setItem(storageKey, pendingText);
+    } catch {}
+  }
+
+  return (
+    <div
+      className="relative"
+      style={hasComments ? { borderTop: "0.5px solid var(--border)", paddingTop: "1.25rem" } : undefined}
+    >
+      <textarea
+        value={pendingText}
+        readOnly
+        onClick={() => setShowOverlay(true)}
+        placeholder="Écrivez votre réponse..."
+        rows={3}
+        className="w-full box-border px-3.5 py-2.5 rounded-xl text-[13px] outline-none resize-none"
+        style={{
+          background: "var(--bg-secondary)",
+          border: "1.5px solid var(--border)",
+          color: "var(--text-primary)",
+          cursor: "pointer",
+        }}
+      />
+      {showOverlay && (
+        <div
+          className="absolute inset-0 flex items-center justify-center rounded-xl"
+          style={{ zIndex: 10 }}
+        >
+          <div
+            className="relative rounded-xl px-6 py-5 text-center"
+            style={{
+              background: "var(--bg-card)",
+              border: "0.5px solid var(--border)",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+              maxWidth: "340px",
+              width: "100%",
+            }}
+          >
+            <button
+              onClick={() => setShowOverlay(false)}
+              className="absolute top-2.5 right-3 text-[16px] leading-none transition-opacity hover:opacity-70"
+              style={{ color: "var(--text-tertiary)" }}
+              aria-label="Fermer"
+            >
+              ✕
+            </button>
+            <p className="text-[13px] font-medium mb-4" style={{ color: "var(--text-primary)" }}>
+              Connectez-vous pour participer à la discussion
+            </p>
+            <div className="flex flex-col gap-2">
+              <Link
+                href={`/auth/connexion?callbackUrl=${callbackUrl}`}
+                onClick={savePendingText}
+                className="px-4 py-2 rounded-lg text-[13px] font-semibold text-center transition-opacity hover:opacity-90"
+                style={{
+                  border: "1.5px solid var(--green)",
+                  color: "var(--green)",
+                  background: "transparent",
+                }}
+              >
+                Se connecter
+              </Link>
+              <Link
+                href={`/auth/inscription?callbackUrl=${callbackUrl}`}
+                onClick={savePendingText}
+                className="px-4 py-2 rounded-lg text-[13px] font-semibold text-white text-center transition-opacity hover:opacity-90"
+                style={{ background: "var(--green)" }}
+              >
+                Créer un compte gratuit
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── CommentSection ──────────────────────────────────────────────────────────
 
 export function CommentSection({ postId, initial }: { postId: string; initial: Comment[] }) {
@@ -347,6 +443,19 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
   const contenuRef = useRef<HTMLTextAreaElement>(null);
 
   const currentUserId = session?.user?.id;
+
+  // Restore pending reply from localStorage after login
+  useEffect(() => {
+    if (!session) return;
+    try {
+      const key = `pending_reply_${postId}`;
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        setContenu(saved);
+        localStorage.removeItem(key);
+      }
+    } catch {}
+  }, [session, postId]);
 
   function handleImageFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -492,12 +601,7 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
           </button>
         </form>
       ) : (
-        <p className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-          <Link href={`/auth/connexion?callbackUrl=${encodeURIComponent(pathname)}`} className="font-medium underline" style={{ color: "var(--green)" }}>
-            Connectez-vous
-          </Link>{" "}
-          pour participer à la discussion.
-        </p>
+        <GuestCommentPrompt postId={postId} hasComments={comments.length > 0} />
       )}
     </div>
   );

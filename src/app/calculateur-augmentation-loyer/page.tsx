@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { CommunityCTA } from "@/components/CommunityCTA";
 import { CalculateurLoyerClient } from "./CalculateurLoyerClient";
+import { CalcActions } from "@/components/CalcActions";
 import type { Metadata } from "next";
 
 const BASE_URL =
@@ -159,6 +160,7 @@ export default function CalculateurAugmentationLoyerPage() {
               }}
             >
               <CalculateurLoyerClient />
+              <CalcActions />
             </div>
 
             {/* ── EXPLANATION SECTION ───────────────────── */}

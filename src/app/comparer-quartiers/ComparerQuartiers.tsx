@@ -222,7 +222,7 @@ export function ComparerQuartiers() {
       {/* Loading indicator */}
       {loading && (
         <div className="text-center py-6 text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-          Chargement des donnees...
+          Chargement des données...
         </div>
       )}
 
@@ -237,7 +237,7 @@ export function ComparerQuartiers() {
               <thead>
                 <tr style={{ background: "var(--bg-secondary)" }}>
                   <th className="text-left px-4 py-3 text-[12px] font-semibold" style={{ color: "var(--text-secondary)", minWidth: "140px" }}>
-                    Critere
+                    Critère
                   </th>
                   {data.map((d) => (
                     <th key={d.slug} className="text-center px-4 py-3 text-[12px] font-semibold" style={{ color: "var(--text-primary)", minWidth: "150px" }}>
@@ -302,7 +302,7 @@ export function ComparerQuartiers() {
 
                 {/* Delai */}
                 <tr style={{ borderTop: "0.5px solid var(--border)" }}>
-                  <td className="px-4 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Delai de vente</td>
+                  <td className="px-4 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Délai de vente</td>
                   {data.map((d, i) => {
                     const delais = data.map((x) => {
                       const m = x.market?.delai?.match(/(\d+)/);
@@ -318,10 +318,10 @@ export function ComparerQuartiers() {
 
                 {/* Marche */}
                 <tr style={{ borderTop: "0.5px solid var(--border)" }}>
-                  <td className="px-4 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Condition du marche</td>
+                  <td className="px-4 py-3 font-medium" style={{ color: "var(--text-secondary)" }}>Condition du marché</td>
                   {data.map((d) => {
                     const m = d.market?.marche ?? "";
-                    const label = m === "vendeur" ? "Vendeur" : m === "acheteur" ? "Acheteur" : "Equilibre";
+                    const label = m === "vendeur" ? "Vendeur" : m === "acheteur" ? "Acheteur" : "Équilibré";
                     const style = m === "vendeur"
                       ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
                       : m === "acheteur"
@@ -394,7 +394,7 @@ export function ComparerQuartiers() {
               className="inline-block w-3 h-3 rounded-sm"
               style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--green)" }}
             />
-            <span>= Meilleur resultat dans cette categorie</span>
+            <span>= Meilleur résultat dans cette catégorie</span>
           </div>
         </div>
       )}
@@ -405,7 +405,7 @@ export function ComparerQuartiers() {
           style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
         >
           <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-            Selectionnez au moins 2 quartiers pour voir la comparaison.
+            Sélectionnez au moins 2 quartiers pour voir la comparaison.
           </p>
         </div>
       )}
@@ -416,10 +416,10 @@ export function ComparerQuartiers() {
           style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
         >
           <p className="text-[14px] font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
-            Commencez par selectionner des quartiers ci-dessus
+            Commencez par sélectionner des quartiers ci-dessus
           </p>
           <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-            Comparez les prix, avis et activite de 2 a 3 quartiers cote a cote.
+            Comparez les prix, avis et activité de 2 à 3 quartiers côte à côte.
           </p>
         </div>
       )}

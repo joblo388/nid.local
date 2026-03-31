@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { CommunityCTA } from "@/components/CommunityCTA";
 import { EstimationClient } from "./EstimationClient";
+import { CalcActions } from "@/components/CalcActions";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
 import type { Metadata } from "next";
@@ -147,6 +148,7 @@ export default async function EstimationPage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <EstimationClient />
+                <CalcActions />
               </div>
 
               {/* How it works */}

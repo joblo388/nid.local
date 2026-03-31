@@ -114,7 +114,7 @@ export default async function QuartierPage({ params }: Props) {
               </div>
             </div>
 
-            {/* Donnees de marche du quartier */}
+            {/* Données de marché du quartier */}
             {marketData && (() => {
               const maxVal = Math.max(...marketData.historiquePrix.map((h) => h.valeur));
               return (
@@ -128,7 +128,7 @@ export default async function QuartierPage({ params }: Props) {
                       className="text-[14px] font-bold mb-3"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      Prix medians - {marketData.nom}
+                      Prix médians - {marketData.nom}
                     </h2>
                     <div className="grid grid-cols-3 gap-3">
                       {[
@@ -219,7 +219,7 @@ export default async function QuartierPage({ params }: Props) {
                       className="text-[14px] font-bold mb-3"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      Indicateurs du marche
+                      Indicateurs du marché
                     </h2>
                     <div className="grid grid-cols-2 gap-3">
                       <div
@@ -227,7 +227,7 @@ export default async function QuartierPage({ params }: Props) {
                         style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}
                       >
                         <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                          Delai de vente
+                          Délai de vente
                         </p>
                         <p className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
                           {marketData.delaiVente}
@@ -238,7 +238,7 @@ export default async function QuartierPage({ params }: Props) {
                         style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}
                       >
                         <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                          Conditions du marche
+                          Conditions du marché
                         </p>
                         <p className="text-[15px] font-bold flex items-center gap-1.5">
                           {marketData.marcheType === "vendeur" ? (
@@ -249,7 +249,7 @@ export default async function QuartierPage({ params }: Props) {
                                 color: "var(--green-text)",
                               }}
                             >
-                              Marche vendeur
+                              Marché vendeur
                             </span>
                           ) : marketData.marcheType === "acheteur" ? (
                             <span
@@ -259,7 +259,7 @@ export default async function QuartierPage({ params }: Props) {
                                 color: "var(--amber-text)",
                               }}
                             >
-                              Marche acheteur
+                              Marché acheteur
                             </span>
                           ) : (
                             <span
@@ -270,7 +270,7 @@ export default async function QuartierPage({ params }: Props) {
                                 border: "0.5px solid var(--border)",
                               }}
                             >
-                              Marche equilibre
+                              Marché équilibré
                             </span>
                           )}
                         </p>
@@ -312,7 +312,7 @@ export default async function QuartierPage({ params }: Props) {
                       className="text-[14px] font-bold mb-3"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      A propos de {marketData.nom}
+                      À propos de {marketData.nom}
                     </h2>
                     <div className="space-y-2.5">
                       {marketData.description.map((p, i) => (

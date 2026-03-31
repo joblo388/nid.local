@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { CommunityCTA } from "@/components/CommunityCTA";
 import { CalculatriceClient } from "./CalculatriceClient";
 import { SaveHypoButton } from "@/components/SaveHypoButton";
+import { CalcActions } from "@/components/CalcActions";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
 import type { Metadata } from "next";
@@ -177,6 +178,7 @@ export default async function CalculatriceHypothecairePage() {
               >
                 <CalculatriceClient />
                 <SaveHypoButton />
+                <CalcActions />
               </div>
 
               {/* How to use */}
