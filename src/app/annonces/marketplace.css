@@ -186,15 +186,22 @@
 @media(max-width:640px){
   .mp-breadcrumb{flex-wrap:wrap}
   .mp-detail-price{font-size:22px}
-  .mp-detail-title{font-size:15px}
-  .mp-specs-row{flex-wrap:wrap;gap:8px}
+  .mp-detail-title{font-size:15px;word-break:break-word}
+  .mp-detail-address{word-break:break-word}
+  .mp-specs-row{flex-wrap:wrap;gap:6px;justify-content:flex-start}
   .mp-spec-divider{display:none}
-  .mp-spec-item{flex:0 0 auto;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;border:0.5px solid var(--border)}
-  .mp-detail-grid{grid-template-columns:1fr}
+  .mp-spec-item{flex:0 0 auto;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;border:0.5px solid var(--border);min-width:60px;text-align:center}
+  .mp-detail-grid{grid-template-columns:1fr !important}
+  .mp-detail-row{flex-wrap:wrap;gap:2px}
+  .mp-detail-row span:last-child{word-break:break-word;text-align:right;max-width:100%}
   .mp-section iframe{height:180px !important}
+  .mp-section{overflow-x:hidden;word-break:break-word}
+  .mp-desc{word-break:break-word;overflow-wrap:anywhere}
   .mp-contact-card{position:static}
   .mp-ph-item{flex-wrap:wrap;gap:4px}
   .mp-ph-date{width:auto}
+  .mp-sidebar-card{padding:12px 14px}
+  .mp-sidebar-card .mp-btn-primary{font-size:13px;padding:10px}
 }
 
 /* --- Publier (page /annonces/publier) --- */
