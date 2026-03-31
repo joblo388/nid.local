@@ -252,6 +252,8 @@ export const ressourcesUtiles = [
   { label: "Premier acheteur", href: "/premier-acheteur", description: "RAP, CELIAPP et programmes d'aide" },
   { label: "Frais d'achat", href: "/frais-achat", description: "Tous les frais lors de l'achat d'une propriété" },
   { label: "Lexique immobilier", href: "/lexique", description: "Vocabulaire et termes immobiliers expliqués" },
+  { label: "Augmentation de loyer", href: "/calculateur-augmentation-loyer", description: "Calculez la hausse permise par le TAL" },
+  { label: "Droits du locataire", href: "/guide/droits-locataire-quebec", description: "Guide complet des droits des locataires" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
