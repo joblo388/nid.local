@@ -4,7 +4,9 @@
 .mp-card-hover:hover{border-color:var(--border-secondary) !important}
 
 /* --- Cards grid: desktop = auto-fill grid, mobile = stack --- */
-.mp-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.mp-listing-grid,.mp-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:1024px){.mp-listing-grid,.mp-cards-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.mp-listing-grid,.mp-cards-grid{grid-template-columns:1fr}}
 
 /* Mobile card layouts */
 @media(max-width:767px){

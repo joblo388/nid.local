@@ -878,7 +878,7 @@ export function AnnoncesListeView() {
 
         {/* ═══ G. Listing cards grid ═══ */}
         {loading && listings.length === 0 ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+          <div className="mp-listing-grid">
             {[...Array(6)].map((_, i) => <SkeletonListingCard key={i} />)}
           </div>
         ) : listings.length === 0 ? (
