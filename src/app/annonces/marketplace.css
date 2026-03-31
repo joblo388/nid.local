@@ -122,7 +122,7 @@
 .mp-breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-tertiary);margin-bottom:20px}
 .mp-breadcrumb a{color:var(--blue-text);cursor:pointer;text-decoration:none}
 .mp-detail-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px}
-@media(max-width:500px){.mp-detail-layout{grid-template-columns:1fr}}
+@media(max-width:768px){.mp-detail-layout{grid-template-columns:1fr !important}}
 .mp-gallery{border-radius:12px;overflow:hidden;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:200px 200px;gap:4px}
 @media(max-width:500px){.mp-gallery{grid-template-columns:1fr;grid-template-rows:auto}.mp-gallery-main{grid-row:auto;grid-column:auto;max-height:250px}.mp-gallery-thumb{max-height:250px}}
 .mp-gallery-main{grid-row:1/3;grid-column:1/2;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
@@ -181,6 +181,21 @@
 .mp-virtual-btn{width:100%;padding:10px;border-radius:8px;border:0.5px solid var(--border-secondary);background:transparent;font-size:13px;color:var(--blue-text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;font-family:inherit}
 .mp-virtual-btn:hover{background:var(--blue-bg)}
 .mp-virtual-btn svg{width:15px;height:15px;stroke:var(--blue-text);fill:none;stroke-width:1.5}
+
+/* --- Detail mobile responsive --- */
+@media(max-width:640px){
+  .mp-breadcrumb{flex-wrap:wrap}
+  .mp-detail-price{font-size:22px}
+  .mp-detail-title{font-size:15px}
+  .mp-specs-row{flex-wrap:wrap;gap:8px}
+  .mp-spec-divider{display:none}
+  .mp-spec-item{flex:0 0 auto;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;border:0.5px solid var(--border)}
+  .mp-detail-grid{grid-template-columns:1fr}
+  .mp-section iframe{height:180px !important}
+  .mp-contact-card{position:static}
+  .mp-ph-item{flex-wrap:wrap;gap:4px}
+  .mp-ph-date{width:auto}
+}
 
 /* --- Publier (page /annonces/publier) --- */
 .mp-stepper{display:flex;align-items:center;margin-bottom:28px}
