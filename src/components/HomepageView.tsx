@@ -516,46 +516,24 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
   return (
     <PullToRefresh onRefresh={handlePullToRefresh}>
-      {/* Barre ville + catégories — sticky sous le header, hidden on desktop (sidebar takes over) */}
+      {/* Catégories — sticky sous le header, visible mobile/tablette seulement (sidebar gère la nav sur desktop) */}
       <div className="sticky z-40 lg:hidden" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
         <div className="max-w-[1100px] mx-auto px-3 md:px-5">
-          <div className="flex gap-2 py-2 items-center">
-            {/* Ville selector */}
-            <select
-              value={villeSlug}
-              onChange={(e) => { setVilleSlug(e.target.value); setQuartierSlug("tous"); }}
-              className="px-2.5 py-1.5 rounded-lg text-[12px] font-semibold shrink-0"
-              style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "0.5px solid var(--green)", cursor: "pointer" }}
-            >
-              <option value="">Toutes les villes</option>
-              {villes.map((v) => (
-                <option key={v.slug} value={v.slug}>{v.nom}</option>
-              ))}
-            </select>
-            {/* Catégories — desktop */}
-            <div className="hidden md:flex gap-1 overflow-x-auto flex-1 items-center" style={{ scrollbarWidth: "none" }}>
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setCategorie(cat.value)}
-                  className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
-                  style={
-                    categorie === cat.value
-                      ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
-                      : { color: "var(--text-secondary)" }
-                  }
-                >
-                  {cat.label}
-                </button>
-              ))}
-              <Link
-                href="/villes"
-                className="px-3 py-1.5 rounded-lg text-[12px] font-semibold whitespace-nowrap shrink-0 transition-opacity hover:opacity-90 ml-auto"
-                style={{ background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }}
+          <div className="flex gap-1 py-2 items-center overflow-x-auto" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.value}
+                onClick={() => setCategorie(cat.value)}
+                className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
+                style={
+                  categorie === cat.value
+                    ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
+                    : { color: "var(--text-secondary)" }
+                }
               >
-                Villes & quartiers
-              </Link>
-            </div>
+                {cat.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
