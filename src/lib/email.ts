@@ -143,7 +143,7 @@ const templates: Record<NotifType, { subject: (d: NotifEmailData) => string; bod
     subject: (d) => `Nouveau message de ${d.acteurNom}`,
     body: (d) => `
       <p><strong>${esc(d.acteurNom)}</strong> vous a envoyé un message privé.</p>
-      ${cta(`${SITE}/messages`, "Lire le message")}
+      ${cta(`${SITE}/messages/${d.postId}`, "Lire le message")}
     `,
   },
   suggestion: {

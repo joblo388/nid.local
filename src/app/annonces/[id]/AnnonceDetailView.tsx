@@ -12,7 +12,8 @@ import { useLightbox } from "@/components/LightboxProvider";
 import { SellerRating } from "@/components/SellerRating";
 import { SellerDashboard } from "@/components/SellerDashboard";
 import { ImageCarousel } from "@/components/ImageCarousel";
-import { PriceBadge } from "@/components/PriceBadge";
+// PriceBadge désactivé temporairement (données pas assez fiables)
+// import { PriceBadge } from "@/components/PriceBadge";
 import { quartierBySlug } from "@/lib/data";
 import { getMarketEstimate } from "@/lib/marketEstimate";
 import "../marketplace.css";
@@ -270,7 +271,7 @@ export function AnnonceDetailView() {
             <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
               <div className="mp-detail-price">{fmtPrice(listing.prix)}</div>
               <div className="mp-detail-type">{TYPE_LABELS[listing.type] ?? listing.type} · {quartierNom}</div>
-              <PriceBadge prix={listing.prix} estimatedValue={getMarketEstimate(listing.quartierSlug, listing.type)} quartierNom={quartierNom} type={listing.type} />
+              {/* PriceBadge désactivé temporairement */}
             </div>
             <div className="mp-detail-title">{listing.titre}</div>
             <div className="mp-detail-address">{listing.adresse}</div>

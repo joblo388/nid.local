@@ -43,11 +43,15 @@ export function NotificationBell() {
       if (latestUnread) {
         const body =
           latestUnread.type === "price_drop"
-            ? `Le prix a baisse sur : ${latestUnread.postTitre}`
+            ? `Baisse de prix : ${latestUnread.postTitre}`
             : latestUnread.type === "comment"
-            ? `${latestUnread.acteurNom} a commente votre post`
-            : latestUnread.type === "expert_request"
-            ? `Quelqu'un a besoin de votre expertise`
+            ? `${latestUnread.acteurNom} a commenté votre discussion`
+            : latestUnread.type === "reply"
+            ? `${latestUnread.acteurNom} a répondu à votre commentaire`
+            : latestUnread.type === "message" || latestUnread.type === "conversation"
+            ? `${latestUnread.acteurNom} vous a envoyé un message`
+            : latestUnread.type === "mention"
+            ? `${latestUnread.acteurNom} vous a mentionné`
             : `${latestUnread.acteurNom} a interagi avec votre post`;
         try {
           new window.Notification("nid.local", {
@@ -121,7 +125,14 @@ export function NotificationBell() {
     setOpen(false);
     await fetch("/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, lu: true } : n));
-    const url = type === "price_drop" || type === "listing_comment" ? `/annonces/${postId}` : `/post/${postId}`;
+    let url = `/post/${postId}`;
+    if (type === "price_drop" || type === "listing_comment" || type === "listing_favorite") {
+      url = `/annonces/${postId}`;
+    } else if (type === "message" || type === "conversation") {
+      url = `/messages/${postId}`;
+    } else if (type === "comment" || type === "reply" || type === "mention") {
+      url = `/post/${postId}`;
+    }
     window.location.href = url;
   }
 
@@ -190,16 +201,28 @@ export function NotificationBell() {
                   }}
                 >
                   <p className="text-[12px] leading-snug" style={{ color: "var(--text-primary)" }}>
-                    {n.type === "price_drop" ? (
-                      <>Le prix a baisse sur :</>
+                    {n.type === "comment" ? (
+                      <><span className="font-semibold">{n.acteurNom}</span> a commenté votre discussion</>
+                    ) : n.type === "reply" ? (
+                      <><span className="font-semibold">{n.acteurNom}</span> a répondu à votre commentaire</>
+                    ) : n.type === "mention" ? (
+                      <><span className="font-semibold">{n.acteurNom}</span> vous a mentionné</>
+                    ) : n.type === "message" || n.type === "conversation" ? (
+                      <><span className="font-semibold">{n.acteurNom}</span> vous a envoyé un message</>
+                    ) : n.type === "price_drop" ? (
+                      <>Baisse de prix sur une annonce que vous suivez</>
+                    ) : n.type === "listing_comment" ? (
+                      <><span className="font-semibold">{n.acteurNom}</span> a commenté votre annonce</>
+                    ) : n.type === "listing_favorite" ? (
+                      <><span className="font-semibold">{n.acteurNom}</span> a ajouté votre annonce en favoris</>
                     ) : n.type === "expert_request" ? (
-                      <>Quelqu&apos;un a besoin de votre expertise sur :</>
+                      <>Quelqu&apos;un a besoin de votre expertise</>
                     ) : (
-                      <><span className="font-semibold">{n.acteurNom}</span>{n.type === "comment" ? " a commente votre post" : " a interagi avec votre post"}</>
+                      <><span className="font-semibold">{n.acteurNom}</span> a interagi avec votre post</>
                     )}
                   </p>
                   <p className="text-[11px] mt-0.5 truncate" style={{ color: "var(--text-tertiary)" }}>
-                    {n.postTitre}
+                    {n.type === "message" || n.type === "conversation" ? "Nouveau message privé" : n.postTitre}
                   </p>
                   <p className="text-[10px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
                     {tempsRelatif(n.creeLe)}
