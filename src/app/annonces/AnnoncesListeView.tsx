@@ -478,22 +478,6 @@ export function AnnoncesListeView() {
             {SDB_OPTIONS.map((s) => <option key={s} value={s.replace("+", "")}>{s}</option>)}
           </select>
 
-          <button
-            onClick={() => setAdvancedOpen((o) => !o)}
-            style={{
-              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
-              border: (filters.anneeMin || filters.anneeMax) ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-              background: (filters.anneeMin || filters.anneeMax) ? "var(--green-light-bg)" : "var(--bg-card)",
-              color: (filters.anneeMin || filters.anneeMax) ? "var(--green-text)" : "var(--text-primary)",
-              fontFamily: "inherit", cursor: "pointer",
-            }}
-          >
-            {filters.anneeMin && filters.anneeMax ? `${filters.anneeMin} à ${filters.anneeMax}`
-              : filters.anneeMin ? `Après ${filters.anneeMin}`
-              : filters.anneeMax ? `Avant ${filters.anneeMax}`
-              : "Année"}
-          </button>
-
           {/* Filtres avances toggle */}
           <button
             onClick={() => setAdvancedOpen(!advancedOpen)}
