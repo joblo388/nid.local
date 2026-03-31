@@ -363,136 +363,145 @@ export function AnnoncesListeView() {
         </form>
 
         {/* ═══ C. Filter bar ═══ */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+        {/* Row 1: Tab groups (scrollable on mobile) */}
+        <div className="mp-filter-row">
+          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content" }}>
 
-          {/* Tab group 1: Mode */}
-          <div style={{
-            display: "inline-flex", borderRadius: 9999, background: "var(--bg-secondary)",
-            padding: 3, gap: 2,
-          }}>
-            {[
-              { value: "", label: "Toutes" },
-              { value: "vente", label: "Acheter" },
-              { value: "location", label: "Louer" },
-            ].map((m) => (
-              <button
-                key={m.value}
-                onClick={() => setFilters((f) => ({ ...f, mode: m.value }))}
-                style={{
-                  fontSize: 12, padding: "5px 14px", borderRadius: 9999, border: "none", cursor: "pointer",
-                  fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
-                  background: filters.mode === m.value ? "var(--bg-card)" : "transparent",
-                  color: filters.mode === m.value ? "var(--text-primary)" : "var(--text-tertiary)",
-                  boxShadow: filters.mode === m.value ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                }}
-              >
-                {m.label}
-              </button>
-            ))}
+            {/* Tab group 1: Mode */}
+            <div style={{
+              display: "inline-flex", borderRadius: 9999, background: "var(--bg-secondary)",
+              padding: 3, gap: 2,
+            }}>
+              {[
+                { value: "", label: "Toutes" },
+                { value: "vente", label: "Acheter" },
+                { value: "location", label: "Louer" },
+              ].map((m) => (
+                <button
+                  key={m.value}
+                  onClick={() => setFilters((f) => ({ ...f, mode: m.value }))}
+                  style={{
+                    fontSize: 12, padding: "5px 14px", borderRadius: 9999, border: "none", cursor: "pointer",
+                    fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
+                    background: filters.mode === m.value ? "var(--bg-card)" : "transparent",
+                    color: filters.mode === m.value ? "var(--text-primary)" : "var(--text-tertiary)",
+                    boxShadow: filters.mode === m.value ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                  }}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Tab group 2: Quick types */}
+            <div style={{
+              display: "inline-flex", borderRadius: 9999, background: "var(--bg-secondary)",
+              padding: 3, gap: 2,
+            }}>
+              {QUICK_TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  onClick={() => setFilters((f) => ({ ...f, type: t.value }))}
+                  style={{
+                    fontSize: 12, padding: "5px 14px", borderRadius: 9999, border: "none", cursor: "pointer",
+                    fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
+                    background: filters.type === t.value ? "var(--bg-card)" : "transparent",
+                    color: filters.type === t.value ? "var(--text-primary)" : "var(--text-tertiary)",
+                    boxShadow: filters.type === t.value ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
           </div>
+        </div>
 
-          {/* Tab group 2: Quick types */}
-          <div style={{
-            display: "inline-flex", borderRadius: 9999, background: "var(--bg-secondary)",
-            padding: 3, gap: 2,
-          }}>
-            {QUICK_TYPES.map((t) => (
-              <button
-                key={t.value}
-                onClick={() => setFilters((f) => ({ ...f, type: t.value }))}
-                style={{
-                  fontSize: 12, padding: "5px 14px", borderRadius: 9999, border: "none", cursor: "pointer",
-                  fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
-                  background: filters.type === t.value ? "var(--bg-card)" : "transparent",
-                  color: filters.type === t.value ? "var(--text-primary)" : "var(--text-tertiary)",
-                  boxShadow: filters.type === t.value ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                }}
-              >
-                {t.label}
-              </button>
-            ))}
+        {/* Row 2: Pill filters (scrollable on mobile) */}
+        <div className="mp-filter-row" style={{ marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content" }}>
+
+            {/* Pill filters */}
+            <select
+              value={filters.villeSlug}
+              onChange={(e) => setFilters((f) => ({ ...f, villeSlug: e.target.value }))}
+              style={{
+                fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+                border: filters.villeSlug ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                background: filters.villeSlug ? "var(--green-light-bg)" : "var(--bg-card)",
+                color: filters.villeSlug ? "var(--green-text)" : "var(--text-primary)",
+                fontFamily: "inherit", cursor: "pointer", outline: "none",
+              }}
+            >
+              <option value="">Ville</option>
+              {villes.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
+            </select>
+
+            <input
+              type="number"
+              placeholder="Prix max $"
+              value={filters.prixMax}
+              onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
+              min={0}
+              step={10000}
+              style={{
+                fontSize: 12, padding: "6px 12px", borderRadius: 9999, width: 110,
+                border: filters.prixMax ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                background: filters.prixMax ? "var(--green-light-bg)" : "var(--bg-card)",
+                color: filters.prixMax ? "var(--green-text)" : "var(--text-primary)",
+                fontFamily: "inherit", outline: "none",
+              }}
+            />
+
+            <select
+              value={filters.chambresMin}
+              onChange={(e) => setFilters((f) => ({ ...f, chambresMin: e.target.value }))}
+              style={{
+                fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+                border: filters.chambresMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                background: filters.chambresMin ? "var(--green-light-bg)" : "var(--bg-card)",
+                color: filters.chambresMin ? "var(--green-text)" : "var(--text-primary)",
+                fontFamily: "inherit", cursor: "pointer", outline: "none",
+              }}
+            >
+              <option value="">Chambres</option>
+              {CHAMBRES_OPTIONS.map((c) => <option key={c} value={c.replace("+", "")}>{c}</option>)}
+            </select>
+
+            <select
+              value={filters.sallesBainMin}
+              onChange={(e) => setFilters((f) => ({ ...f, sallesBainMin: e.target.value }))}
+              style={{
+                fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+                border: filters.sallesBainMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                background: filters.sallesBainMin ? "var(--green-light-bg)" : "var(--bg-card)",
+                color: filters.sallesBainMin ? "var(--green-text)" : "var(--text-primary)",
+                fontFamily: "inherit", cursor: "pointer", outline: "none",
+              }}
+            >
+              <option value="">Salles de bain</option>
+              {SDB_OPTIONS.map((s) => <option key={s} value={s.replace("+", "")}>{s}</option>)}
+            </select>
+
+            {/* Filtres avances toggle */}
+            <button
+              onClick={() => setAdvancedOpen(!advancedOpen)}
+              style={{
+                fontSize: 12, padding: "6px 14px", borderRadius: 9999, cursor: "pointer",
+                fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
+                border: advancedOpen ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                background: advancedOpen ? "var(--green-light-bg)" : "var(--bg-card)",
+                color: advancedOpen ? "var(--green-text)" : "var(--text-tertiary)",
+                display: "inline-flex", alignItems: "center", gap: 5,
+              }}
+            >
+              <svg style={{ width: 13, height: 13, stroke: "currentColor", fill: "none", strokeWidth: 1.5 }} viewBox="0 0 24 24">
+                <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+                <circle cx="8" cy="6" r="2" /><circle cx="16" cy="12" r="2" /><circle cx="10" cy="18" r="2" />
+              </svg>
+              Filtres avancés
+            </button>
           </div>
-
-          {/* Pill filters */}
-          <select
-            value={filters.villeSlug}
-            onChange={(e) => setFilters((f) => ({ ...f, villeSlug: e.target.value }))}
-            style={{
-              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
-              border: filters.villeSlug ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-              background: filters.villeSlug ? "var(--green-light-bg)" : "var(--bg-card)",
-              color: filters.villeSlug ? "var(--green-text)" : "var(--text-primary)",
-              fontFamily: "inherit", cursor: "pointer", outline: "none",
-            }}
-          >
-            <option value="">Ville</option>
-            {villes.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
-          </select>
-
-          <input
-            type="number"
-            placeholder="Prix max $"
-            value={filters.prixMax}
-            onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
-            min={0}
-            step={10000}
-            style={{
-              fontSize: 12, padding: "6px 12px", borderRadius: 9999, width: 110,
-              border: filters.prixMax ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-              background: filters.prixMax ? "var(--green-light-bg)" : "var(--bg-card)",
-              color: filters.prixMax ? "var(--green-text)" : "var(--text-primary)",
-              fontFamily: "inherit", outline: "none",
-            }}
-          />
-
-          <select
-            value={filters.chambresMin}
-            onChange={(e) => setFilters((f) => ({ ...f, chambresMin: e.target.value }))}
-            style={{
-              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
-              border: filters.chambresMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-              background: filters.chambresMin ? "var(--green-light-bg)" : "var(--bg-card)",
-              color: filters.chambresMin ? "var(--green-text)" : "var(--text-primary)",
-              fontFamily: "inherit", cursor: "pointer", outline: "none",
-            }}
-          >
-            <option value="">Chambres</option>
-            {CHAMBRES_OPTIONS.map((c) => <option key={c} value={c.replace("+", "")}>{c}</option>)}
-          </select>
-
-          <select
-            value={filters.sallesBainMin}
-            onChange={(e) => setFilters((f) => ({ ...f, sallesBainMin: e.target.value }))}
-            style={{
-              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
-              border: filters.sallesBainMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-              background: filters.sallesBainMin ? "var(--green-light-bg)" : "var(--bg-card)",
-              color: filters.sallesBainMin ? "var(--green-text)" : "var(--text-primary)",
-              fontFamily: "inherit", cursor: "pointer", outline: "none",
-            }}
-          >
-            <option value="">Salles de bain</option>
-            {SDB_OPTIONS.map((s) => <option key={s} value={s.replace("+", "")}>{s}</option>)}
-          </select>
-
-          {/* Filtres avances toggle */}
-          <button
-            onClick={() => setAdvancedOpen(!advancedOpen)}
-            style={{
-              fontSize: 12, padding: "6px 14px", borderRadius: 9999, cursor: "pointer",
-              fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
-              border: advancedOpen ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-              background: advancedOpen ? "var(--green-light-bg)" : "var(--bg-card)",
-              color: advancedOpen ? "var(--green-text)" : "var(--text-tertiary)",
-              display: "inline-flex", alignItems: "center", gap: 5,
-            }}
-          >
-            <svg style={{ width: 13, height: 13, stroke: "currentColor", fill: "none", strokeWidth: 1.5 }} viewBox="0 0 24 24">
-              <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
-              <circle cx="8" cy="6" r="2" /><circle cx="16" cy="12" r="2" /><circle cx="10" cy="18" r="2" />
-            </svg>
-            Filtres avancés
-          </button>
         </div>
 
         {/* ═══ D. Active filter chips ═══ */}
@@ -532,7 +541,7 @@ export function AnnoncesListeView() {
             background: "var(--bg-card)", borderRadius: 12, border: "0.5px solid var(--border)",
             padding: 20, marginBottom: 16,
           }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
+            <div className="mp-adv-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
 
               {/* Col 1 */}
               <div>

@@ -3,8 +3,12 @@
 /* --- Card grid hover (page /annonces) --- */
 .mp-card-hover:hover{border-color:var(--border-secondary) !important}
 
+/* --- Filter bar scrollable rows (mobile) --- */
+.mp-filter-row{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:6px}
+.mp-filter-row::-webkit-scrollbar{display:none}
+
 /* --- Advanced panel responsive --- */
-@media(max-width:768px){
+@media(max-width:640px){
   .mp-adv-grid{grid-template-columns:1fr !important}
 }
 
