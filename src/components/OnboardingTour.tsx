@@ -296,6 +296,7 @@ export function OnboardingTour() {
           inset: 0,
           background: spotlightStyle.display === "none" ? "rgba(0,0,0,0.6)" : "transparent",
           pointerEvents: "auto",
+          zIndex: 99998,
           transition: "background 0.3s",
         }}
       />
@@ -307,6 +308,7 @@ export function OnboardingTour() {
             ...spotlightStyle,
             boxShadow: "0 0 0 9999px rgba(0,0,0,0.6)",
             pointerEvents: "none",
+            zIndex: 99999,
             transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
           }}
         />
