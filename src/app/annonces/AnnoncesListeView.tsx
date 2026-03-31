@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { villes, quartierBySlug } from "@/lib/data";
 import { SkeletonListingCard } from "@/components/Skeleton";
+import { MobileMarketplaceFilters } from "@/components/MobileMarketplaceFilters";
 import "./marketplace.css";
 
 /* ─── Types ─────────────────────────────────────────────────────── */
@@ -319,6 +320,13 @@ export function AnnoncesListeView() {
 
   const chips = getActiveChips(filters);
 
+  const activeCount = [
+    filters.mode, filters.type, filters.villeSlug, filters.quartierSlug,
+    filters.prixMin, filters.prixMax, filters.chambresMin, filters.sallesBainMin,
+    filters.superficieMin, filters.anneeMin, filters.anneeMax, filters.chauffage,
+    filters.sousSol, filters.search,
+  ].filter(Boolean).length + filters.extras.length;
+
   /* ── Render ─────────────────────────────────────────────── */
 
   return (
@@ -376,9 +384,17 @@ export function AnnoncesListeView() {
           </div>
         </form>
 
-        {/* ═══ C. Filter bar ═══ */}
+        {/* ═══ Mobile filters ═══ */}
+        <MobileMarketplaceFilters
+          filters={filters}
+          setFilters={setFilters}
+          total={total}
+          activeCount={activeCount}
+        />
+
+        {/* ═══ C. Filter bar (desktop only) ═══ */}
         {/* Row 1: Tab groups (wrap on mobile, scroll on desktop) */}
-        <div className="mp-filter-row-wrap">
+        <div className="mp-filter-row-wrap hidden md:block">
           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content" }}>
 
             {/* Tab group 1: Mode */}
@@ -433,8 +449,8 @@ export function AnnoncesListeView() {
           </div>
         </div>
 
-        {/* Row 2: Pill filters (scroll with fade on mobile) */}
-        <div className="mp-filter-row2-wrapper">
+        {/* Row 2: Pill filters (desktop only) */}
+        <div className="mp-filter-row2-wrapper hidden md:block">
           <div className="mp-filter-row2">
             <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content", paddingRight: 16 }}>
 
@@ -524,9 +540,9 @@ export function AnnoncesListeView() {
           <div className="mp-filter-row2-fade" />
         </div>
 
-        {/* ═══ D. Active filter chips ═══ */}
+        {/* ═══ D. Active filter chips (desktop only) ═══ */}
         {chips.length > 0 && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+          <div className="hidden md:flex" style={{ alignItems: "center", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
             {chips.map((chip) => (
               <button
                 key={chip.key}
@@ -555,9 +571,9 @@ export function AnnoncesListeView() {
           </div>
         )}
 
-        {/* ═══ E. Advanced filter panel ═══ */}
+        {/* ═══ E. Advanced filter panel (desktop only) ═══ */}
         {advancedOpen && (
-          <div style={{
+          <div className="hidden md:block" style={{
             background: "var(--bg-card)", borderRadius: 12, border: "0.5px solid var(--border)",
             padding: 20, marginBottom: 16,
           }}>
