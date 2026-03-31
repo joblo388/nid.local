@@ -280,35 +280,27 @@ export function OnboardingTour() {
   const isCenter = current.target === null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 99999,
-        pointerEvents: "none",
-      }}
-    >
-      {/* Clickable backdrop — always present for dismissing on click */}
+    <>
+      {/* Dark overlay covering the whole screen */}
       <div
         onClick={finish}
         style={{
           position: "fixed",
           inset: 0,
-          background: spotlightStyle.display === "none" ? "rgba(0,0,0,0.6)" : "transparent",
-          pointerEvents: "auto",
-          zIndex: 99998,
-          transition: "background 0.3s",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 99997,
         }}
       />
 
-      {/* Spotlight cutout — creates its own overlay via giant box-shadow */}
+      {/* Spotlight cutout — punch a hole in the overlay */}
       {spotlightStyle.display !== "none" && (
         <div
           style={{
             ...spotlightStyle,
-            boxShadow: "0 0 0 9999px rgba(0,0,0,0.6)",
+            background: "transparent",
+            boxShadow: "0 0 0 4px rgba(212,116,42,0.5)",
             pointerEvents: "none",
-            zIndex: 99999,
+            zIndex: 99998,
             transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
           }}
         />
@@ -317,12 +309,13 @@ export function OnboardingTour() {
       {/* Tooltip */}
       <div
         ref={tooltipRef}
+        onClick={(e) => e.stopPropagation()}
         style={{
           ...tooltipStyle,
           maxWidth: 300,
           width: isCenter ? 300 : undefined,
-          pointerEvents: "auto",
-          zIndex: 100000,
+          position: "fixed",
+          zIndex: 99999,
           transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
         }}
       >
@@ -336,8 +329,27 @@ export function OnboardingTour() {
             padding: "20px",
             boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
             border: "0.5px solid var(--border)",
+            position: "relative",
           }}
         >
+          {/* Close button */}
+          <button
+            onClick={finish}
+            style={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--text-tertiary)",
+              padding: 4,
+              lineHeight: 1,
+              fontSize: 16,
+            }}
+          >
+            x
+          </button>
           {/* Step title */}
           <h3
             style={{
@@ -450,6 +462,6 @@ export function OnboardingTour() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
