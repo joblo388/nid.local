@@ -32,19 +32,37 @@ type ListingDetail = {
   titre: string;
   description: string;
   prix: number;
+  mode: string;
   type: string;
   style: string | null;
+  sousType: string | null;
   quartierSlug: string;
   villeSlug: string;
   adresse: string;
   chambres: number;
   sallesDeBain: number;
+  sallesEau: number;
   superficie: number;
   superficieTerrain: number | null;
   anneeConstruction: number | null;
   stationnement: string | null;
   chauffage: string | null;
   eauChaude: string | null;
+  climatisation: string | null;
+  sousSol: string | null;
+  revetement: string | null;
+  extras: string | null;
+  stInterieur: number | null;
+  stExterieur: number | null;
+  prixNegociable: boolean;
+  nbLogements: number | null;
+  revenusBruts: number | null;
+  depensesAnnuelles: number | null;
+  logementsLibres: number | null;
+  occupationProprio: boolean;
+  contactPrefere: string | null;
+  courriel: string | null;
+  disponibilites: string | null;
   taxesMunicipales: number | null;
   taxesScolaires: number | null;
   fraisCondo: number | null;
@@ -167,17 +185,54 @@ export function AnnonceDetailView() {
   const initials = listing.auteur.anonyme ? "?" : listing.auteur.username.slice(0, 2).toUpperCase();
   const daysOnline = daysSince(listing.creeLe);
 
+  const STYLE_LABELS: Record<string, string> = {
+    "detache": "Détaché", "jumele": "Jumelé", "maison-de-ville": "Maison de ville",
+    "plain-pied": "Plain-pied", "a-etages": "À étages", "bi_generation": "Bi-génération",
+  };
+  const CLIMAT_LABELS: Record<string, string> = {
+    "aucune": "Aucune", "mural": "Mural", "central": "Central", "thermopompe": "Thermopompe",
+  };
+  const SOUSSOL_LABELS: Record<string, string> = {
+    "aucun": "Aucun", "non-fini": "Non fini", "semi-fini": "Semi-fini", "fini": "Fini",
+  };
+
   const details: [string, string][] = [
     ["Type", TYPE_LABELS[listing.type] ?? listing.type],
-    ...(listing.style ? [["Style", listing.style] as [string, string]] : []),
+    ...(listing.sousType ? [["Sous-type", STYLE_LABELS[listing.sousType] ?? listing.sousType] as [string, string]] : []),
+    ...(listing.style ? [["Style", STYLE_LABELS[listing.style] ?? listing.style] as [string, string]] : []),
     ...(listing.superficieTerrain ? [["Superficie terrain", `${listing.superficieTerrain.toLocaleString("fr-CA")} pi²`] as [string, string]] : []),
-    ...(listing.stationnement ? [["Stationnement", STATIONNEMENT_LABELS[listing.stationnement] ?? listing.stationnement] as [string, string]] : []),
-    ...(listing.chauffage ? [["Chauffage", listing.chauffage] as [string, string]] : []),
-    ...(listing.eauChaude ? [["Eau chaude", listing.eauChaude] as [string, string]] : []),
+    ...(listing.anneeConstruction ? [["Année de construction", String(listing.anneeConstruction)] as [string, string]] : []),
+    ...(listing.chauffage ? [["Chauffage", listing.chauffage.charAt(0).toUpperCase() + listing.chauffage.slice(1)] as [string, string]] : []),
+    ...(listing.eauChaude ? [["Eau chaude", listing.eauChaude.charAt(0).toUpperCase() + listing.eauChaude.slice(1)] as [string, string]] : []),
+    ...(listing.climatisation && listing.climatisation !== "aucune" ? [["Climatisation", CLIMAT_LABELS[listing.climatisation] ?? listing.climatisation] as [string, string]] : []),
+    ...(listing.sousSol ? [["Sous-sol", SOUSSOL_LABELS[listing.sousSol] ?? listing.sousSol] as [string, string]] : []),
+    ...(listing.revetement ? [["Revêtement", listing.revetement.charAt(0).toUpperCase() + listing.revetement.slice(1)] as [string, string]] : []),
+    ...(listing.stInterieur ? [["Stationnement intérieur", `${listing.stInterieur} place${listing.stInterieur > 1 ? "s" : ""}`] as [string, string]] : []),
+    ...(listing.stExterieur ? [["Stationnement extérieur", `${listing.stExterieur} place${listing.stExterieur > 1 ? "s" : ""}`] as [string, string]] : []),
+    ...(listing.stationnement && !listing.stInterieur && !listing.stExterieur ? [["Stationnement", STATIONNEMENT_LABELS[listing.stationnement] ?? listing.stationnement] as [string, string]] : []),
+    ...(listing.prixNegociable === false ? [["Prix", "Ferme (non négociable)"] as [string, string]] : []),
     ...(listing.taxesMunicipales ? [["Taxes municipales", `${listing.taxesMunicipales.toLocaleString("fr-CA")} $ / an`] as [string, string]] : []),
     ...(listing.taxesScolaires ? [["Taxes scolaires", `${listing.taxesScolaires.toLocaleString("fr-CA")} $ / an`] as [string, string]] : []),
     ...(listing.fraisCondo ? [["Frais de condo", `${listing.fraisCondo.toLocaleString("fr-CA")} $ / mois`] as [string, string]] : []),
+    ...(listing.nbLogements ? [["Nombre de logements", String(listing.nbLogements)] as [string, string]] : []),
+    ...(listing.revenusBruts ? [["Revenus bruts", `${listing.revenusBruts.toLocaleString("fr-CA")} $ / an`] as [string, string]] : []),
+    ...(listing.depensesAnnuelles ? [["Dépenses annuelles", `${listing.depensesAnnuelles.toLocaleString("fr-CA")} $ / an`] as [string, string]] : []),
+    ...(listing.disponibilites ? [["Disponibilités visites", listing.disponibilites.charAt(0).toUpperCase() + listing.disponibilites.slice(1)] as [string, string]] : []),
   ];
+
+  // Parse extras JSON
+  let extrasLabels: string[] = [];
+  if (listing.extras) {
+    try {
+      const parsed = JSON.parse(listing.extras);
+      const EXTRA_LABELS: Record<string, string> = {
+        garage: "Garage", "piscine-creusee": "Piscine creusée", "piscine-hors-sol": "Piscine hors-sol",
+        spa: "Spa", foyer: "Foyer", "borne-ve": "Borne VÉ", "acces-pmr": "Accès PMR",
+        cabanon: "Cabanon", serre: "Serre", alarme: "Système d'alarme",
+      };
+      extrasLabels = (parsed as string[]).map((e: string) => EXTRA_LABELS[e] ?? e);
+    } catch { /* ignore */ }
+  }
 
   const mapQuery = encodeURIComponent(listing.adresse + ", Québec, Canada");
 
@@ -245,6 +300,20 @@ export function AnnonceDetailView() {
                 <div className="mp-detail-grid">
                   {details.map(([label, value]) => (
                     <div key={label} className="mp-detail-row"><span>{label}</span><span>{value}</span></div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Extras */}
+            {extrasLabels.length > 0 && (
+              <div className="mp-section">
+                <div className="mp-section-title">Caractéristiques</div>
+                <div className="flex flex-wrap gap-2">
+                  {extrasLabels.map((label) => (
+                    <span key={label} className="text-[12px] px-3 py-1.5 rounded-full" style={{ background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }}>
+                      {label}
+                    </span>
                   ))}
                 </div>
               </div>
