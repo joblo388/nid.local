@@ -237,6 +237,7 @@ type DbPost = {
 // ─── Ressources utiles (source unique pour tout le site) ──────────────────────
 
 export const ressourcesUtiles = [
+  { label: "Augmentation de loyer TAL", href: "/calculateur-augmentation-loyer", description: "Calculez l'augmentation permise par le TAL" },
   { label: "Marketplace immobilier", href: "/annonces", description: "Vendez ou achetez une maison" },
   { label: "Données de marché", href: "/donnees-marche", description: "Prix médians et tendances par quartier" },
   { label: "Calculatrice hypothécaire", href: "/calculatrice-hypothecaire", description: "Estimez vos paiements mensuels" },
@@ -245,14 +246,12 @@ export const ressourcesUtiles = [
   { label: "Taxe de bienvenue", href: "/taxe-bienvenue", description: "Calculez vos droits de mutation" },
   { label: "Acheter ou louer?", href: "/acheter-ou-louer", description: "Comparez les deux scénarios" },
   { label: "Estimation de valeur", href: "/estimation", description: "Estimez la valeur de votre propriété" },
-  { label: "Suggestions", href: "/suggestions", description: "Proposez des améliorations" },
   { label: "Répertoire professionnel", href: "/repertoire", description: "Trouvez un professionnel de confiance" },
   { label: "Comparer des quartiers", href: "/comparer-quartiers", description: "Comparez les quartiers côte à côte" },
   { label: "Guide premier achat", href: "/guide-premier-achat", description: "Tout savoir pour votre premier achat" },
   { label: "Premier acheteur", href: "/premier-acheteur", description: "RAP, CELIAPP et programmes d'aide" },
   { label: "Frais d'achat", href: "/frais-achat", description: "Tous les frais lors de l'achat d'une propriété" },
   { label: "Lexique immobilier", href: "/lexique", description: "Vocabulaire et termes immobiliers expliqués" },
-  // { label: "Augmentation de loyer", href: "/calculateur-augmentation-loyer", description: "Calculez la hausse permise par le TAL" }, // Désactivé temporairement
   { label: "Droits du locataire", href: "/guide/droits-locataire-quebec", description: "Guide complet des droits des locataires" },
 ];
 

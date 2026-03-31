@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/Sidebar";
 import { PostCard } from "@/components/PostCard";
 import { prisma } from "@/lib/prisma";
-import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
+import { dbPostToAppPost } from "@/lib/data";
 import type { Metadata } from "next";
 
 export const revalidate = 120;
@@ -123,8 +124,6 @@ export default async function CategoriePage({ params }: Props) {
   });
   const posts = dbPosts.map(dbPostToAppPost);
 
-  const otherCats = Object.entries(CATEGORIES).filter(([s]) => s !== slug);
-
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
@@ -166,69 +165,7 @@ export default async function CategoriePage({ params }: Props) {
           </div>
 
           {/* Sidebar */}
-          <aside className="hidden md:flex flex-col gap-3 w-[240px] shrink-0">
-            <Link href="/nouveau-post"
-              className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white flex items-center justify-center transition-opacity hover:opacity-90"
-              style={{ background: "var(--green)" }}>
-              + Nouvelle discussion
-            </Link>
-
-            <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-              <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-                <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                  Autres catégories
-                </h3>
-              </div>
-              <ul>
-                {otherCats.map(([s, c], i) => (
-                  <li key={s} style={{ borderBottom: i < otherCats.length - 1 ? "0.5px solid var(--border)" : "none" }}>
-                    <Link href={`/categorie/${s}`}
-                      className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg">
-                      <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>{c.label}</span>
-                      <svg className="w-3 h-3" style={{ color: "var(--text-tertiary)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="rounded-xl p-4" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-              <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                Vous avez une question sur <strong>{cat.label.toLowerCase()}</strong> au Québec?
-                Posez-la à la communauté nid.local.
-              </p>
-              <Link href="/nouveau-post"
-                className="mt-3 inline-block text-[12px] font-medium transition-opacity hover:opacity-70"
-                style={{ color: "var(--green)" }}>
-                Poser une question →
-              </Link>
-            </div>
-
-            <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-              <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-                <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Ressources utiles</h3>
-              </div>
-              <ul>
-                {ressourcesUtiles.map((r, i) => (
-                  <li key={r.label} style={{ borderBottom: i < ressourcesUtiles.length - 1 ? "0.5px solid var(--border)" : "none" }}>
-                    <Link href={r.href} className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg">
-                      <div className="min-w-0">
-                        <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>{r.label}</span>
-                        {"description" in r && r.description && (
-                          <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>{r.description}</p>
-                        )}
-                      </div>
-                      <svg className="w-3 h-3 shrink-0 ml-2" style={{ color: "var(--text-tertiary)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </aside>
+          <Sidebar />
         </div>
       </main>
     </div>

@@ -50,28 +50,17 @@ export default async function QuartierPage({ params }: Props) {
   const whereQuartier = { quartierSlug: slug };
   const orderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
 
-  const [dbPostsQuartier, totalQuartier, userVotes, userBookmarks, byVille, byQuartier, totaux, quartierSub] = await Promise.all([
+  const [dbPostsQuartier, totalQuartier, userVotes, userBookmarks, quartierSub] = await Promise.all([
     prisma.post.findMany({ where: whereQuartier, orderBy, take: PAGE_SIZE, include: { auteur: { select: { tag: true } } } }),
     prisma.post.count({ where: whereQuartier }),
     userId ? prisma.vote.findMany({ where: { userId }, select: { postId: true } }) : [],
     userId ? prisma.bookmark.findMany({ where: { userId }, select: { postId: true } }) : [],
-    prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
-    prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
-    prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
     userId ? prisma.quartierSubscription.findUnique({ where: { userId_quartierSlug: { userId, quartierSlug: slug } } }) : null,
   ]);
 
   const postsQuartier = dbPostsQuartier.map(dbPostToAppPost);
   const initialVotedPostIds = userVotes.map((v) => v.postId);
   const initialBookmarkedPostIds = userBookmarks.map((b) => b.postId);
-
-  const sidebarStats = {
-    countsByVille: Object.fromEntries(byVille.map((r) => [r.villeSlug, r._count._all])),
-    countsByQuartier: Object.fromEntries(byQuartier.map((r) => [r.quartierSlug, r._count._all])),
-    totalPosts: totaux._count._all,
-    totalVues: totaux._sum.nbVues ?? 0,
-    totalReponses: totaux._sum.nbCommentaires ?? 0,
-  };
 
   const datasetSchema = marketData ? generateDatasetSchema(
     `Données marché immobilier ${quartier.nom} 2026`,
@@ -385,7 +374,7 @@ export default async function QuartierPage({ params }: Props) {
               />
             )}
           </div>
-          <Sidebar villeSlug={quartier.villeSlug} stats={sidebarStats} />
+          <Sidebar />
         </div>
       </main>
     </div>

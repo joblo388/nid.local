@@ -3,8 +3,7 @@ import { dbPostToAppPost } from "@/lib/data";
 import { HomepageView } from "@/components/HomepageView";
 import { Header } from "@/components/Header";
 import { auth } from "@/auth";
-import { cached } from "@/lib/cache";
-import type { SidebarStats } from "@/components/Sidebar";
+import { Sidebar } from "@/components/Sidebar";
 
 export const dynamic = "force-dynamic";
 
@@ -17,25 +16,11 @@ export default async function HomePage() {
   const defaultWhere = {};
   const defaultOrderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
 
-  const [dbPosts, total, userVotes, userBookmarks, sidebarStats] = await Promise.all([
+  const [dbPosts, total, userVotes, userBookmarks] = await Promise.all([
     prisma.post.findMany({ where: defaultWhere, orderBy: defaultOrderBy, take: PAGE_SIZE, include: { auteur: { select: { tag: true } } } }),
     prisma.post.count({ where: defaultWhere }),
     userId ? prisma.vote.findMany({ where: { userId }, select: { postId: true } }) : [],
     userId ? prisma.bookmark.findMany({ where: { userId }, select: { postId: true } }) : [],
-    cached<SidebarStats>("sidebar:stats", 60, async () => {
-      const [byVille, byQuartier, totaux] = await Promise.all([
-        prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
-        prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
-        prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
-      ]);
-      return {
-        countsByVille: Object.fromEntries(byVille.map((r) => [r.villeSlug, r._count._all])),
-        countsByQuartier: Object.fromEntries(byQuartier.map((r) => [r.quartierSlug, r._count._all])),
-        totalPosts: totaux._count._all,
-        totalVues: totaux._sum.nbVues ?? 0,
-        totalReponses: totaux._sum.nbCommentaires ?? 0,
-      };
-    }),
   ]);
 
   const initialPosts = dbPosts.map(dbPostToAppPost);
@@ -90,7 +75,7 @@ export default async function HomePage() {
         initialTotal={total}
         initialVotedPostIds={initialVotedPostIds}
         initialBookmarkedPostIds={initialBookmarkedPostIds}
-        sidebarStats={sidebarStats}
+        sidebar={<Sidebar />}
       />
     </div>
     </>

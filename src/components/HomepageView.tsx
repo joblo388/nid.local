@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Post, Categorie } from "@/lib/types";
 import { villes, quartiers, quartiersDeVille, villeBySlug } from "@/lib/data";
 import { PostCard } from "./PostCard";
 import { SkeletonPostCard } from "./Skeleton";
-import { Sidebar, SidebarStats } from "./Sidebar";
 import { PullToRefresh } from "./PullToRefresh";
 
 const PAGE_SIZE = 20;
@@ -260,10 +259,10 @@ type Props = {
   initialTotal: number;
   initialVotedPostIds: string[];
   initialBookmarkedPostIds: string[];
-  sidebarStats: SidebarStats;
+  sidebar?: ReactNode;
 };
 
-export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, initialBookmarkedPostIds, sidebarStats }: Props) {
+export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, initialBookmarkedPostIds, sidebar }: Props) {
   const searchParams = useSearchParams();
   const urlTri = searchParams.get("tri");
   const initialTri = (urlTri === "recent" || urlTri === "actif") ? urlTri : "populaire";
@@ -673,7 +672,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
           </div>
 
           {/* Sidebar — desktop uniquement */}
-          <Sidebar villeSlug={villeSlug} stats={sidebarStats} />
+          {sidebar}
         </div>
 
       </main>

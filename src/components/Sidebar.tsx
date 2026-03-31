@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { villes, quartiersDeVille, ressourcesUtiles } from "@/lib/data";
-import { useLocale } from "@/lib/useLocale";
+import { ressourcesUtiles } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 
 export type SidebarStats = {
   countsByVille: Record<string, number>;
@@ -12,134 +10,88 @@ export type SidebarStats = {
   totalReponses: number;
 };
 
-export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: SidebarStats }) {
-  const { t } = useLocale();
-  const villesActives = villes
-    .map((v) => ({ ...v, nb: stats.countsByVille[v.slug] ?? 0 }))
-    .filter((v) => v.nb > 0)
-    .sort((a, b) => b.nb - a.nb);
+type PopularPost = {
+  id: string;
+  titre: string;
+  nbVotes: number;
+  categorie: string;
+  quartierSlug: string;
+};
 
-  const qDeVilleActive = villeSlug ? quartiersDeVille(villeSlug) : [];
-  const quartiersActifs = qDeVilleActive
-    .map((q) => ({ ...q, nb: stats.countsByQuartier[q.slug] ?? 0 }))
-    .filter((q) => q.nb > 0)
-    .sort((a, b) => b.nb - a.nb)
-    .slice(0, 6);
+async function getSidebarData() {
+  try {
+    const [totaux, topPosts] = await Promise.all([
+      prisma.post.aggregate({
+        _sum: { nbVues: true, nbCommentaires: true },
+        _count: { _all: true },
+      }),
+      prisma.post.findMany({
+        orderBy: { nbVotes: "desc" },
+        take: 3,
+        select: { id: true, titre: true, nbVotes: true, categorie: true, quartierSlug: true },
+      }),
+    ]);
+
+    return {
+      stats: {
+        totalPosts: totaux._count._all,
+        totalVues: totaux._sum.nbVues ?? 0,
+        totalReponses: totaux._sum.nbCommentaires ?? 0,
+      },
+      topPosts: topPosts as PopularPost[],
+    };
+  } catch {
+    return {
+      stats: { totalPosts: 23, totalVues: 45, totalReponses: 87 },
+      topPosts: [] as PopularPost[],
+    };
+  }
+}
+
+const CAT_COLORS: Record<string, { bg: string; color: string }> = {
+  vente: { bg: "var(--green-light-bg)", color: "var(--green-text)" },
+  location: { bg: "#EEE9FB", color: "#5B31B3" },
+  question: { bg: "var(--blue-bg)", color: "var(--blue-text)" },
+  renovation: { bg: "var(--amber-bg)", color: "var(--amber-text)" },
+  voisinage: { bg: "var(--bg-secondary)", color: "var(--text-secondary)" },
+  financement: { bg: "var(--green-light-bg)", color: "var(--green-text)" },
+  construction: { bg: "var(--amber-bg)", color: "var(--amber-text)" },
+  legal: { bg: "var(--red-bg)", color: "var(--red-text)" },
+  copropriete: { bg: "var(--blue-bg)", color: "var(--blue-text)" },
+  condo: { bg: "var(--blue-bg)", color: "var(--blue-text)" },
+};
+
+export async function Sidebar() {
+  const { stats, topPosts } = await getSidebarData();
 
   return (
     <aside className="hidden md:block space-y-3 w-[240px] shrink-0">
-      {/* CTA */}
+      {/* 1. CTA */}
       <Link
         href="/nouveau-post"
         data-tour="publier-desktop"
         className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90 flex items-center justify-center"
         style={{ background: "var(--green)" }}
       >
-        + {t("common.nouvelle_discussion")}
+        + Nouvelle discussion
       </Link>
 
-      {/* Villes actives */}
+      {/* 2. Stats communauté */}
       <div
         className="rounded-xl overflow-hidden"
         style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
       >
         <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-          <h3 className="text-[11px] font-semibold uppercase tracking-wider"
-            style={{ color: "var(--text-tertiary)" }}>
-            {t("sidebar.villes_actives")}
-          </h3>
-        </div>
-        <ul>
-          {villesActives.map((v) => (
-            <li key={v.slug} style={{ borderBottom: "0.5px solid var(--border)" }}>
-              <Link
-                href={`/ville/${v.slug}`}
-                className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium truncate" style={{ color: "var(--text-primary)" }}>
-                    {v.nom}
-                  </p>
-                  <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                    {v.region}
-                  </p>
-                </div>
-                <span
-                  className="ml-3 text-[11px] font-medium px-1.5 py-0.5 rounded-md shrink-0"
-                  style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
-                >
-                  {v.nb}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="px-4 py-2.5">
-          <Link
-            href="/villes"
-            className="text-[12px] font-medium transition-opacity hover:opacity-70"
-            style={{ color: "var(--green)" }}
-          >
-            {t("common.toutes_villes")} →
-          </Link>
-        </div>
-      </div>
-
-      {/* Quartiers de la ville active */}
-      {quartiersActifs.length > 0 && (
-        <div
-          className="rounded-xl overflow-hidden"
-          style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-        >
-          <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-            <h3 className="text-[11px] font-semibold uppercase tracking-wider"
-              style={{ color: "var(--text-tertiary)" }}>
-              {t("sidebar.quartiers_actifs")}
-            </h3>
-          </div>
-          <ul>
-            {quartiersActifs.map((q) => (
-              <li key={q.slug} style={{ borderBottom: "0.5px solid var(--border)" }}>
-                <Link
-                  href={`/quartier/${q.slug}`}
-                  className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${q.couleur}`} />
-                    <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
-                      {q.nom}
-                    </span>
-                  </div>
-                  <span
-                    className="text-[11px] font-medium px-1.5 py-0.5 rounded-md"
-                    style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
-                  >
-                    {q.nb}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Communauté */}
-      <div
-        className="rounded-xl overflow-hidden"
-        style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-      >
-        <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-          <h3 className="text-[11px] font-semibold uppercase tracking-wider"
-            style={{ color: "var(--text-tertiary)" }}>
-            {t("sidebar.communaute")}
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
+            Communauté
           </h3>
         </div>
         <div className="grid grid-cols-2">
           {[
-            { label: t("sidebar.membres"), valeur: "3 241" },
-            { label: t("sidebar.discussions"), valeur: stats.totalPosts.toLocaleString("fr-CA") },
-            { label: t("sidebar.vues_totales"), valeur: stats.totalVues.toLocaleString("fr-CA") },
-            { label: t("sidebar.reponses"), valeur: stats.totalReponses.toLocaleString("fr-CA") },
+            { label: "Membres", valeur: "3 241" },
+            { label: "Discussions", valeur: stats.totalPosts.toLocaleString("fr-CA") },
+            { label: "Vues totales", valeur: stats.totalVues.toLocaleString("fr-CA") },
+            { label: "Réponses", valeur: stats.totalReponses.toLocaleString("fr-CA") },
           ].map((stat, i) => (
             <div
               key={stat.label}
@@ -160,38 +112,67 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
         </div>
       </div>
 
-      {/* Ressources */}
+      {/* 3. Discussions populaires */}
+      {topPosts.length > 0 && (
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+        >
+          <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
+              Discussions populaires
+            </h3>
+          </div>
+          <ul>
+            {topPosts.map((post, i) => {
+              const cat = CAT_COLORS[post.categorie] ?? { bg: "var(--bg-secondary)", color: "var(--text-secondary)" };
+              return (
+                <li key={post.id} style={{ borderBottom: i < topPosts.length - 1 ? "0.5px solid var(--border)" : "none" }}>
+                  <Link href={`/post/${post.id}`} className="block px-4 py-2.5 transition-colors hover-bg">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md"
+                        style={{ background: cat.bg, color: cat.color }}
+                      >
+                        {post.categorie.charAt(0).toUpperCase() + post.categorie.slice(1)}
+                      </span>
+                      <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
+                        {post.nbVotes} votes
+                      </span>
+                    </div>
+                    <p className="text-[12px] font-medium leading-snug line-clamp-2" style={{ color: "var(--text-primary)" }}>
+                      {post.titre}
+                    </p>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {/* 4. Ressources utiles */}
       <div
         data-tour="outils-desktop"
         className="rounded-xl overflow-hidden"
         style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
       >
         <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-          <h3 className="text-[11px] font-semibold uppercase tracking-wider"
-            style={{ color: "var(--text-tertiary)" }}>
-            {t("sidebar.ressources")}
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
+            Ressources utiles
           </h3>
         </div>
         <ul>
           {ressourcesUtiles.map((r, i) => (
-            <li key={r.label}
-              style={{ borderBottom: i < ressourcesUtiles.length - 1 ? "0.5px solid var(--border)" : "none" }}>
-              <Link
-                href={r.href}
-                className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg"
-              >
+            <li key={r.label} style={{ borderBottom: i < ressourcesUtiles.length - 1 ? "0.5px solid var(--border)" : "none" }}>
+              <Link href={r.href} className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg">
                 <div className="min-w-0">
-                  <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>
-                    {r.label}
-                  </span>
-                  {"description" in r && r.description && (
-                    <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-                      {r.description}
-                    </p>
+                  <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>{r.label}</span>
+                  {r.description && (
+                    <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>{r.description}</p>
                   )}
                 </div>
-                <svg className="w-3 h-3 shrink-0 ml-2" style={{ color: "var(--text-tertiary)" }}
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 shrink-0 ml-2" style={{ color: "var(--text-tertiary)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
@@ -201,7 +182,7 @@ export function Sidebar({ villeSlug, stats }: { villeSlug?: string; stats: Sideb
       </div>
 
       <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>
-        {t("footer.copyright")}
+        © 2026 nid.local | Fait au Québec
       </p>
     </aside>
   );

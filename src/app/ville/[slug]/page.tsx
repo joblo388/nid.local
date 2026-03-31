@@ -35,14 +35,12 @@ export default async function VillePage({ params }: Props) {
   const whereVille = { villeSlug: slug };
   const orderBy = [{ epingle: "desc" as const }, { nbVotes: "desc" as const }];
 
-  const [dbPostsVille, totalVille, userVotes, userBookmarks, byVille, byQuartier, totaux] = await Promise.all([
+  const [dbPostsVille, totalVille, userVotes, userBookmarks, byQuartier] = await Promise.all([
     prisma.post.findMany({ where: whereVille, orderBy, take: PAGE_SIZE, include: { auteur: { select: { tag: true } } } }),
     prisma.post.count({ where: whereVille }),
     userId ? prisma.vote.findMany({ where: { userId }, select: { postId: true } }) : [],
     userId ? prisma.bookmark.findMany({ where: { userId }, select: { postId: true } }) : [],
-    prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
     prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
-    prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
   ]);
 
   const postsVille = dbPostsVille.map(dbPostToAppPost);
@@ -50,14 +48,6 @@ export default async function VillePage({ params }: Props) {
   const initialBookmarkedPostIds = userBookmarks.map((b) => b.postId);
 
   const countsByQuartier = Object.fromEntries(byQuartier.map((r) => [r.quartierSlug, r._count._all]));
-
-  const sidebarStats = {
-    countsByVille: Object.fromEntries(byVille.map((r) => [r.villeSlug, r._count._all])),
-    countsByQuartier,
-    totalPosts: totaux._count._all,
-    totalVues: totaux._sum.nbVues ?? 0,
-    totalReponses: totaux._sum.nbCommentaires ?? 0,
-  };
 
   const quartiersAvecNb = qDeVille
     .map((q) => ({ ...q, nb: countsByQuartier[q.slug] ?? 0 }))
@@ -168,7 +158,7 @@ export default async function VillePage({ params }: Props) {
             )}
           </div>
 
-          <Sidebar villeSlug={slug} stats={sidebarStats} />
+          <Sidebar />
         </div>
       </main>
     </div>

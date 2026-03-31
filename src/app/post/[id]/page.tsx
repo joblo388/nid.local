@@ -65,7 +65,7 @@ const badgeLabels: Record<string, string> = {
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
 
-  const [dbPost, dbComments, byVille, byQuartier, totaux, dbPoll] = await Promise.all([
+  const [dbPost, dbComments, dbPoll] = await Promise.all([
     prisma.post.findUnique({ where: { id }, include: { auteur: { select: { tag: true } } } }),
     prisma.comment.findMany({
       where: { postId: id, parentId: null },
@@ -79,9 +79,6 @@ export default async function PostPage({ params }: Props) {
         },
       },
     }),
-    prisma.post.groupBy({ by: ["villeSlug"], _count: { _all: true } }),
-    prisma.post.groupBy({ by: ["quartierSlug"], _count: { _all: true } }),
-    prisma.post.aggregate({ _sum: { nbVues: true, nbCommentaires: true }, _count: { _all: true } }),
     prisma.poll.findUnique({ where: { postId: id }, select: { id: true } }),
   ]);
 
@@ -104,14 +101,6 @@ export default async function PostPage({ params }: Props) {
       nbVotes: r.nbVotes,
     })),
   }));
-
-  const sidebarStats = {
-    countsByVille: Object.fromEntries(byVille.map((r) => [r.villeSlug, r._count._all])),
-    countsByQuartier: Object.fromEntries(byQuartier.map((r) => [r.quartierSlug, r._count._all])),
-    totalPosts: totaux._count._all,
-    totalVues: totaux._sum.nbVues ?? 0,
-    totalReponses: totaux._sum.nbCommentaires ?? 0,
-  };
 
   const dateStr = new Date(post.creeLe).toLocaleDateString("fr-CA", {
     year: "numeric", month: "long", day: "numeric",
@@ -272,7 +261,7 @@ export default async function PostPage({ params }: Props) {
             <SimilarPosts postId={post.id} />
           </div>
           <div className="hidden md:block">
-            <Sidebar stats={sidebarStats} />
+            <Sidebar />
           </div>
         </div>
       </main>
