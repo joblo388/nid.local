@@ -4,16 +4,17 @@ import { CommunityCTA } from "@/components/CommunityCTA";
 import { CalculateurLoyerClient } from "./CalculateurLoyerClient";
 import type { Metadata } from "next";
 
-const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.local";
+const BASE_URL =
+  process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.local";
 const PAGE_URL = `${BASE_URL}/calculateur-augmentation-loyer`;
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
-  title: "Calculateur augmentation de loyer Québec 2026 | TAL",
+  title: "Calculateur augmentation de loyer Quebec 2026 | TAL",
   description:
-    "Calculez l'augmentation de loyer permise selon les critères du TAL 2026. Outil gratuit basé sur les règles officielles du Tribunal administratif du logement du Québec.",
+    "Calculez l'augmentation de loyer permise selon les criteres du TAL 2026. Outil gratuit base sur les regles officielles du Tribunal administratif du logement du Quebec.",
   keywords: [
-    "augmentation loyer québec",
+    "augmentation loyer quebec",
     "calculateur TAL",
     "hausse loyer 2026",
     "tribunal administratif logement",
@@ -21,9 +22,9 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Calculateur augmentation de loyer Québec 2026 | TAL",
+    title: "Calculateur augmentation de loyer Quebec 2026 | TAL",
     description:
-      "Calculez l'augmentation de loyer permise selon les critères du TAL 2026. Outil gratuit basé sur les règles officielles du Tribunal administratif du logement du Québec.",
+      "Calculez l'augmentation de loyer permise selon les criteres du TAL 2026. Outil gratuit base sur les regles officielles du Tribunal administratif du logement du Quebec.",
     url: PAGE_URL,
     siteName: "nid.local",
     locale: "fr_CA",
@@ -31,9 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Calculateur augmentation de loyer Québec 2026 | TAL",
+    title: "Calculateur augmentation de loyer Quebec 2026 | TAL",
     description:
-      "Calculez l'augmentation de loyer permise selon les critères du TAL 2026. Outil gratuit basé sur les règles officielles du Tribunal administratif du logement.",
+      "Calculez l'augmentation de loyer permise selon les criteres du TAL 2026. Outil gratuit base sur les regles officielles du Tribunal administratif du logement.",
   },
 };
 
@@ -43,7 +44,12 @@ const jsonLd = {
     {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "nid.local", item: BASE_URL },
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "nid.local",
+          item: BASE_URL,
+        },
         {
           "@type": "ListItem",
           position: 2,
@@ -54,10 +60,10 @@ const jsonLd = {
     },
     {
       "@type": "WebApplication",
-      name: "Calculateur augmentation de loyer Québec | nid.local",
+      name: "Calculateur augmentation de loyer Quebec | nid.local",
       url: PAGE_URL,
       description:
-        "Calculez l'augmentation de loyer permise selon les critères du TAL 2026. Estimation standard ou calcul personnalisé avec vos dépenses réelles.",
+        "Calculez l'augmentation de loyer permise selon les criteres du TAL 2026. Estimation basee sur la methode officielle du Tribunal administratif du logement.",
       applicationCategory: "FinanceApplication",
       operatingSystem: "All",
       inLanguage: "fr-CA",
@@ -69,26 +75,26 @@ const jsonLd = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "Quelle est l'augmentation de loyer permise au Québec en 2026?",
+          name: "Quelle est l'augmentation de loyer permise au Quebec en 2026?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Le Tribunal administratif du logement (TAL) publie chaque année des indices d'ajustement de loyer. Pour 2026, le taux de base est de 3,1%, auquel s'ajoutent 0,4% si le logement est chauffé par le propriétaire et 0,2% pour l'eau chaude fournie. Ces taux sont des estimations applicables lorsque le propriétaire ne fournit pas le détail de ses dépenses réelles.",
+            text: "Le Tribunal administratif du logement (TAL) publie chaque annee des indices d'ajustement de loyer. Pour 2026, le taux de base est de 3,1%, auquel s'ajoutent les hausses reelles de taxes, assurances et travaux majeurs. Ces taux sont des estimations applicables lorsque le proprietaire ne fournit pas le detail de ses depenses reelles.",
           },
         },
         {
           "@type": "Question",
-          name: "Un propriétaire peut-il augmenter le loyer au-delà des taux du TAL?",
+          name: "Un proprietaire peut-il augmenter le loyer au-dela des taux du TAL?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Le propriétaire peut proposer une augmentation supérieure aux taux suggérés par le TAL s'il peut justifier des dépenses réelles plus élevées, par exemple des travaux de rénovation majeurs, une hausse importante des taxes municipales ou de l'assurance. Le locataire a le droit de refuser et de demander une fixation de loyer au TAL.",
+            text: "Le proprietaire peut proposer une augmentation superieure aux taux suggeres par le TAL s'il peut justifier des depenses reelles plus elevees, par exemple des travaux de renovation majeurs, une hausse importante des taxes municipales ou de l'assurance. Le locataire a le droit de refuser et de demander une fixation de loyer au TAL.",
           },
         },
         {
           "@type": "Question",
-          name: "Que faire si je refuse l'augmentation de loyer proposée?",
+          name: "Que faire si je refuse l'augmentation de loyer proposee?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Le locataire dispose d'un mois après la réception de l'avis d'augmentation pour refuser par écrit. Le propriétaire a ensuite un mois pour demander au TAL de fixer le loyer. Si le propriétaire ne fait pas la demande, le loyer reste inchangé. Le locataire peut aussi contester directement au TAL s'il juge l'augmentation abusive.",
+            text: "Le locataire dispose d'un mois apres la reception de l'avis d'augmentation pour refuser par ecrit. Le proprietaire a ensuite un mois pour demander au TAL de fixer le loyer. Si le proprietaire ne fait pas la demande, le loyer reste inchange. Le locataire peut aussi contester directement au TAL s'il juge l'augmentation abusive.",
           },
         },
       ],
@@ -131,16 +137,16 @@ export default function CalculateurAugmentationLoyerPage() {
                 className="text-[22px] font-bold leading-snug mb-2"
                 style={{ color: "var(--text-primary)" }}
               >
-                Calculateur d&apos;augmentation de loyer Québec
+                Calculateur d&apos;augmentation de loyer Quebec
               </h1>
               <p
                 className="text-[13px] leading-relaxed"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Estimez l&apos;augmentation de loyer permise selon les
-                critères du Tribunal administratif du logement (TAL) pour
-                2026. Calcul standard ou personnalisé avec vos dépenses
-                réelles.
+                Estimez l&apos;augmentation de loyer permise selon la methode
+                officielle du Tribunal administratif du logement (TAL) pour
+                2026. Entrez vos depenses reelles pour obtenir un calcul
+                personnalise.
               </p>
             </div>
 
@@ -155,251 +161,412 @@ export default function CalculateurAugmentationLoyerPage() {
               <CalculateurLoyerClient />
             </div>
 
-            {/* Droits et procédure */}
+            {/* ── EXPLANATION SECTION ───────────────────── */}
+
+            {/* Comment fonctionne le calcul */}
             <div
-              className="rounded-xl p-6 space-y-3"
+              className="rounded-xl p-6 space-y-5"
               style={{
                 background: "var(--bg-card)",
                 border: "0.5px solid var(--border)",
               }}
             >
               <h2
-                className="text-[15px] font-bold"
+                className="text-[20px] font-bold"
                 style={{ color: "var(--text-primary)" }}
               >
-                Droits et procédure
+                Comment fonctionne le calcul
               </h2>
-              <div className="grid md:grid-cols-3 gap-4">
-                {[
-                  {
-                    n: "1",
-                    titre: "Avis écrit obligatoire",
-                    texte:
-                      "Le propriétaire doit envoyer un avis écrit au locataire au moins 3 mois avant la fin du bail (6 mois pour un bail de plus de 6 mois dans certains cas). L'avis doit mentionner le nouveau loyer proposé ou les modifications au bail.",
-                  },
-                  {
-                    n: "2",
-                    titre: "Droit de refus",
-                    texte:
-                      "Le locataire dispose d'un mois après réception de l'avis pour refuser par écrit l'augmentation proposée. Le propriétaire a ensuite un mois pour demander la fixation du loyer au TAL.",
-                  },
-                  {
-                    n: "3",
-                    titre: "Fixation par le TAL",
-                    texte:
-                      "Si les parties ne s'entendent pas, le TAL fixe le loyer en tenant compte des dépenses réelles du propriétaire, des revenus de l'immeuble et des indices annuels d'ajustement.",
-                  },
-                ].map((step) => (
-                  <div key={step.n} className="flex gap-3">
-                    <div
-                      className="w-6 h-6 rounded-full text-[12px] font-bold flex items-center justify-center shrink-0 mt-0.5 text-white"
+
+              <div className="space-y-4">
+                {/* Card 1 */}
+                <div
+                  className="rounded-lg p-4 space-y-2"
+                  style={{
+                    background: "var(--bg-secondary)",
+                    border: "0.5px solid var(--border)",
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="w-7 h-7 rounded-full text-[13px] font-bold flex items-center justify-center shrink-0 text-white"
                       style={{ background: "var(--green)" }}
                     >
-                      {step.n}
-                    </div>
-                    <div>
+                      {"\u2460"}
+                    </span>
+                    <div className="flex-1">
                       <p
                         className="text-[13px] font-semibold mb-1"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        {step.titre}
+                        Ajustement de base (IPC)
                       </p>
                       <p
                         className="text-[12px] leading-relaxed"
                         style={{ color: "var(--text-secondary)" }}
                       >
-                        {step.texte}
+                        Le taux de base de 3,1% est applique directement au
+                        loyer mensuel actuel. Ce taux correspond a
+                        l&apos;indice des prix a la consommation (IPC) retenu
+                        par le TAL pour 2026.
                       </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Indices TAL */}
-            <div
-              className="rounded-xl p-6 space-y-4"
-              style={{
-                background: "var(--bg-card)",
-                border: "0.5px solid var(--border)",
-              }}
-            >
-              <h2
-                className="text-[15px] font-bold"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Indices d&apos;ajustement du TAL 2026
-              </h2>
-              <div className="space-y-3">
-                {[
-                  {
-                    titre: "Taux de base (IPC)",
-                    texte:
-                      "3,1% couvre l'ajustement général lié à l'inflation (indice des prix à la consommation). Ce taux s'applique à tous les logements locatifs au Québec.",
-                    couleur: "var(--blue-bg)",
-                    textColor: "var(--blue-text)",
-                  },
-                  {
-                    titre: "Chauffage inclus",
-                    texte:
-                      "Un supplément de 0,4% est ajouté lorsque le propriétaire assume les coûts de chauffage du logement, reflétant la hausse des coûts énergétiques.",
-                    couleur: "var(--amber-bg)",
-                    textColor: "var(--amber-text)",
-                  },
-                  {
-                    titre: "Eau chaude incluse",
-                    texte:
-                      "Un supplément de 0,2% est ajouté lorsque le propriétaire fournit l'eau chaude, pour couvrir les coûts supplémentaires d'énergie.",
-                    couleur: "var(--green-light-bg)",
-                    textColor: "var(--green-text)",
-                  },
-                  {
-                    titre: "Dépenses réelles",
-                    texte:
-                      "Le propriétaire peut justifier une augmentation différente en présentant ses dépenses réelles (taxes, assurance, chauffage, rénovations). Le calcul personnalisé utilise ces montants.",
-                    couleur: "var(--red-bg)",
-                    textColor: "var(--red-text)",
-                  },
-                ].map((rule) => (
                   <div
-                    key={rule.titre}
-                    className="flex gap-3 p-3 rounded-lg"
-                    style={{ background: rule.couleur }}
+                    className="ml-10 p-3 rounded-lg text-[12px] leading-relaxed"
+                    style={{
+                      borderLeft: "3px solid var(--green)",
+                      background: "var(--bg-page)",
+                      color: "var(--text-secondary)",
+                    }}
                   >
+                    Exemple : pour un loyer de 1 200 $, l&apos;ajustement de
+                    base est de 1 200 $ x 3,1% = 37,20 $/mois.
+                  </div>
+                </div>
+
+                {/* Card 2 */}
+                <div
+                  className="rounded-lg p-4 space-y-2"
+                  style={{
+                    background: "var(--bg-secondary)",
+                    border: "0.5px solid var(--border)",
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="w-7 h-7 rounded-full text-[13px] font-bold flex items-center justify-center shrink-0 text-white"
+                      style={{ background: "var(--green)" }}
+                    >
+                      {"\u2461"}
+                    </span>
                     <div className="flex-1">
                       <p
-                        className="text-[12px] font-semibold mb-0.5"
-                        style={{ color: rule.textColor }}
+                        className="text-[13px] font-semibold mb-1"
+                        style={{ color: "var(--text-primary)" }}
                       >
-                        {rule.titre}
+                        Taxes et assurances
                       </p>
                       <p
                         className="text-[12px] leading-relaxed"
-                        style={{ color: rule.textColor, opacity: 0.85 }}
+                        style={{ color: "var(--text-secondary)" }}
                       >
-                        {rule.texte}
+                        Seule la portion de la hausse qui depasse le taux IPC
+                        de 3,1% est prise en compte. La hausse retenue est
+                        ensuite repartie au prorata du loyer par rapport au
+                        total des loyers de l&apos;immeuble, puis divisee par
+                        12 pour obtenir le montant mensuel.
                       </p>
                     </div>
                   </div>
-                ))}
-              </div>
-              <p
-                className="text-[11px]"
-                style={{ color: "var(--text-tertiary)" }}
-              >
-                Ces indices sont publiés annuellement par le Tribunal
-                administratif du logement. Consultez le site du TAL pour les
-                valeurs officielles.
-              </p>
-            </div>
-
-            {/* FAQ */}
-            <div
-              className="rounded-xl p-6 space-y-4"
-              style={{
-                background: "var(--bg-card)",
-                border: "0.5px solid var(--border)",
-              }}
-            >
-              <h2
-                className="text-[15px] font-bold"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Questions fréquentes sur l&apos;augmentation de loyer
-              </h2>
-              <dl className="space-y-4">
-                {[
-                  {
-                    q: "Quelle est l'augmentation de loyer permise au Québec en 2026?",
-                    r: "Le TAL publie chaque année des indices d'ajustement. Pour 2026, le taux de base est de 3,1%, auquel s'ajoutent 0,4% si le logement est chauffé par le propriétaire et 0,2% pour l'eau chaude fournie. Ces taux sont des estimations applicables lorsque le propriétaire ne fournit pas le détail de ses dépenses réelles.",
-                  },
-                  {
-                    q: "Un propriétaire peut-il augmenter le loyer au-delà des taux du TAL?",
-                    r: "Le propriétaire peut proposer une augmentation supérieure aux taux suggérés par le TAL s'il peut justifier des dépenses réelles plus élevées, par exemple des travaux de rénovation majeurs, une hausse importante des taxes municipales ou de l'assurance. Le locataire a le droit de refuser et de demander une fixation de loyer au TAL.",
-                  },
-                  {
-                    q: "Que faire si je refuse l'augmentation de loyer proposée?",
-                    r: "Le locataire dispose d'un mois après la réception de l'avis d'augmentation pour refuser par écrit. Le propriétaire a ensuite un mois pour demander au TAL de fixer le loyer. Si le propriétaire ne fait pas la demande, le loyer reste inchangé. Le locataire peut aussi contester directement au TAL s'il juge l'augmentation abusive.",
-                  },
-                ].map((item) => (
                   <div
-                    key={item.q}
-                    className="pb-4"
-                    style={{ borderBottom: "0.5px solid var(--border)" }}
-                  >
-                    <dt
-                      className="text-[13px] font-semibold mb-1.5"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      {item.q}
-                    </dt>
-                    <dd
-                      className="text-[13px] leading-relaxed"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
-                      {item.r}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-
-            {/* Outils connexes */}
-            <div
-              className="rounded-xl p-6 space-y-3"
-              style={{
-                background: "var(--bg-card)",
-                border: "0.5px solid var(--border)",
-              }}
-            >
-              <h2
-                className="text-[15px] font-bold"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Outils connexes
-              </h2>
-              <div className="grid sm:grid-cols-3 gap-3">
-                {[
-                  {
-                    href: "/acheter-ou-louer",
-                    label: "Acheter ou louer",
-                    desc: "Comparez les coûts d'achat et de location pour votre situation.",
-                  },
-                  {
-                    href: "/calculatrice-hypothecaire",
-                    label: "Calculatrice hypothécaire",
-                    desc: "Estimez votre paiement mensuel et la prime SCHL.",
-                  },
-                  {
-                    href: "/donnees-marche",
-                    label: "Données de marché",
-                    desc: "Prix médians et tendances dans 80+ quartiers du Québec.",
-                  },
-                ].map((tool) => (
-                  <Link
-                    key={tool.href}
-                    href={tool.href}
-                    className="p-3 rounded-lg transition-colors hover-bg"
+                    className="ml-10 p-3 rounded-lg text-[12px] leading-relaxed"
                     style={{
-                      background: "var(--bg-secondary)",
-                      border: "0.5px solid var(--border)",
+                      borderLeft: "3px solid var(--green)",
+                      background: "var(--bg-page)",
+                      color: "var(--text-secondary)",
                     }}
                   >
+                    Exemple : taxes passant de 4 200 $ a 4 500 $. Hausse =
+                    300 $. Base exclue = 4 200 $ x 3,1% = 130,20 $. Retenu =
+                    300 $ - 130,20 $ = 169,80 $.
+                  </div>
+                </div>
+
+                {/* Card 3 */}
+                <div
+                  className="rounded-lg p-4 space-y-2"
+                  style={{
+                    background: "var(--bg-secondary)",
+                    border: "0.5px solid var(--border)",
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="w-7 h-7 rounded-full text-[13px] font-bold flex items-center justify-center shrink-0 text-white"
+                      style={{ background: "var(--green)" }}
+                    >
+                      {"\u2462"}
+                    </span>
+                    <div className="flex-1">
+                      <p
+                        className="text-[13px] font-semibold mb-1"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        Reparations et ameliorations majeures
+                      </p>
+                      <p
+                        className="text-[12px] leading-relaxed"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        Le cout net des travaux (montant moins les aides
+                        recues) est amorti a 5% par annee, soit sur 20 ans.
+                        Si plusieurs logements sont concernes, un prorata est
+                        applique selon le poids du loyer dans l&apos;ensemble
+                        des logements touches.
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className="ml-10 p-3 rounded-lg text-[12px] leading-relaxed"
+                    style={{
+                      borderLeft: "3px solid var(--green)",
+                      background: "var(--bg-page)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    Exemple : travaux de 15 000 $ sans aide, 1 logement
+                    concerne. Ajustement = 15 000 $ x 5% / 12 = 62,50 $/mois.
+                  </div>
+                </div>
+
+                {/* Card 4 */}
+                <div
+                  className="rounded-lg p-4 space-y-2"
+                  style={{
+                    background: "var(--bg-secondary)",
+                    border: "0.5px solid var(--border)",
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="w-7 h-7 rounded-full text-[13px] font-bold flex items-center justify-center shrink-0 text-white"
+                      style={{ background: "var(--green)" }}
+                    >
+                      {"\u2463"}
+                    </span>
+                    <div className="flex-1">
+                      <p
+                        className="text-[13px] font-semibold mb-1"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        Nouveaux services ou accessoires
+                      </p>
+                      <p
+                        className="text-[12px] leading-relaxed"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        Contrairement aux renovations, les nouveaux services
+                        ne sont pas amortis. Le cout annuel net est
+                        directement reparti entre les logements concernes et
+                        divise par 12 pour obtenir l&apos;ajustement mensuel.
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className="ml-10 p-3 rounded-lg text-[12px] leading-relaxed"
+                    style={{
+                      borderLeft: "3px solid var(--green)",
+                      background: "var(--bg-page)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    Exemple : ajout d&apos;un stationnement a 600 $/an, 1
+                    logement. Ajustement = 600 $ / 12 = 50,00 $/mois.
+                  </div>
+                </div>
+              </div>
+
+              {/* Alert box for tenants */}
+              <div
+                className="rounded-lg p-4 flex gap-3"
+                style={{
+                  background: "var(--amber-bg)",
+                }}
+              >
+                <svg
+                  className="w-5 h-5 shrink-0 mt-0.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ color: "var(--amber-text)" }}
+                >
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <div>
+                  <p
+                    className="text-[13px] font-semibold mb-1"
+                    style={{ color: "var(--amber-text)" }}
+                  >
+                    Note pour les locataires
+                  </p>
+                  <p
+                    className="text-[12px] leading-relaxed"
+                    style={{ color: "var(--amber-text)", opacity: 0.85 }}
+                  >
+                    Ce calculateur reproduit la methode du TAL, mais ne
+                    remplace pas une fixation officielle. Si l&apos;augmentation
+                    proposee par votre proprietaire vous semble excessive, vous
+                    avez le droit de la refuser par ecrit dans le delai prevu et
+                    de demander au TAL de fixer le loyer.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Vous voulez refuser l'augmentation */}
+            <div
+              className="rounded-xl p-6 space-y-5"
+              style={{
+                background: "var(--bg-card)",
+                border: "0.5px solid var(--border)",
+              }}
+            >
+              <h2
+                className="text-[20px] font-bold"
+                style={{ color: "var(--text-primary)" }}
+              >
+                Vous voulez refuser l&apos;augmentation
+              </h2>
+
+              {/* Timeline */}
+              <div className="relative pl-8 space-y-6">
+                {/* Vertical line */}
+                <div
+                  className="absolute left-[11px] top-2 bottom-2 w-[2px]"
+                  style={{ background: "var(--border)" }}
+                />
+
+                {[
+                  {
+                    titre: "Reception de l'avis d'augmentation",
+                    desc: "Le proprietaire doit envoyer un avis ecrit au moins 3 mois avant la fin du bail (6 mois si le bail depasse 6 ans ou pour un logement dans un immeuble de 5 logements et plus). L'avis doit indiquer le nouveau loyer propose.",
+                  },
+                  {
+                    titre: "Reponse du locataire (1 mois)",
+                    desc: "Vous disposez d'un mois apres reception de l'avis pour refuser par ecrit. Envoyez votre refus par courrier recommande ou remettez-le en main propre avec accuse de reception.",
+                  },
+                  {
+                    titre: "Demande du proprietaire au TAL (1 mois)",
+                    desc: "Le proprietaire a un mois apres votre refus pour deposer une demande de fixation de loyer au TAL. S'il ne le fait pas dans ce delai, le loyer reste inchange pour la prochaine annee.",
+                  },
+                  {
+                    titre: "Audience au TAL",
+                    desc: "Le TAL convoque les deux parties a une audience. Il examine les depenses reelles du proprietaire, les revenus de l'immeuble et les indices annuels. Le tribunal rend ensuite sa decision, qui est contraignante.",
+                  },
+                ].map((step, i) => (
+                  <div key={i} className="relative">
+                    <div
+                      className="absolute -left-8 top-1 w-[10px] h-[10px] rounded-full border-2"
+                      style={{
+                        borderColor: "var(--green)",
+                        background: "var(--bg-card)",
+                      }}
+                    />
                     <p
-                      className="text-[13px] font-semibold mb-0.5"
+                      className="text-[13px] font-semibold mb-1"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      {tool.label}
+                      {step.titre}
                     </p>
                     <p
-                      className="text-[11px]"
-                      style={{ color: "var(--text-tertiary)" }}
+                      className="text-[12px] leading-relaxed"
+                      style={{ color: "var(--text-secondary)" }}
                     >
-                      {tool.desc}
+                      {step.desc}
                     </p>
-                  </Link>
+                  </div>
                 ))}
               </div>
+            </div>
+
+            {/* Resources grid */}
+            <div className="grid sm:grid-cols-3 gap-3">
+              <a
+                href="https://www.tal.gouv.qc.ca"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl p-4 transition-colors hover-bg block"
+                style={{
+                  background: "var(--bg-card)",
+                  border: "0.5px solid var(--border)",
+                }}
+              >
+                <p
+                  className="text-[13px] font-semibold mb-1"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Tribunal administratif du logement
+                </p>
+                <p
+                  className="text-[11px] leading-relaxed"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  Site officiel du TAL. Formulaires, outils de calcul et
+                  informations sur vos droits.
+                </p>
+              </a>
+              <a
+                href="https://rclalq.qc.ca"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl p-4 transition-colors hover-bg block"
+                style={{
+                  background: "var(--bg-card)",
+                  border: "0.5px solid var(--border)",
+                }}
+              >
+                <p
+                  className="text-[13px] font-semibold mb-1"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  RCLALQ
+                </p>
+                <p
+                  className="text-[11px] leading-relaxed"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  Regroupement des comites logement et associations de
+                  locataires du Quebec. Aide et accompagnement.
+                </p>
+              </a>
+              <Link
+                href="/"
+                className="rounded-xl p-4 transition-colors hover-bg block"
+                style={{
+                  background: "var(--bg-card)",
+                  border: "0.5px solid var(--border)",
+                }}
+              >
+                <p
+                  className="text-[13px] font-semibold mb-1"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Forum nid.local
+                </p>
+                <p
+                  className="text-[11px] leading-relaxed"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  Discutez avec d&apos;autres locataires et proprietaires.
+                  Partagez vos experiences et posez vos questions.
+                </p>
+              </Link>
+            </div>
+
+            {/* Important note */}
+            <div
+              className="rounded-xl p-4"
+              style={{
+                background: "var(--blue-bg)",
+              }}
+            >
+              <p
+                className="text-[12px] leading-relaxed"
+                style={{ color: "var(--blue-text)" }}
+              >
+                <span className="font-semibold">Important :</span> cet outil
+                est fourni a titre informatif et ne constitue pas un avis
+                juridique. Les resultats sont bases sur la methode de calcul
+                du TAL, mais ne remplacent pas une fixation officielle.
+                Consultez le TAL ou un conseiller juridique pour toute
+                situation particuliere.
+              </p>
             </div>
 
             {/* CTA community */}
