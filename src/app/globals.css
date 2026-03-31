@@ -324,11 +324,10 @@ body {
     cursor: pointer;
     font-family: inherit;
     text-decoration: none;
-    padding: 4px 12px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: 72px;
+    padding: 4px 0;
     text-align: center;
+    white-space: nowrap;
+    flex: 1;
   }
   .bottom-nav a.active, .bottom-nav button.active {
     color: var(--green);
