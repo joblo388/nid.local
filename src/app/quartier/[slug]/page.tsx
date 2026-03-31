@@ -184,28 +184,29 @@ export default async function QuartierPage({ params }: Props) {
                     >
                       Historique des prix (unifamiliale)
                     </h2>
-                    <div className="flex items-end gap-2" style={{ height: "140px" }}>
+                    <div className="flex items-end gap-2" style={{ height: "160px" }}>
                       {marketData.historiquePrix.map((h, i) => {
-                        const pct = (h.valeur / maxVal) * 100;
+                        const minPct = 20;
+                        const pct = minPct + ((h.valeur - Math.min(...marketData.historiquePrix.map((x) => x.valeur))) / (maxVal - Math.min(...marketData.historiquePrix.map((x) => x.valeur)) || 1)) * (100 - minPct);
                         const isRecent = i >= marketData.historiquePrix.length - 2;
                         return (
-                          <div key={h.annee} className="flex-1 flex flex-col items-center gap-1">
+                          <div key={h.annee} className="flex-1 flex flex-col items-center" style={{ height: "100%" }}>
                             <span
-                              className="text-[10px] font-semibold"
+                              className="text-[10px] font-semibold mb-1"
                               style={{ color: "var(--text-tertiary)" }}
                             >
                               {(h.valeur / 1000).toFixed(0)}k
                             </span>
+                            <div className="flex-1" />
                             <div
-                              className="w-full rounded-t"
+                              className="w-full rounded-t-sm"
                               style={{
                                 height: `${pct}%`,
                                 background: isRecent ? "var(--green)" : "var(--amber-bg)",
-                                minHeight: "8px",
                               }}
                             />
                             <span
-                              className="text-[10px]"
+                              className="text-[10px] mt-1"
                               style={{ color: "var(--text-tertiary)" }}
                             >
                               {h.annee}
