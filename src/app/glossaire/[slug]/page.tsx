@@ -34,6 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
+    keywords: [
+      `${entry.terme.toLowerCase()} définition`, `${entry.terme.toLowerCase()} immobilier`,
+      "lexique immobilier québec", "vocabulaire immobilier", "glossaire immobilier",
+    ],
     alternates: { canonical: url },
     openGraph: {
       title,

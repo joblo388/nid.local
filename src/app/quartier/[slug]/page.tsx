@@ -20,14 +20,28 @@ export async function generateStaticParams() {
   return quartiers.map((q) => ({ slug: q.slug }));
 }
 
+const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nidlocal.com";
+
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const quartier = quartiers.find((q) => q.slug === slug);
   if (!quartier) return {};
   const ville = villeBySlug[quartier.villeSlug];
+  const villeNom = ville?.nom ?? "";
+  const title = `Immobilier ${quartier.nom} 2026 | Prix, tendances et discussions`;
+  const description = `Prix médians, tendances du marché et discussions communautaires pour ${quartier.nom}${villeNom ? ` à ${villeNom}` : ""}. Données 2026, avis de résidents.`;
+  const url = `${BASE_URL}/quartier/${slug}`;
   return {
-    title: quartier.nom,
-    description: `Discussions immobilières dans le quartier ${quartier.nom}${ville ? ` à ${ville.nom}` : ""}. Ventes, locations, questions et alertes de voisinage.`,
+    title,
+    description,
+    keywords: [
+      `immobilier ${quartier.nom.toLowerCase()}`, `prix maison ${quartier.nom.toLowerCase()}`,
+      `${quartier.nom.toLowerCase()} ${villeNom.toLowerCase()}`, `acheter ${quartier.nom.toLowerCase()}`,
+      `quartier ${quartier.nom.toLowerCase()}`, "forum immobilier québec",
+    ],
+    alternates: { canonical: url },
+    openGraph: { title, description, url, siteName: "nid.local", locale: "fr_CA", type: "website" },
+    twitter: { card: "summary_large_image" as const, title, description },
   };
 }
 
