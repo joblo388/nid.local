@@ -200,7 +200,7 @@ export const PostCard = React.memo(function PostCard({ post, searchQuery = "", h
 
           {/* Titre */}
           <Link href={`/post/${post.id}`}>
-            <h2 className="text-[15px] font-[600] leading-snug mb-1.5 transition-opacity hover:opacity-70"
+            <h2 className="text-[15px] font-[600] leading-snug mb-1.5 transition-opacity hover:opacity-70 line-clamp-2 md:line-clamp-3"
               style={{ color: "var(--text-primary)" }}>
               <Highlighted text={post.titre} query={searchQuery} />
             </h2>

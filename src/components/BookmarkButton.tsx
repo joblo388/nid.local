@@ -38,14 +38,16 @@ export function BookmarkButton({
     <button
       onClick={toggle}
       title={bookmarked ? "Retirer des favoris" : "Sauvegarder"}
-      className="flex items-center gap-1 text-[12px] transition-opacity hover:opacity-70"
-      style={{ color: bookmarked ? "var(--green)" : "var(--text-tertiary)" }}
+      aria-label={bookmarked ? "Retirer des favoris" : "Sauvegarder"}
+      className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0"
+      style={{
+        color: bookmarked ? "var(--green)" : "var(--text-tertiary)",
+        background: bookmarked ? "var(--green-light-bg)" : "transparent",
+      }}
     >
-      <svg className="w-3.5 h-3.5" fill={bookmarked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-          d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+      <svg className="w-4 h-4" fill={bookmarked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 16 16" strokeWidth={1.5}>
+        <path d="M4 2h8a1 1 0 011 1v11l-5-3-5 3V3a1 1 0 011-1z" />
       </svg>
-      {bookmarked ? "Sauvegardé" : "Sauvegarder"}
     </button>
   );
 }
