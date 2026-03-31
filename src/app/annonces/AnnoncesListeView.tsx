@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { Header } from "@/components/Header";
 import { villes, quartierBySlug } from "@/lib/data";
 import { SkeletonListingCard } from "@/components/Skeleton";
 import "./marketplace.css";
@@ -309,9 +308,7 @@ export function AnnoncesListeView() {
   /* ── Render ─────────────────────────────────────────────── */
 
   return (
-    <>
-      <Header />
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 16px 40px" }}>
+    <div>
 
         {/* ═══ A. Page header ═══ */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", margin: "24px 0 20px", flexWrap: "wrap", gap: 12 }}>
@@ -936,6 +933,5 @@ export function AnnoncesListeView() {
           </>
         )}
       </div>
-    </>
   );
 }

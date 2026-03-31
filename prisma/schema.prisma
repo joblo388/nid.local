@@ -462,14 +462,23 @@ model QuartierReview {
 }
 
 model SavedSearch {
-  id         String   @id @default(cuid())
-  userId     String
-  nom        String
-  mode       String?
-  villeSlug  String?
-  type       String?
-  prixMax    Int?
-  creeLe     DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  nom            String
+  mode           String?  // "vente" | "location"
+  villeSlug      String?
+  quartierSlug   String?
+  type           String?  // "unifamiliale" | "condo" | "plex" etc.
+  prixMax        Int?
+  prixMin        Int?
+  chambresMin    Int?
+  sallesBainMin  Int?
+  courriel       String?
+  frequence      String   @default("quotidien") // "instantane" | "quotidien" | "hebdomadaire"
+  alerteActive   Boolean  @default(true)
+  inclureBaisses Boolean  @default(true)
+  nbNouveaux     Int      @default(0)  // nouvelles annonces depuis dernier check
+  creeLe         DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
