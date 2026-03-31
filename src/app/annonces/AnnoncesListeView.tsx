@@ -5,12 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Header } from "@/components/Header";
-import { villes, quartierBySlug, ressourcesUtiles } from "@/lib/data";
+import { villes, quartierBySlug } from "@/lib/data";
 import { SkeletonListingCard } from "@/components/Skeleton";
-import { PriceBadge } from "@/components/PriceBadge";
-import { getMarketEstimate } from "@/lib/marketEstimate";
-import { AnnonceMapView } from "./AnnonceMapView";
 import "./marketplace.css";
+
+/* ─── Types ─────────────────────────────────────────────────────── */
 
 type ListingItem = {
   id: string;
@@ -31,29 +30,77 @@ type ListingItem = {
   creeLe: string;
 };
 
-function fmtPrice(p: number, mode?: string) {
-  return p.toLocaleString("fr-CA") + (mode === "location" ? " $/mois" : " $");
-}
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const days = Math.floor(diff / 86400000);
-  if (days === 0) return "aujourd'hui";
-  if (days === 1) return "il y a 1j";
-  if (days < 7) return `il y a ${days}j`;
-  const weeks = Math.floor(days / 7);
-  if (weeks < 4) return `il y a ${weeks}sem`;
-  return `il y a ${Math.floor(days / 30)}mois`;
-}
-
-const TYPE_LABELS: Record<string, string> = {
-  unifamiliale: "Unifamiliale", condo: "Condo", duplex: "Duplex", triplex: "Triplex", quadruplex: "Quadruplex",
-  "5plex": "5-plex", maison_de_ville: "Maison de ville", terrain: "Terrain", commercial: "Commercial",
-  "1_et_demi": "1\u00BD", "2_et_demi": "2\u00BD", "3_et_demi": "3\u00BD", "4_et_demi": "4\u00BD",
-  "5_et_demi": "5\u00BD", "6_et_demi": "6\u00BD", studio: "Studio", loft: "Loft", autre: "Autre", autre_location: "Autre",
+type Filters = {
+  mode: string;
+  type: string;
+  villeSlug: string;
+  quartierSlug: string;
+  prixMin: string;
+  prixMax: string;
+  chambresMin: string;
+  sallesBainMin: string;
+  superficieMin: string;
+  anneeMin: string;
+  anneeMax: string;
+  chauffage: string;
+  extras: string[];
+  sousSol: string;
+  search: string;
+  tri: string;
 };
 
-const TYPES_VENTE = [
+const EMPTY_FILTERS: Filters = {
+  mode: "",
+  type: "",
+  villeSlug: "",
+  quartierSlug: "",
+  prixMin: "",
+  prixMax: "",
+  chambresMin: "",
+  sallesBainMin: "",
+  superficieMin: "",
+  anneeMin: "",
+  anneeMax: "",
+  chauffage: "",
+  extras: [],
+  sousSol: "",
+  search: "",
+  tri: "recent",
+};
+
+/* ─── Constants ─────────────────────────────────────────────────── */
+
+const TYPE_LABELS: Record<string, string> = {
+  unifamiliale: "Unifamiliale",
+  condo: "Condo",
+  duplex: "Duplex",
+  triplex: "Triplex",
+  quadruplex: "Quadruplex",
+  "5plex": "5-plex",
+  maison_de_ville: "Maison de ville",
+  terrain: "Terrain",
+  commercial: "Commercial",
+  chalet: "Chalet",
+  "1_et_demi": "1\u00BD",
+  "2_et_demi": "2\u00BD",
+  "3_et_demi": "3\u00BD",
+  "4_et_demi": "4\u00BD",
+  "5_et_demi": "5\u00BD",
+  "6_et_demi": "6\u00BD",
+  studio: "Studio",
+  loft: "Loft",
+  autre: "Autre",
+  autre_location: "Autre",
+};
+
+const QUICK_TYPES = [
+  { value: "", label: "Tous types" },
+  { value: "duplex", label: "Plex" },
+  { value: "terrain", label: "Terrain" },
+  { value: "chalet", label: "Chalet" },
+];
+
+const ALL_TYPES = [
   { value: "unifamiliale", label: "Unifamiliale" },
   { value: "condo", label: "Condo" },
   { value: "duplex", label: "Duplex" },
@@ -62,33 +109,97 @@ const TYPES_VENTE = [
   { value: "5plex", label: "5-plex" },
   { value: "maison_de_ville", label: "Maison de ville" },
   { value: "terrain", label: "Terrain" },
+  { value: "chalet", label: "Chalet" },
   { value: "commercial", label: "Commercial" },
   { value: "autre", label: "Autre" },
 ];
 
-const TYPES_LOCATION = [
-  { value: "studio", label: "Studio" },
-  { value: "1_et_demi", label: "1\u00BD" },
-  { value: "2_et_demi", label: "2\u00BD" },
-  { value: "3_et_demi", label: "3\u00BD" },
-  { value: "4_et_demi", label: "4\u00BD" },
-  { value: "5_et_demi", label: "5\u00BD" },
-  { value: "6_et_demi", label: "6\u00BD" },
-  { value: "loft", label: "Loft" },
-  { value: "autre_location", label: "Autre" },
+const CHAMBRES_OPTIONS = ["1+", "2+", "3+", "4+", "5+"];
+const SDB_OPTIONS = ["1+", "2+", "3+", "4+"];
+const ANNEE_OPTIONS = [
+  { value: "2020", label: "2020+" },
+  { value: "2010", label: "2010+" },
+  { value: "2000", label: "2000+" },
+  { value: "1990", label: "1990+" },
+  { value: "1980", label: "1980+" },
+  { value: "avant1980", label: "Avant 1980" },
 ];
 
-type SavedSearchItem = {
-  id: string;
-  nom: string;
-  mode: string | null;
-  villeSlug: string | null;
-  type: string | null;
-  prixMax: number | null;
-};
+const CHAUFFAGE_OPTIONS = [
+  { value: "electrique", label: "\u00c9lectrique" },
+  { value: "gaz", label: "Gaz" },
+  { value: "mazout", label: "Mazout" },
+  { value: "geothermie", label: "G\u00e9othermie" },
+  { value: "bois", label: "Bois" },
+];
+
+const EXTRAS_OPTIONS = [
+  { value: "sous-sol-fini", label: "Sous-sol fini" },
+  { value: "garage", label: "Garage" },
+  { value: "piscine", label: "Piscine" },
+  { value: "foyer", label: "Foyer" },
+  { value: "borne-ve", label: "Borne V\u00c9" },
+  { value: "acces-pmr", label: "Acc\u00e8s PMR" },
+];
 
 const VILLE_LABELS: Record<string, string> = {};
 villes.forEach((v) => { VILLE_LABELS[v.slug] = v.nom; });
+
+/* ─── Helpers ───────────────────────────────────────────────────── */
+
+function fmtPrice(p: number, mode?: string) {
+  return p.toLocaleString("fr-CA") + (mode === "location" ? " $/mois" : " $");
+}
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const h = Math.floor(diff / 3600000);
+  if (h < 1) return "il y a moins d\u20191h";
+  if (h < 24) return `il y a ${h}h`;
+  const days = Math.floor(diff / 86400000);
+  if (days === 1) return "il y a 1j";
+  if (days < 7) return `il y a ${days}j`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 4) return `il y a ${weeks} sem.`;
+  return `il y a ${Math.floor(days / 30)} mois`;
+}
+
+function hasActiveFilters(f: Filters): boolean {
+  return !!(
+    f.mode || f.type || f.villeSlug || f.quartierSlug ||
+    f.prixMin || f.prixMax || f.chambresMin || f.sallesBainMin ||
+    f.superficieMin || f.anneeMin || f.anneeMax || f.chauffage ||
+    f.extras.length > 0 || f.sousSol || f.search
+  );
+}
+
+function getActiveChips(f: Filters): { key: string; label: string }[] {
+  const chips: { key: string; label: string }[] = [];
+  if (f.mode === "vente") chips.push({ key: "mode", label: "Acheter" });
+  if (f.mode === "location") chips.push({ key: "mode", label: "Louer" });
+  if (f.type) chips.push({ key: "type", label: TYPE_LABELS[f.type] ?? f.type });
+  if (f.villeSlug) chips.push({ key: "villeSlug", label: VILLE_LABELS[f.villeSlug] ?? f.villeSlug });
+  if (f.prixMin) chips.push({ key: "prixMin", label: `Min ${parseInt(f.prixMin).toLocaleString("fr-CA")} $` });
+  if (f.prixMax) chips.push({ key: "prixMax", label: `Max ${parseInt(f.prixMax).toLocaleString("fr-CA")} $` });
+  if (f.chambresMin) chips.push({ key: "chambresMin", label: `${f.chambresMin}+ chambres` });
+  if (f.sallesBainMin) chips.push({ key: "sallesBainMin", label: `${f.sallesBainMin}+ sdb` });
+  if (f.superficieMin) chips.push({ key: "superficieMin", label: `${parseInt(f.superficieMin).toLocaleString("fr-CA")}+ pi\u00B2` });
+  if (f.anneeMin && f.anneeMin !== "avant1980") chips.push({ key: "anneeMin", label: `${f.anneeMin}+` });
+  if (f.anneeMax) chips.push({ key: "anneeMax", label: `Avant ${f.anneeMax}` });
+  if (f.chauffage) {
+    const cl = CHAUFFAGE_OPTIONS.find((c) => c.value === f.chauffage);
+    chips.push({ key: "chauffage", label: cl?.label ?? f.chauffage });
+  }
+  f.extras.forEach((ex) => {
+    const el = EXTRAS_OPTIONS.find((e) => e.value === ex);
+    chips.push({ key: `extra:${ex}`, label: el?.label ?? ex });
+  });
+  if (f.sousSol) chips.push({ key: "sousSol", label: `Sous-sol: ${f.sousSol}` });
+  if (f.search) chips.push({ key: "search", label: `"${f.search}"` });
+  return chips;
+}
+
+/* ─── Component ─────────────────────────────────────────────────── */
 
 export function AnnoncesListeView() {
   const { data: session } = useSession();
@@ -97,72 +208,33 @@ export function AnnoncesListeView() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [favs, setFavs] = useState<Set<string>>(new Set());
-  const [filters, setFilters] = useState({ villeSlug: "", quartierSlug: "", type: "", prixMax: "", tri: "recent", q: "", mode: "" });
+  const [filters, setFilters] = useState<Filters>({ ...EMPTY_FILTERS });
   const [searchInput, setSearchInput] = useState("");
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"liste" | "carte">("liste");
-  const [compareIds, setCompareIds] = useState<string[]>([]);
-  const [savedSearches, setSavedSearches] = useState<SavedSearchItem[]>([]);
-  const [savingSearch, setSavingSearch] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
-  // Fetch saved searches when logged in
-  useEffect(() => {
-    if (!session?.user) return;
-    fetch("/api/saved-searches")
-      .then((r) => r.json())
-      .then((data) => { if (data.searches) setSavedSearches(data.searches); })
-      .catch(() => {});
-  }, [session?.user]);
-
-  async function handleSaveSearch() {
-    const nom = prompt("Nom de la recherche :");
-    if (!nom || nom.trim().length === 0) return;
-    setSavingSearch(true);
-    try {
-      const res = await fetch("/api/saved-searches", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nom: nom.trim(),
-          mode: filters.mode || undefined,
-          villeSlug: filters.villeSlug || undefined,
-          type: filters.type || undefined,
-          prixMax: filters.prixMax || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (data.search) setSavedSearches((prev) => [data.search, ...prev]);
-    } catch { /* ignore */ }
-    setSavingSearch(false);
-  }
-
-  async function handleDeleteSearch(id: string, e: React.MouseEvent) {
-    e.stopPropagation();
-    setSavedSearches((prev) => prev.filter((s) => s.id !== id));
-    await fetch(`/api/saved-searches/${id}`, { method: "DELETE" });
-  }
-
-  function applySearch(s: SavedSearchItem) {
-    setFilters((f) => ({
-      ...f,
-      mode: s.mode ?? "",
-      villeSlug: s.villeSlug ?? "",
-      type: s.type ?? "",
-      prixMax: s.prixMax != null ? String(s.prixMax) : "",
-    }));
-  }
+  /* ── Fetch ──────────────────────────────────────────────── */
 
   const fetchListings = useCallback(async (p = 1, append = false) => {
     if (!append) setLoading(true);
     const params = new URLSearchParams();
     if (filters.mode) params.set("mode", filters.mode);
+    if (filters.type) params.set("type", filters.type);
     if (filters.villeSlug) params.set("villeSlug", filters.villeSlug);
     if (filters.quartierSlug) params.set("quartierSlug", filters.quartierSlug);
-    if (filters.type) params.set("type", filters.type);
+    if (filters.prixMin) params.set("prixMin", filters.prixMin);
     if (filters.prixMax) params.set("prixMax", filters.prixMax);
+    if (filters.chambresMin) params.set("chambresMin", filters.chambresMin);
+    if (filters.sallesBainMin) params.set("sallesBainMin", filters.sallesBainMin);
+    if (filters.superficieMin) params.set("superficieMin", filters.superficieMin);
+    if (filters.anneeMin) params.set("anneeMin", filters.anneeMin);
+    if (filters.anneeMax) params.set("anneeMax", filters.anneeMax);
+    if (filters.chauffage) params.set("chauffage", filters.chauffage);
+    if (filters.extras.length > 0) params.set("extras", filters.extras.join(","));
+    if (filters.sousSol) params.set("sousSol", filters.sousSol);
+    if (filters.search) params.set("search", filters.search);
     if (filters.tri) params.set("tri", filters.tri);
-    if (filters.q) params.set("q", filters.q);
     params.set("page", String(p));
     try {
       const res = await fetch(`/api/annonces?${params}`);
@@ -172,31 +244,30 @@ export function AnnoncesListeView() {
       setHasMore(data.hasMore);
       setPage(data.page);
       if (!append) setFavs(new Set(data.favoritedIds));
+      setLastUpdate(new Date());
     } catch { /* ignore */ }
     setLoading(false);
   }, [filters]);
 
   useEffect(() => { fetchListings(1); }, [fetchListings]);
 
+  /* ── Search ─────────────────────────────────────────────── */
+
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
-    setFilters((f) => ({ ...f, q: searchInput }));
+    setFilters((f) => ({ ...f, search: searchInput }));
   }
 
-  function trackClick(id: string) {
-    fetch(`/api/annonces/${id}/click`, { method: "POST" });
-  }
+  /* ── Favorites ──────────────────────────────────────────── */
 
   async function toggleFav(id: string, e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    // Trigger heart pop animation
-    const btn = (e.currentTarget as HTMLElement);
+    const btn = e.currentTarget as HTMLElement;
     btn.classList.remove("heart-pop");
     void btn.offsetWidth;
     btn.classList.add("heart-pop");
     btn.addEventListener("animationend", () => btn.classList.remove("heart-pop"), { once: true });
-
     setFavs((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
@@ -205,365 +276,704 @@ export function AnnoncesListeView() {
     await fetch(`/api/annonces/${id}/favorite`, { method: "POST" });
   }
 
-  function toggleCompare(id: string, e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    setCompareIds((prev) => {
-      if (prev.includes(id)) return prev.filter((x) => x !== id);
-      if (prev.length >= 3) return prev;
-      return [...prev, id];
-    });
+  /* ── Filter helpers ─────────────────────────────────────── */
+
+  function removeChip(key: string) {
+    if (key.startsWith("extra:")) {
+      const val = key.replace("extra:", "");
+      setFilters((f) => ({ ...f, extras: f.extras.filter((x) => x !== val) }));
+    } else {
+      setFilters((f) => ({ ...f, [key]: key === "extras" ? [] : "" }));
+    }
   }
 
-  const quartierCounts: Record<string, number> = {};
-  listings.forEach((l) => {
-    const q = quartierBySlug[l.quartierSlug];
-    quartierCounts[q?.nom ?? l.quartierSlug] = (quartierCounts[q?.nom ?? l.quartierSlug] || 0) + 1;
-  });
+  function clearAll() {
+    setFilters({ ...EMPTY_FILTERS });
+    setSearchInput("");
+  }
+
+  function toggleExtra(val: string) {
+    setFilters((f) => ({
+      ...f,
+      extras: f.extras.includes(val) ? f.extras.filter((x) => x !== val) : [...f.extras, val],
+    }));
+  }
+
+  function handleAnneeSelect(opt: { value: string; label: string }) {
+    if (opt.value === "avant1980") {
+      setFilters((f) => ({ ...f, anneeMin: "", anneeMax: "1980" }));
+    } else {
+      setFilters((f) => ({
+        ...f,
+        anneeMin: f.anneeMin === opt.value ? "" : opt.value,
+        anneeMax: "",
+      }));
+    }
+  }
+
+  function trackClick(id: string) {
+    fetch(`/api/annonces/${id}/click`, { method: "POST" });
+  }
+
+  /* ── Time since last update ─────────────────────────────── */
+
+  function updateAgoLabel(): string {
+    const diff = Date.now() - lastUpdate.getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "Mise \u00e0 jour \u00e0 l\u2019instant";
+    if (mins < 60) return `Mise \u00e0 jour il y a ${mins} min`;
+    return `Mise \u00e0 jour il y a ${Math.floor(mins / 60)}h`;
+  }
+
+  const chips = getActiveChips(filters);
+
+  /* ── Render ─────────────────────────────────────────────── */
 
   return (
     <>
       <Header />
-      <div className="max-w-[900px] mx-auto px-4 pb-10">
-        <div className="mp-page-header" style={{ marginTop: 20 }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 16px 40px" }}>
+
+        {/* ═══ A. Page header ═══ */}
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", margin: "24px 0 20px", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div className="mp-page-title">Annonces immobilières</div>
-            <div className="mp-page-sub">Propriétés vendues directement par les propriétaires — sans commission</div>
+            <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>Annonces immobili\u00e8res</h1>
+            <p style={{ fontSize: 13, color: "var(--text-tertiary)", margin: "4px 0 0" }}>
+              Propri\u00e9t\u00e9s vendues directement par les propri\u00e9taires, sans commission.
+            </p>
           </div>
-          <Link className="mp-btn-primary btn-press" href="/annonces/publier">+ Publier une annonce</Link>
+          <Link
+            href="/annonces/publier"
+            className="btn-press"
+            style={{
+              fontSize: 13, fontWeight: 500, padding: "8px 18px", borderRadius: 9999,
+              background: "var(--green)", color: "#fff", textDecoration: "none", border: "none", cursor: "pointer",
+            }}
+          >
+            + Publier une annonce
+          </Link>
         </div>
 
-        {/* Search bar */}
-        <form onSubmit={handleSearch} style={{ marginBottom: 12 }}>
-          <div className="mp-field-input" style={{ borderRadius: 20 }}>
+        {/* ═══ B. Search bar ═══ */}
+        <form onSubmit={handleSearch} style={{ marginBottom: 16 }}>
+          <div style={{
+            display: "flex", alignItems: "center", borderRadius: 9999,
+            border: "0.5px solid var(--border-secondary)", background: "var(--bg-card)", overflow: "hidden",
+          }}>
+            <svg style={{ width: 16, height: 16, marginLeft: 14, flexShrink: 0, stroke: "var(--text-tertiary)", fill: "none", strokeWidth: 2 }} viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" /><line x1="16.5" y1="16.5" x2="21" y2="21" />
+            </svg>
             <input
               type="text"
-              placeholder="Rechercher une adresse, quartier, type…"
+              placeholder="Rechercher par adresse, quartier ou type..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              style={{ padding: "8px 14px", fontSize: 13 }}
+              style={{
+                flex: 1, padding: "10px 12px", fontSize: 13, border: "none", background: "transparent",
+                color: "var(--text-primary)", fontFamily: "inherit", outline: "none",
+              }}
             />
             <button
               type="submit"
-              style={{ padding: "0 14px", background: "transparent", border: "none", cursor: "pointer", color: "var(--text-tertiary)", fontFamily: "inherit", fontSize: 13 }}
+              style={{
+                padding: "8px 18px", fontSize: 13, fontWeight: 500, border: "none",
+                background: "var(--green)", color: "#fff", cursor: "pointer", fontFamily: "inherit",
+                borderRadius: "0 9999px 9999px 0",
+              }}
             >
               Rechercher
             </button>
           </div>
         </form>
 
-        {/* Filters + sort */}
-        <div className="mp-filters">
-          <button
-            className={`mp-filter-pill${filters.mode === "" ? " on" : ""}`}
-            onClick={() => setFilters((f) => ({ ...f, mode: "", type: "", prixMax: "" }))}
+        {/* ═══ C. Filter bar ═══ */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+
+          {/* Tab group 1: Mode */}
+          <div style={{
+            display: "inline-flex", borderRadius: 9999, background: "var(--bg-secondary)",
+            padding: 3, gap: 2,
+          }}>
+            {[
+              { value: "", label: "Toutes" },
+              { value: "vente", label: "Acheter" },
+              { value: "location", label: "Louer" },
+            ].map((m) => (
+              <button
+                key={m.value}
+                onClick={() => setFilters((f) => ({ ...f, mode: m.value }))}
+                style={{
+                  fontSize: 12, padding: "5px 14px", borderRadius: 9999, border: "none", cursor: "pointer",
+                  fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
+                  background: filters.mode === m.value ? "var(--bg-card)" : "transparent",
+                  color: filters.mode === m.value ? "var(--text-primary)" : "var(--text-tertiary)",
+                  boxShadow: filters.mode === m.value ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                }}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab group 2: Quick types */}
+          <div style={{
+            display: "inline-flex", borderRadius: 9999, background: "var(--bg-secondary)",
+            padding: 3, gap: 2,
+          }}>
+            {QUICK_TYPES.map((t) => (
+              <button
+                key={t.value}
+                onClick={() => setFilters((f) => ({ ...f, type: t.value }))}
+                style={{
+                  fontSize: 12, padding: "5px 14px", borderRadius: 9999, border: "none", cursor: "pointer",
+                  fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
+                  background: filters.type === t.value ? "var(--bg-card)" : "transparent",
+                  color: filters.type === t.value ? "var(--text-primary)" : "var(--text-tertiary)",
+                  boxShadow: filters.type === t.value ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Pill filters */}
+          <select
+            value={filters.villeSlug}
+            onChange={(e) => setFilters((f) => ({ ...f, villeSlug: e.target.value }))}
+            style={{
+              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+              border: filters.villeSlug ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+              background: filters.villeSlug ? "var(--green-light-bg)" : "var(--bg-card)",
+              color: filters.villeSlug ? "var(--green-text)" : "var(--text-primary)",
+              fontFamily: "inherit", cursor: "pointer", outline: "none",
+            }}
           >
-            Toutes
-          </button>
-          <button
-            className={`mp-filter-pill${filters.mode === "vente" ? " on" : ""}`}
-            onClick={() => setFilters((f) => ({ ...f, mode: f.mode === "vente" ? "" : "vente", type: "", prixMax: "" }))}
-          >
-            Acheter
-          </button>
-          <button
-            className={`mp-filter-pill${filters.mode === "location" ? " on" : ""}`}
-            onClick={() => setFilters((f) => ({ ...f, mode: f.mode === "location" ? "" : "location", type: "", prixMax: "" }))}
-          >
-            Louer
-          </button>
-          <select className="mp-filter-select" value={filters.villeSlug} onChange={(e) => setFilters((f) => ({ ...f, villeSlug: e.target.value }))}>
-            <option value="">Toutes les villes</option>
+            <option value="">Ville</option>
             {villes.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
           </select>
-          <select className="mp-filter-select" value={filters.type} onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}>
-            <option value="">Tous les types</option>
-            {(filters.mode === "location" ? TYPES_LOCATION : filters.mode === "vente" ? TYPES_VENTE : [...TYPES_VENTE, ...TYPES_LOCATION]).map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
-            ))}
+
+          <input
+            type="number"
+            placeholder="Prix max $"
+            value={filters.prixMax}
+            onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
+            min={0}
+            step={10000}
+            style={{
+              fontSize: 12, padding: "6px 12px", borderRadius: 9999, width: 110,
+              border: filters.prixMax ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+              background: filters.prixMax ? "var(--green-light-bg)" : "var(--bg-card)",
+              color: filters.prixMax ? "var(--green-text)" : "var(--text-primary)",
+              fontFamily: "inherit", outline: "none",
+            }}
+          />
+
+          <select
+            value={filters.chambresMin}
+            onChange={(e) => setFilters((f) => ({ ...f, chambresMin: e.target.value }))}
+            style={{
+              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+              border: filters.chambresMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+              background: filters.chambresMin ? "var(--green-light-bg)" : "var(--bg-card)",
+              color: filters.chambresMin ? "var(--green-text)" : "var(--text-primary)",
+              fontFamily: "inherit", cursor: "pointer", outline: "none",
+            }}
+          >
+            <option value="">Chambres</option>
+            {CHAMBRES_OPTIONS.map((c) => <option key={c} value={c.replace("+", "")}>{c}</option>)}
           </select>
-          {filters.mode === "location" ? (
-            <input
-              type="number"
-              className="mp-filter-select"
-              placeholder="Loyer max $/mois"
-              value={filters.prixMax}
-              onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
-              min={0}
-              step={50}
-              style={{ minWidth: 130 }}
-            />
-          ) : (
-            <input
-              type="number"
-              className="mp-filter-select"
-              placeholder="Prix max $"
-              value={filters.prixMax}
-              onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
-              min={0}
-              step={10000}
-              style={{ minWidth: 130 }}
-            />
-          )}
-          <select className="mp-filter-select mp-filter-sort" value={filters.tri} onChange={(e) => setFilters((f) => ({ ...f, tri: e.target.value }))}>
-            <option value="recent">Plus récent</option>
-            <option value="prix_asc">Prix ↑</option>
-            <option value="prix_desc">Prix ↓</option>
-            <option value="populaire">Plus vu</option>
+
+          <select
+            value={filters.sallesBainMin}
+            onChange={(e) => setFilters((f) => ({ ...f, sallesBainMin: e.target.value }))}
+            style={{
+              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+              border: filters.sallesBainMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+              background: filters.sallesBainMin ? "var(--green-light-bg)" : "var(--bg-card)",
+              color: filters.sallesBainMin ? "var(--green-text)" : "var(--text-primary)",
+              fontFamily: "inherit", cursor: "pointer", outline: "none",
+            }}
+          >
+            <option value="">Salles de bain</option>
+            {SDB_OPTIONS.map((s) => <option key={s} value={s.replace("+", "")}>{s}</option>)}
           </select>
-          <span className="mp-results-count">
-            {total} annonce{total !== 1 ? "s" : ""}
-            {session?.user && (
-              <button
-                className="mp-save-search-btn"
-                onClick={handleSaveSearch}
-                disabled={savingSearch}
-                title="Sauvegarder cette recherche"
-              >
-                <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 1v12M1 7h12" /></svg>
-                {savingSearch ? "..." : "Sauvegarder"}
-              </button>
-            )}
-          </span>
-          <div className="mp-view-toggle">
-            <button className={`mp-view-toggle-btn${viewMode === "liste" ? " active" : ""}`} onClick={() => setViewMode("liste")}>
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="1" y1="3" x2="15" y2="3" /><line x1="1" y1="8" x2="15" y2="8" /><line x1="1" y1="13" x2="15" y2="13" /></svg>
-              Liste
-            </button>
-            <button className={`mp-view-toggle-btn${viewMode === "carte" ? " active" : ""}`} onClick={() => setViewMode("carte")}>
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 3l5-2 4 2 5-2v12l-5 2-4-2-5 2V3z" /><line x1="6" y1="1" x2="6" y2="13" /><line x1="10" y1="3" x2="10" y2="15" /></svg>
-              Carte
-            </button>
-          </div>
+
+          <select
+            value={filters.anneeMin || (filters.anneeMax === "1980" ? "avant1980" : "")}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === "avant1980") {
+                setFilters((f) => ({ ...f, anneeMin: "", anneeMax: "1980" }));
+              } else if (v) {
+                setFilters((f) => ({ ...f, anneeMin: v, anneeMax: "" }));
+              } else {
+                setFilters((f) => ({ ...f, anneeMin: "", anneeMax: "" }));
+              }
+            }}
+            style={{
+              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+              border: (filters.anneeMin || filters.anneeMax) ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+              background: (filters.anneeMin || filters.anneeMax) ? "var(--green-light-bg)" : "var(--bg-card)",
+              color: (filters.anneeMin || filters.anneeMax) ? "var(--green-text)" : "var(--text-primary)",
+              fontFamily: "inherit", cursor: "pointer", outline: "none",
+            }}
+          >
+            <option value="">Ann\u00e9e</option>
+            {ANNEE_OPTIONS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
+          </select>
+
+          {/* Filtres avances toggle */}
+          <button
+            onClick={() => setAdvancedOpen(!advancedOpen)}
+            style={{
+              fontSize: 12, padding: "6px 14px", borderRadius: 9999, cursor: "pointer",
+              fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
+              border: advancedOpen ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+              background: advancedOpen ? "var(--green-light-bg)" : "var(--bg-card)",
+              color: advancedOpen ? "var(--green-text)" : "var(--text-tertiary)",
+              display: "inline-flex", alignItems: "center", gap: 5,
+            }}
+          >
+            <svg style={{ width: 13, height: 13, stroke: "currentColor", fill: "none", strokeWidth: 1.5 }} viewBox="0 0 24 24">
+              <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+              <circle cx="8" cy="6" r="2" /><circle cx="16" cy="12" r="2" /><circle cx="10" cy="18" r="2" />
+            </svg>
+            Filtres avanc\u00e9s
+          </button>
         </div>
 
-        {/* Saved searches */}
-        {session?.user && savedSearches.length > 0 && (
-          <div className="mp-saved-searches">
-            <span className="mp-saved-label">Mes recherches</span>
-            {savedSearches.map((s) => (
+        {/* ═══ D. Active filter chips ═══ */}
+        {chips.length > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+            {chips.map((chip) => (
               <button
-                key={s.id}
-                className="mp-saved-pill"
-                onClick={() => applySearch(s)}
-                title={[
-                  s.mode === "vente" ? "Acheter" : s.mode === "location" ? "Louer" : null,
-                  s.villeSlug ? VILLE_LABELS[s.villeSlug] ?? s.villeSlug : null,
-                  s.type ? TYPE_LABELS[s.type] ?? s.type : null,
-                  s.prixMax != null ? `max ${s.prixMax.toLocaleString("fr-CA")} $` : null,
-                ].filter(Boolean).join(" · ") || "Tous les filtres"}
+                key={chip.key}
+                onClick={() => removeChip(chip.key)}
+                style={{
+                  fontSize: 11, padding: "4px 10px", borderRadius: 9999,
+                  background: "var(--green-light-bg)", color: "var(--green-text)",
+                  border: "0.5px solid var(--green)", cursor: "pointer", fontFamily: "inherit",
+                  display: "inline-flex", alignItems: "center", gap: 4, fontWeight: 500,
+                }}
               >
-                {s.nom}
-                <span
-                  className="mp-saved-pill-x"
-                  onClick={(e) => handleDeleteSearch(s.id, e)}
-                  title="Supprimer"
-                >
-                  &times;
-                </span>
+                {chip.label}
+                <span style={{ fontSize: 14, lineHeight: 1 }}>&times;</span>
               </button>
             ))}
+            <button
+              onClick={clearAll}
+              style={{
+                fontSize: 11, padding: "4px 10px", borderRadius: 9999,
+                background: "transparent", color: "var(--text-tertiary)",
+                border: "0.5px solid var(--border-secondary)", cursor: "pointer", fontFamily: "inherit",
+              }}
+            >
+              Tout effacer
+            </button>
           </div>
         )}
 
-        {viewMode === "carte" ? (
-          <AnnonceMapView
-            listings={listings}
-            favs={favs}
-            onToggleFav={toggleFav}
-            onTrackClick={trackClick}
-            quartierFilter={filters.quartierSlug}
-            villeFilter={filters.villeSlug}
-          />
-        ) : (
-        <div className="mp-layout">
-          <div className="mp-listings">
-            {loading && listings.length === 0 ? (
-              <div className="space-y-3">
-                {[...Array(3)].map((_, i) => (
-                  <SkeletonListingCard key={i} />
-                ))}
-              </div>
-            ) : listings.length === 0 ? (
-              <div className="mp-sidebar-card" style={{ textAlign: "center", padding: 40 }}>
-                <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>Aucune annonce</div>
-                <div style={{ fontSize: 13, color: "var(--text-tertiary)", marginBottom: 16 }}>
-                  {filters.q ? "Aucun résultat pour cette recherche." : "Sois le premier à publier une propriété."}
+        {/* ═══ E. Advanced filter panel ═══ */}
+        {advancedOpen && (
+          <div style={{
+            background: "var(--bg-card)", borderRadius: 12, border: "0.5px solid var(--border)",
+            padding: 20, marginBottom: 16,
+          }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
+
+              {/* Col 1 */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Type de propri\u00e9t\u00e9
                 </div>
-                {filters.q ? (
-                  <button className="mp-btn-primary" onClick={() => { setSearchInput(""); setFilters((f) => ({ ...f, q: "" })); }}>Effacer la recherche</button>
-                ) : (
-                  <Link className="mp-btn-primary btn-press" href="/annonces/publier">+ Publier une annonce</Link>
-                )}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 18 }}>
+                  {ALL_TYPES.map((t) => (
+                    <button
+                      key={t.value}
+                      onClick={() => setFilters((f) => ({ ...f, type: f.type === t.value ? "" : t.value }))}
+                      style={{
+                        fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                        fontFamily: "inherit", transition: "all 0.15s",
+                        background: filters.type === t.value ? "var(--green-light-bg)" : "transparent",
+                        color: filters.type === t.value ? "var(--green-text)" : "var(--text-tertiary)",
+                        border: filters.type === t.value ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Chambres
+                </div>
+                <div style={{ display: "flex", gap: 6, marginBottom: 18 }}>
+                  {CHAMBRES_OPTIONS.map((c) => {
+                    const val = c.replace("+", "");
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => setFilters((f) => ({ ...f, chambresMin: f.chambresMin === val ? "" : val }))}
+                        style={{
+                          fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                          fontFamily: "inherit", transition: "all 0.15s",
+                          background: filters.chambresMin === val ? "var(--green-light-bg)" : "transparent",
+                          color: filters.chambresMin === val ? "var(--green-text)" : "var(--text-tertiary)",
+                          border: filters.chambresMin === val ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                        }}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Salles de bain
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {SDB_OPTIONS.map((s) => {
+                    const val = s.replace("+", "");
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => setFilters((f) => ({ ...f, sallesBainMin: f.sallesBainMin === val ? "" : val }))}
+                        style={{
+                          fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                          fontFamily: "inherit", transition: "all 0.15s",
+                          background: filters.sallesBainMin === val ? "var(--green-light-bg)" : "transparent",
+                          color: filters.sallesBainMin === val ? "var(--green-text)" : "var(--text-tertiary)",
+                          border: filters.sallesBainMin === val ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                        }}
+                      >
+                        {s}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            ) : (
-              <>
-                {listings.map((l) => {
-                  const q = quartierBySlug[l.quartierSlug];
-                  const quartierNom = q?.nom ?? l.quartierSlug;
-                  return (
-                    <Link key={l.id} className="mp-listing-card" href={`/annonces/${l.id}`} onClick={() => trackClick(l.id)}>
-                      <div className="mp-listing-img">
-                        {l.imageUrl ? (
-                          <Image src={l.imageUrl} alt={l.titre} fill sizes="200px" style={{ objectFit: "cover" }} loading="lazy" />
-                        ) : (
-                          <svg viewBox="0 0 32 32"><rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" /><rect x="12" y="20" width="8" height="10" /></svg>
-                        )}
-                        {l.mode === "location" ? (
-                          <div className="mp-listing-badge" style={{ background: "var(--blue-bg)", color: "var(--blue-text)" }}>À louer</div>
-                        ) : (
-                          <div className="mp-listing-badge" style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}>À vendre</div>
-                        )}
-                        {l.lienVisite && <div className="mp-listing-badge mp-badge-virtual" style={{ top: "auto", bottom: 8 }}>Visite virtuelle</div>}
-                        <div className="cmp-checkbox-wrapper">
-                          <label
-                            className={`cmp-checkbox-label${compareIds.includes(l.id) ? " checked" : ""}`}
-                            title={compareIds.includes(l.id) ? "Retirer de la comparaison" : compareIds.length >= 3 ? "Maximum 3 annonces" : "Ajouter à la comparaison"}
-                            onClick={(e) => toggleCompare(l.id, e)}
-                          >
-                            <input type="checkbox" checked={compareIds.includes(l.id)} readOnly />
-                            {compareIds.includes(l.id) ? (
-                              <svg viewBox="0 0 14 14"><polyline points="3 7 6 10 11 4" /></svg>
-                            ) : (
-                              <svg viewBox="0 0 14 14"><line x1="4" y1="4" x2="10" y2="4" /><line x1="4" y1="7" x2="10" y2="7" /><line x1="4" y1="10" x2="8" y2="10" /></svg>
-                            )}
-                          </label>
-                        </div>
-                      </div>
-                      <div className="mp-listing-body">
-                        <div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <div className="mp-listing-price">{fmtPrice(l.prix, l.mode)}</div>
-                            {l.mode !== "location" && <PriceBadge prix={l.prix} estimatedValue={getMarketEstimate(l.quartierSlug, l.type)} compact />}
-                          </div>
-                          <div className="mp-listing-price-sub">{TYPE_LABELS[l.type] ?? l.type} · {quartierNom}</div>
-                        </div>
-                        <div className="mp-listing-title">{l.titre}</div>
-                        <div className="mp-listing-address">{l.adresse}</div>
-                        <div className="mp-listing-specs">
-                          <div className="mp-spec"><svg viewBox="0 0 14 14"><path d="M1 11V5l6-4 6 4v6" /><rect x="4" y="7" width="6" height="4" /></svg>{l.chambres} ch.</div>
-                          <div className="mp-spec"><svg viewBox="0 0 14 14"><rect x="2" y="4" width="8" height="6" rx="1" /><path d="M10 7h2v3H2" /></svg>{l.sallesDeBain} sdb</div>
-                          <div className="mp-spec"><svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="1" /><path d="M1 5h12M5 1v12" /></svg>{l.superficie.toLocaleString("fr-CA")} pi²</div>
-                          {l.lienVisite && (
-                            <div className="mp-spec" style={{ color: "var(--blue-text)" }}>
-                              <svg viewBox="0 0 14 14" stroke="var(--blue-text)"><circle cx="7" cy="7" r="5" /><path d="M7 2a8 8 0 010 10M7 2a8 8 0 000 10" /><line x1="2" y1="7" x2="12" y2="7" /></svg>
-                              Visite 360°
-                            </div>
-                          )}
-                        </div>
-                        <div className="mp-listing-footer">
-                          <span className="mp-listing-date">{timeAgo(l.creeLe)}</span>
-                          <button className={`mp-fav-btn${favs.has(l.id) ? " active" : ""}`} onClick={(e) => toggleFav(l.id, e)}>
-                            <svg viewBox="0 0 14 14"><path d="M7 12S1 8 1 4.5A3.5 3.5 0 017 2.6 3.5 3.5 0 0113 4.5C13 8 7 12 7 12z" /></svg>
-                          </button>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-                {/* Pagination */}
-                {hasMore && (
-                  <button
-                    onClick={() => fetchListings(page + 1, true)}
-                    className="w-full py-3 rounded-xl text-[13px] font-medium transition-colors hover-bg"
-                    style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", color: "var(--text-secondary)" }}
-                  >
-                    Charger plus d&apos;annonces
-                  </button>
-                )}
-              </>
-            )}
-          </div>
 
-          <div className="mp-sidebar hidden md:block">
-            <button className="mp-sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
-              {sidebarOpen ? "Masquer le menu ▲" : "Marché, quartiers, ressources ▼"}
-            </button>
-            <div className="hidden md:block" style={sidebarOpen ? { display: "block" } : undefined}>
-            <Link href="/" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-medium transition-colors hover-bg mb-3.5" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", color: "var(--text-secondary)" }}>
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-              Retour au forum nid.local
-            </Link>
+              {/* Col 2 */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Prix maximum
+                </div>
+                <div style={{ marginBottom: 6 }}>
+                  <input
+                    type="range"
+                    min={0}
+                    max={2000000}
+                    step={25000}
+                    value={filters.prixMax || 0}
+                    onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value === "0" ? "" : e.target.value }))}
+                    style={{ width: "100%", accentColor: "var(--green)" }}
+                  />
+                  <div style={{ fontSize: 12, color: "var(--text-tertiary)", textAlign: "right" }}>
+                    {filters.prixMax ? `${parseInt(filters.prixMax).toLocaleString("fr-CA")} $` : "Illimit\u00e9"}
+                  </div>
+                </div>
 
-            <div className="mp-sidebar-card">
-              <h3>Marché en ce moment</h3>
-              <div className="mp-stat-row"><span>Annonces actives</span><span>{total}</span></div>
-            </div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, marginTop: 14, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Superficie minimum
+                </div>
+                <div style={{ marginBottom: 6 }}>
+                  <input
+                    type="range"
+                    min={0}
+                    max={5000}
+                    step={100}
+                    value={filters.superficieMin || 0}
+                    onChange={(e) => setFilters((f) => ({ ...f, superficieMin: e.target.value === "0" ? "" : e.target.value }))}
+                    style={{ width: "100%", accentColor: "var(--green)" }}
+                  />
+                  <div style={{ fontSize: 12, color: "var(--text-tertiary)", textAlign: "right" }}>
+                    {filters.superficieMin ? `${parseInt(filters.superficieMin).toLocaleString("fr-CA")} pi\u00B2` : "Aucun minimum"}
+                  </div>
+                </div>
 
-            {Object.keys(quartierCounts).length > 0 && (
-              <div className="mp-sidebar-card">
-                <h3>Par quartier</h3>
-                {Object.entries(quartierCounts).sort(([, a], [, b]) => b - a).map(([name, count]) => (
-                  <div key={name} className="mp-quartier-stat"><span>{name}</span><span className="mp-qs-count">{count}</span></div>
-                ))}
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, marginTop: 14, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Ann\u00e9e de construction
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {ANNEE_OPTIONS.map((a) => {
+                    const isActive = a.value === "avant1980"
+                      ? filters.anneeMax === "1980"
+                      : filters.anneeMin === a.value;
+                    return (
+                      <button
+                        key={a.value}
+                        onClick={() => handleAnneeSelect(a)}
+                        style={{
+                          fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                          fontFamily: "inherit", transition: "all 0.15s",
+                          background: isActive ? "var(--green-light-bg)" : "transparent",
+                          color: isActive ? "var(--green-text)" : "var(--text-tertiary)",
+                          border: isActive ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                        }}
+                      >
+                        {a.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            )}
 
-            <div className="mp-sidebar-card">
-              <h3>Alerte courriel</h3>
-              <div style={{ fontSize: 13, color: "var(--text-tertiary)", marginBottom: 10, lineHeight: 1.55 }}>Reçois un courriel dès qu&apos;une nouvelle annonce correspond à tes critères.</div>
-              <button className="mp-btn-primary btn-press" style={{ width: "100%", borderRadius: 8 }}>Créer une alerte</button>
+              {/* Col 3 */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  B\u00e2timent et syst\u00e8mes
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 18 }}>
+                  {EXTRAS_OPTIONS.map((ex) => (
+                    <button
+                      key={ex.value}
+                      onClick={() => toggleExtra(ex.value)}
+                      style={{
+                        fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                        fontFamily: "inherit", transition: "all 0.15s",
+                        background: filters.extras.includes(ex.value) ? "var(--green-light-bg)" : "transparent",
+                        color: filters.extras.includes(ex.value) ? "var(--green-text)" : "var(--text-tertiary)",
+                        border: filters.extras.includes(ex.value) ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                      }}
+                    >
+                      {ex.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Chauffage
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {CHAUFFAGE_OPTIONS.map((ch) => (
+                    <button
+                      key={ch.value}
+                      onClick={() => setFilters((f) => ({ ...f, chauffage: f.chauffage === ch.value ? "" : ch.value }))}
+                      style={{
+                        fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                        fontFamily: "inherit", transition: "all 0.15s",
+                        background: filters.chauffage === ch.value ? "var(--green-light-bg)" : "transparent",
+                        color: filters.chauffage === ch.value ? "var(--green-text)" : "var(--text-tertiary)",
+                        border: filters.chauffage === ch.value ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                      }}
+                    >
+                      {ch.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div className="mp-sidebar-card" style={{ padding: 0 }}>
-              <h3 style={{ padding: "14px 16px 0" }}>Posts populaires</h3>
-              <ul>
-                {[
-                  { title: "Acheter sans courtier : mon expérience", quartier: "Rosemont", comments: 34 },
-                  { title: "Prix des condos à Villeray — ça monte encore?", quartier: "Villeray", comments: 28 },
-                  { title: "Inspection pré-achat : vaut la peine ou pas?", quartier: "Plateau", comments: 19 },
-                  { title: "Duplex occupant — les pièges à éviter", quartier: "Hochelaga", comments: 15 },
-                ].map((post, i) => (
-                  <li key={i} style={{ borderBottom: i < 3 ? "0.5px solid var(--border)" : "none" }}>
-                    <Link href="/" className="block px-4 py-2.5 transition-colors hover-bg">
-                      <div className="text-[12px] font-medium leading-snug" style={{ color: "var(--text-primary)" }}>{post.title}</div>
-                      <div className="text-[11px] mt-1" style={{ color: "var(--text-tertiary)" }}>{post.quartier} · {post.comments} réponses</div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mp-sidebar-card" style={{ padding: 0 }}>
-              <h3 style={{ padding: "14px 16px 0" }}>Ressources utiles</h3>
-              <ul>
-                {ressourcesUtiles.map((r, i, arr) => (
-                  <li key={r.label} style={{ borderBottom: i < arr.length - 1 ? "0.5px solid var(--border)" : "none" }}>
-                    <Link href={r.href} className="flex items-center justify-between px-4 py-2.5 transition-colors hover-bg">
-                      <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>{r.label}</span>
-                      <svg className="w-3 h-3 shrink-0" style={{ color: "var(--text-tertiary)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local — Fait au Québec</p>
+            {/* Advanced panel footer */}
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              borderTop: "0.5px solid var(--border)", marginTop: 20, paddingTop: 16,
+            }}>
+              <button
+                onClick={clearAll}
+                style={{
+                  fontSize: 13, padding: "8px 16px", borderRadius: 9999,
+                  border: "0.5px solid var(--border-secondary)", background: "transparent",
+                  color: "var(--text-tertiary)", cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                R\u00e9initialiser
+              </button>
+              <button
+                onClick={() => setAdvancedOpen(false)}
+                style={{
+                  fontSize: 13, fontWeight: 500, padding: "8px 20px", borderRadius: 9999,
+                  background: "var(--green)", color: "#fff", border: "none", cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                Voir les annonces ({total})
+              </button>
             </div>
           </div>
+        )}
+
+        {/* ═══ F. Results bar ═══ */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          marginBottom: 16, flexWrap: "wrap", gap: 8,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 14, fontWeight: 500 }}>
+              {total} annonce{total !== 1 ? "s" : ""}
+            </span>
+            <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>
+              {updateAgoLabel()}
+            </span>
+          </div>
+          <select
+            value={filters.tri}
+            onChange={(e) => setFilters((f) => ({ ...f, tri: e.target.value }))}
+            style={{
+              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+              border: "0.5px solid var(--border-secondary)", background: "var(--bg-card)",
+              color: "var(--text-primary)", fontFamily: "inherit", cursor: "pointer", outline: "none",
+            }}
+          >
+            <option value="recent">Plus r\u00e9cent</option>
+            <option value="prix_asc">Prix croissant</option>
+            <option value="prix_desc">Prix d\u00e9croissant</option>
+            <option value="populaire">Plus populaire</option>
+          </select>
         </div>
+
+        {/* ═══ G. Listing cards grid ═══ */}
+        {loading && listings.length === 0 ? (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+            {[...Array(6)].map((_, i) => <SkeletonListingCard key={i} />)}
+          </div>
+        ) : listings.length === 0 ? (
+          <div style={{
+            background: "var(--bg-card)", borderRadius: 12, border: "0.5px solid var(--border)",
+            textAlign: "center", padding: 48,
+          }}>
+            <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>Aucune annonce trouv\u00e9e</div>
+            <div style={{ fontSize: 13, color: "var(--text-tertiary)", marginBottom: 16 }}>
+              {hasActiveFilters(filters) ? "Aucun r\u00e9sultat ne correspond \u00e0 vos crit\u00e8res." : "Soyez le premier \u00e0 publier une propri\u00e9t\u00e9."}
+            </div>
+            {hasActiveFilters(filters) ? (
+              <button
+                onClick={clearAll}
+                style={{
+                  fontSize: 13, fontWeight: 500, padding: "8px 18px", borderRadius: 9999,
+                  background: "var(--green)", color: "#fff", border: "none", cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                Effacer les filtres
+              </button>
+            ) : (
+              <Link
+                href="/annonces/publier"
+                className="btn-press"
+                style={{
+                  fontSize: 13, fontWeight: 500, padding: "8px 18px", borderRadius: 9999,
+                  background: "var(--green)", color: "#fff", textDecoration: "none", border: "none",
+                }}
+              >
+                + Publier une annonce
+              </Link>
+            )}
+          </div>
+        ) : (
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+              {listings.map((l) => {
+                const q = quartierBySlug[l.quartierSlug];
+                const quartierNom = q?.nom ?? l.quartierSlug;
+                return (
+                  <Link
+                    key={l.id}
+                    href={`/annonces/${l.id}`}
+                    onClick={() => trackClick(l.id)}
+                    style={{
+                      background: "var(--bg-card)", border: "0.5px solid var(--border)", borderRadius: 12,
+                      overflow: "hidden", cursor: "pointer", textDecoration: "none", color: "inherit",
+                      display: "flex", flexDirection: "column", transition: "border-color 0.15s",
+                    }}
+                    className="mp-card-hover"
+                  >
+                    {/* Image area */}
+                    <div style={{
+                      height: 170, background: "var(--bg-secondary)", position: "relative",
+                      overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      {l.imageUrl ? (
+                        <Image src={l.imageUrl} alt={l.titre} fill sizes="(max-width:640px) 100vw, 300px" style={{ objectFit: "cover" }} loading="lazy" />
+                      ) : (
+                        <svg viewBox="0 0 32 32" style={{ width: 32, height: 32, stroke: "var(--text-tertiary)", fill: "none", strokeWidth: 1 }}>
+                          <rect x="2" y="10" width="28" height="20" rx="2" /><path d="M2 14l14-10 14 10" /><rect x="12" y="20" width="8" height="10" />
+                        </svg>
+                      )}
+                      {/* Badge */}
+                      <div style={{
+                        position: "absolute", top: 8, left: 8, fontSize: 10, padding: "2px 8px",
+                        borderRadius: 9999, fontWeight: 500,
+                        background: l.mode === "location" ? "var(--blue-bg)" : "var(--green-light-bg)",
+                        color: l.mode === "location" ? "var(--blue-text)" : "var(--green-text)",
+                      }}>
+                        {l.mode === "location" ? "\u00c0 louer" : "\u00c0 vendre"}
+                      </div>
+                      {/* Favorite button */}
+                      <button
+                        onClick={(e) => toggleFav(l.id, e)}
+                        className={`mp-fav-btn${favs.has(l.id) ? " active" : ""}`}
+                        style={{
+                          position: "absolute", top: 8, right: 8,
+                          width: 32, height: 32, borderRadius: "50%",
+                          background: favs.has(l.id) ? "var(--red-bg)" : "rgba(255,255,255,0.85)",
+                          border: favs.has(l.id) ? "none" : "0.5px solid var(--border-secondary)",
+                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                          backdropFilter: "blur(4px)",
+                        }}
+                      >
+                        <svg viewBox="0 0 14 14" style={{ width: 14, height: 14, stroke: "#E24B4A", fill: favs.has(l.id) ? "#E24B4A" : "none", strokeWidth: 1.5 }}>
+                          <path d="M7 12S1 8 1 4.5A3.5 3.5 0 017 2.6 3.5 3.5 0 0113 4.5C13 8 7 12 7 12z" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* Card body */}
+                    <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+                      <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: -0.5 }}>
+                        {fmtPrice(l.prix, l.mode)}
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>
+                        {TYPE_LABELS[l.type] ?? l.type} · {quartierNom}
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--text-tertiary)", display: "flex", alignItems: "center", gap: 4 }}>
+                        <svg viewBox="0 0 14 14" style={{ width: 12, height: 12, stroke: "var(--text-tertiary)", fill: "none", strokeWidth: 1.5, flexShrink: 0 }}>
+                          <path d="M7 1C4.8 1 3 2.8 3 5c0 3 4 7 4 7s4-4 4-7c0-2.2-1.8-4-4-4z" /><circle cx="7" cy="5" r="1.5" />
+                        </svg>
+                        {l.adresse}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6, fontSize: 12, color: "var(--text-tertiary)" }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                          <svg viewBox="0 0 14 14" style={{ width: 13, height: 13, stroke: "var(--text-tertiary)", fill: "none", strokeWidth: 1.5 }}>
+                            <path d="M1 11V5l6-4 6 4v6" /><rect x="4" y="7" width="6" height="4" />
+                          </svg>
+                          {l.chambres} ch.
+                        </span>
+                        <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                          <svg viewBox="0 0 14 14" style={{ width: 13, height: 13, stroke: "var(--text-tertiary)", fill: "none", strokeWidth: 1.5 }}>
+                            <rect x="2" y="4" width="8" height="6" rx="1" /><path d="M10 7h2v3H2" />
+                          </svg>
+                          {l.sallesDeBain} sdb
+                        </span>
+                        <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                          <svg viewBox="0 0 14 14" style={{ width: 13, height: 13, stroke: "var(--text-tertiary)", fill: "none", strokeWidth: 1.5 }}>
+                            <rect x="1" y="1" width="12" height="12" rx="1" /><path d="M1 5h12M5 1v12" />
+                          </svg>
+                          {l.superficie.toLocaleString("fr-CA")} pi\u00B2
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Pagination */}
+            {hasMore && (
+              <button
+                onClick={() => fetchListings(page + 1, true)}
+                style={{
+                  width: "100%", padding: 12, marginTop: 16, borderRadius: 12,
+                  fontSize: 13, fontWeight: 500, background: "var(--bg-card)",
+                  border: "0.5px solid var(--border)", color: "var(--text-secondary)",
+                  cursor: "pointer", fontFamily: "inherit", transition: "background 0.15s",
+                }}
+              >
+                Charger plus d&apos;annonces
+              </button>
+            )}
+          </>
         )}
       </div>
-
-      {/* Floating compare bar */}
-      {compareIds.length >= 2 && (
-        <Link
-          href={`/annonces/comparer?ids=${compareIds.join(",")}`}
-          className="cmp-floating-bar"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <rect x="1" y="1" width="5" height="14" rx="1" />
-            <rect x="10" y="1" width="5" height="14" rx="1" />
-          </svg>
-          Comparer ({compareIds.length})
-          <button
-            className="cmp-floating-clear"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCompareIds([]); }}
-          >
-            Effacer
-          </button>
-        </Link>
-      )}
     </>
   );
 }

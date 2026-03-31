@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PublierAnnonceForm } from "./PublierAnnonceForm";
+import PublierFormClient from "./PublierFormClient";
 
 export const metadata: Metadata = {
   title: "Publier une annonce",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function PublierAnnoncePage() {
-  return <PublierAnnonceForm />;
+  return <PublierFormClient />;
 }

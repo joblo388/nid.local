@@ -1,5 +1,13 @@
 /* ===== Marketplace — annonces ===== */
 
+/* --- Card grid hover (page /annonces) --- */
+.mp-card-hover:hover{border-color:var(--border-secondary) !important}
+
+/* --- Advanced panel responsive --- */
+@media(max-width:768px){
+  .mp-adv-grid{grid-template-columns:1fr !important}
+}
+
 /* --- Liste (page /annonces) --- */
 .mp-page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
 .mp-page-title{font-size:22px;font-weight:500}

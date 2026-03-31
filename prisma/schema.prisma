@@ -189,11 +189,30 @@ model Listing {
   superficie    Int      @default(0) // pi²
   superficieTerrain Int? // pi²
   anneeConstruction Int?
-  stationnement String?  // "aucun" | "entree" | "garage_simple" | "garage_double" | "interieur"
-  chauffage     String?
-  eauChaude     String?
-  sousSol       String?
-  piscine       String?
+  stationnement String?  // legacy, use stInterieur/stExterieur instead
+  sousType      String?  // "detache" | "jumele" | "maison-de-ville" | "plain-pied" | "a-etages"
+  chauffage     String?  // "electrique" | "gaz" | "mazout" | "geothermie" | "bois" | "autre"
+  eauChaude     String?  // "electrique" | "gaz" | "thermopompe"
+  climatisation String?  // "aucune" | "mural" | "central" | "thermopompe"
+  sousSol       String?  // "aucun" | "non-fini" | "semi-fini" | "fini"
+  revetement    String?  // "brique" | "vinyle" | "fibrociment" | "pierre" | "bois" | "composite"
+  piscine       String?  // "aucune" | "creusee" | "hors-sol"
+  extras        String?  // JSON array: ["garage","foyer","spa","borne-ve","acces-pmr","cabanon","serre","alarme"]
+  stInterieur   Int?     // places stationnement intérieur
+  stExterieur   Int?     // places stationnement extérieur
+  sallesEau     Int      @default(0)  // salles d'eau (demi salle de bain)
+  prixNegociable Boolean @default(true)
+  // Plex / revenus
+  nbLogements      Int?     // 2=duplex, 3=triplex, 4=quadruplex, 5+=
+  revenusBruts     Int?     // revenus locatifs bruts / an
+  depensesAnnuelles Int?    // dépenses / an
+  logementsLibres  Int?     // nombre de logements libres
+  occupationProprio Boolean @default(false)
+  // Contact & visites
+  contactPrefere String?  // "message" | "telephone" | "courriel"
+  courriel       String?
+  disponibilites String?  // "semaine" | "fins-de-semaine" | "sur-rendez-vous"
+  // Existants
   taxesMunicipales Int?  // $ / an
   taxesScolaires   Int?  // $ / an
   fraisCondo       Int?  // $ / mois

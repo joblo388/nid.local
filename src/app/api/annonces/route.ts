@@ -1,44 +1,137 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { rateLimit, getIp } from "@/lib/rateLimit";
 import { Prisma } from "@prisma/client";
 import { sendAlertEmail } from "@/lib/email";
+import { rateLimit, getIp } from "@/lib/rateLimit";
 import { quartierBySlug } from "@/lib/data";
 
 const PAGE_SIZE = 20;
-const TYPES_VALIDES = ["unifamiliale", "condo", "duplex", "triplex", "quadruplex", "5plex", "maison_de_ville", "terrain", "commercial", "1_et_demi", "2_et_demi", "3_et_demi", "4_et_demi", "5_et_demi", "6_et_demi", "studio", "loft", "autre", "autre_location"];
+const TYPES_VALIDES = [
+  "unifamiliale", "condo", "duplex", "triplex", "quadruplex", "5plex",
+  "maison_de_ville", "terrain", "commercial", "chalet",
+  "1_et_demi", "2_et_demi", "3_et_demi", "4_et_demi", "5_et_demi", "6_et_demi",
+  "studio", "loft", "autre", "autre_location",
+];
 const TRIS_VALIDES = ["recent", "prix_asc", "prix_desc", "populaire"];
+const CHAUFFAGE_VALIDES = ["electrique", "gaz", "mazout", "geothermie", "bois", "autre"];
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
+
+  /* ── Basic filters ── */
+  const mode = searchParams.get("mode");
   const villeSlug = searchParams.get("villeSlug");
   const quartierSlug = searchParams.get("quartierSlug");
   const type = searchParams.get("type");
-  const prixMax = searchParams.get("prixMax");
   const prixMin = searchParams.get("prixMin");
-  const search = searchParams.get("q")?.trim();
+  const prixMax = searchParams.get("prixMax");
+
+  /* ── New advanced filters ── */
+  const chambresMin = searchParams.get("chambresMin");
+  const sallesBainMin = searchParams.get("sallesBainMin");
+  const superficieMin = searchParams.get("superficieMin");
+  const anneeMin = searchParams.get("anneeMin");
+  const anneeMax = searchParams.get("anneeMax");
+  const chauffage = searchParams.get("chauffage");
+  const extrasRaw = searchParams.get("extras"); // comma-separated
+  const sousSol = searchParams.get("sousSol");
+
+  /* ── Text search (new param name "search", keep legacy "q" too) ── */
+  const search = (searchParams.get("search") ?? searchParams.get("q"))?.trim();
+
+  /* ── Sort & pagination ── */
   const tri = searchParams.get("tri") ?? "recent";
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
-  // For "similar" listings
   const excludeId = searchParams.get("excludeId");
   const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : PAGE_SIZE;
 
-  const mode = searchParams.get("mode");
-
+  /* ── Build WHERE ── */
   const where: Prisma.ListingWhereInput = { statut: "active" };
+
   if (mode) where.mode = mode;
   if (villeSlug) where.villeSlug = villeSlug;
   if (quartierSlug) where.quartierSlug = quartierSlug;
   if (type && TYPES_VALIDES.includes(type)) where.type = type;
+  if (excludeId) where.id = { not: excludeId };
+
+  // Prix range
   if (prixMax || prixMin) {
     where.prix = {};
     if (prixMax) (where.prix as Record<string, number>).lte = parseInt(prixMax);
     if (prixMin) (where.prix as Record<string, number>).gte = parseInt(prixMin);
   }
-  if (excludeId) where.id = { not: excludeId };
+
+  // Chambres minimum
+  if (chambresMin) {
+    const val = parseInt(chambresMin);
+    if (!isNaN(val) && val > 0) where.chambres = { gte: val };
+  }
+
+  // Salles de bain minimum
+  if (sallesBainMin) {
+    const val = parseInt(sallesBainMin);
+    if (!isNaN(val) && val > 0) where.sallesDeBain = { gte: val };
+  }
+
+  // Superficie minimum
+  if (superficieMin) {
+    const val = parseInt(superficieMin);
+    if (!isNaN(val) && val > 0) where.superficie = { gte: val };
+  }
+
+  // Annee de construction range
+  if (anneeMin || anneeMax) {
+    where.anneeConstruction = {};
+    if (anneeMin) {
+      const val = parseInt(anneeMin);
+      if (!isNaN(val)) (where.anneeConstruction as Record<string, number>).gte = val;
+    }
+    if (anneeMax) {
+      const val = parseInt(anneeMax);
+      if (!isNaN(val)) (where.anneeConstruction as Record<string, number>).lte = val;
+    }
+  }
+
+  // Chauffage
+  if (chauffage && CHAUFFAGE_VALIDES.includes(chauffage)) {
+    where.chauffage = chauffage;
+  }
+
+  // Sous-sol
+  if (sousSol) {
+    where.sousSol = sousSol;
+  }
+
+  // Extras (comma-separated, stored as JSON string in extras field)
+  // Match listings whose extras JSON array contains ALL requested extras
+  if (extrasRaw) {
+    const extrasArr = extrasRaw.split(",").map((e) => e.trim()).filter(Boolean);
+    if (extrasArr.length > 0) {
+      // Handle special "sous-sol-fini" as a sousSol filter instead
+      const realExtras: string[] = [];
+      for (const ex of extrasArr) {
+        if (ex === "sous-sol-fini") {
+          where.sousSol = "fini";
+        } else if (ex === "piscine") {
+          // piscine is a dedicated field, not in extras
+          where.piscine = { not: "aucune" };
+        } else {
+          realExtras.push(ex);
+        }
+      }
+      // For remaining extras, search in the JSON string field
+      if (realExtras.length > 0) {
+        const extrasConditions: Prisma.ListingWhereInput[] = realExtras.map((ex) => ({
+          extras: { contains: ex, mode: "insensitive" as const },
+        }));
+        where.AND = [...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []), ...extrasConditions];
+      }
+    }
+  }
+
+  // Text search
   if (search) {
-    // Match quartier slugs from search term (e.g. "Rosemont" → quartierSlug contains "rosemont")
     const searchSlug = search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
     where.OR = [
       { titre: { contains: search, mode: "insensitive" } },
@@ -49,15 +142,18 @@ export async function GET(req: NextRequest) {
     ];
   }
 
+  /* ── ORDER BY ── */
   const orderBy: Prisma.ListingOrderByWithRelationInput =
     tri === "prix_asc" ? { prix: "asc" } :
     tri === "prix_desc" ? { prix: "desc" } :
     tri === "populaire" ? { nbVues: "desc" } :
     { creeLe: "desc" };
 
+  /* ── Auth (for favorites) ── */
   const session = await auth();
   const userId = session?.user?.id;
 
+  /* ── Query ── */
   const [listings, total] = await Promise.all([
     prisma.listing.findMany({
       where,
@@ -113,12 +209,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!rateLimit(getIp(req), 3, 60_000)) {
-    return NextResponse.json({ error: "Trop de requêtes." }, { status: 429 });
+    return NextResponse.json({ error: "Trop de requ\u00eates." }, { status: 429 });
   }
 
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+    return NextResponse.json({ error: "Non authentifi\u00e9." }, { status: 401 });
   }
 
   const body = await req.json();
@@ -138,17 +234,17 @@ export async function POST(req: NextRequest) {
   }
 
   if (!titre?.trim() || titre.trim().length < 5) {
-    return NextResponse.json({ error: "Le titre doit avoir au moins 5 caractères." }, { status: 400 });
+    return NextResponse.json({ error: "Le titre doit avoir au moins 5 caract\u00e8res." }, { status: 400 });
   }
   if (!description?.trim() || description.trim().length < 20) {
-    return NextResponse.json({ error: "La description doit avoir au moins 20 caractères." }, { status: 400 });
+    return NextResponse.json({ error: "La description doit avoir au moins 20 caract\u00e8res." }, { status: 400 });
   }
   const minPrix = mode === "location" ? 100 : 1000;
   if (!prix || prix < minPrix) {
     return NextResponse.json({ error: "Prix invalide." }, { status: 400 });
   }
   if (!TYPES_VALIDES.includes(type)) {
-    return NextResponse.json({ error: "Type de propriété invalide." }, { status: 400 });
+    return NextResponse.json({ error: "Type de propri\u00e9t\u00e9 invalide." }, { status: 400 });
   }
   if (!quartierSlug || !adresse?.trim()) {
     return NextResponse.json({ error: "Quartier et adresse requis." }, { status: 400 });
@@ -199,21 +295,20 @@ export async function POST(req: NextRequest) {
     data: { listingId: listing.id, prix, evenement: mode === "location" ? "mise_en_location" : "mise_en_vente" },
   });
 
-  // ─── Send marketplace alert emails (fire-and-forget) ───────────────────────
+  // ── Send marketplace alert emails (fire-and-forget) ──
   (async () => {
     try {
-      const where: Prisma.AlerteMarketplaceWhereInput = {
+      const alerteWhere: Prisma.AlerteMarketplaceWhereInput = {
         active: true,
-        userId: { not: session.user!.id }, // Don't alert the listing author
+        userId: { not: session.user!.id },
       };
 
       const matchingAlertes = await prisma.alerteMarketplace.findMany({
-        where,
+        where: alerteWhere,
         include: { user: { select: { email: true } } },
       });
 
       for (const alerte of matchingAlertes) {
-        // Check each criterion — alert matches if ALL its non-null criteria match the listing
         if (alerte.villeSlug && alerte.villeSlug !== (villeSlug || "montreal")) continue;
         if (alerte.quartierSlug && alerte.quartierSlug !== quartierSlug) continue;
         if (alerte.type && alerte.type !== type) continue;
