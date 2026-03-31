@@ -368,8 +368,8 @@ export function AnnoncesListeView() {
   return (
     <div>
 
-        {/* ═══ A. Page header ═══ */}
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", margin: "24px 0 20px", flexWrap: "wrap", gap: 12 }}>
+        {/* ═══ A. Page header (hidden on mobile, bottom nav handles it) ═══ */}
+        <div className="hidden md:flex" style={{ alignItems: "flex-end", justifyContent: "space-between", margin: "24px 0 20px", flexWrap: "wrap", gap: 12 }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>Annonces immobilières</h1>
             <p style={{ fontSize: 13, color: "var(--text-tertiary)", margin: "4px 0 0" }}>
@@ -388,8 +388,8 @@ export function AnnoncesListeView() {
           </Link>
         </div>
 
-        {/* ═══ B. Search bar ═══ */}
-        <form onSubmit={handleSearch} style={{ marginBottom: 16 }}>
+        {/* ═══ B. Search bar (hidden on mobile, MobileMarketplaceFilters has its own) ═══ */}
+        <form onSubmit={handleSearch} className="hidden md:block" style={{ marginBottom: 16 }}>
           <div style={{
             display: "flex", alignItems: "center", borderRadius: 9999,
             border: "0.5px solid var(--border-secondary)", background: "var(--bg-card)", overflow: "hidden",
