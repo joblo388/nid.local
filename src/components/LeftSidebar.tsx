@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { villes, quartiers } from "@/lib/data";
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
@@ -293,6 +293,7 @@ function Divider() {
 export function LeftSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -403,14 +404,13 @@ export function LeftSidebar() {
   const displayedQuartiers = showAllQuartiers ? filteredQuartiers : filteredQuartiers.slice(0, 7);
 
   // ── Active check helpers ───────────────────────────────────────────────────
+  const triParam = searchParams.get("tri");
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname === href;
   };
-  const isActiveWithQuery = (href: string) => {
-    if (href === "/?tri=recent") return pathname === "/" && typeof window !== "undefined" && window.location.search.includes("tri=recent");
-    return pathname === href;
-  };
+  const isRecentActive = pathname === "/" && triParam === "recent";
+  const isFilActive = pathname === "/" && triParam !== "recent";
 
   // ── Nav item style ─────────────────────────────────────────────────────────
   const navItemClass = (active: boolean) =>
@@ -481,11 +481,11 @@ export function LeftSidebar() {
       ═══════════════════════════════════════════════════════════════════════ */}
       <div className="pt-1 pb-0.5">
         <button
-          className={navItemClass(isActive("/") && !isActiveWithQuery("/?tri=recent"))}
-          style={navItemStyle(isActive("/") && !isActiveWithQuery("/?tri=recent"))}
+          className={navItemClass(isFilActive)}
+          style={navItemStyle(isFilActive)}
           onClick={() => { addRecent("nav:fil:Fil d'actualité"); router.push("/"); }}
         >
-          <span className="shrink-0" style={{ color: isActive("/") && !isActiveWithQuery("/?tri=recent") ? "var(--green-text)" : "var(--text-tertiary)" }}>
+          <span className="shrink-0" style={{ color: isFilActive ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <FeedIcon />
           </span>
           <span className="truncate">Fil d&apos;actualité</span>
@@ -510,11 +510,11 @@ export function LeftSidebar() {
         </Link>
 
         <button
-          className={navItemClass(isActiveWithQuery("/?tri=recent"))}
-          style={navItemStyle(isActiveWithQuery("/?tri=recent"))}
+          className={navItemClass(isRecentActive)}
+          style={navItemStyle(isRecentActive)}
           onClick={() => { addRecent("nav:recent:Récent"); router.push("/?tri=recent"); }}
         >
-          <span className="shrink-0" style={{ color: isActiveWithQuery("/?tri=recent") ? "var(--green-text)" : "var(--text-tertiary)" }}>
+          <span className="shrink-0" style={{ color: isRecentActive ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <ClockIcon />
           </span>
           <span className="truncate">Récent</span>
