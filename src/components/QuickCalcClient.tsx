@@ -80,7 +80,7 @@ export function QuickCalcClient() {
               className="text-[10px] font-semibold uppercase tracking-wider mb-0.5"
               style={{ color: "var(--amber-text)" }}
             >
-              Capacit\u00e9 estim\u00e9e
+              Capacité estimée
             </p>
             <p
               className="text-[16px] font-bold"
@@ -100,7 +100,7 @@ export function QuickCalcClient() {
             border: "0.5px solid var(--border)",
           }}
         >
-          Calcul d\u00e9taill\u00e9
+          Calcul détaillé
         </Link>
       </div>
     </div>

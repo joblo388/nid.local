@@ -61,7 +61,7 @@ const CAT_DOT_COLORS: Record<string, string> = {
 const MARCHE_LABELS: Record<string, string> = {
   vendeur: "Vendeur",
   acheteur: "Acheteur",
-  equilibre: "\u00c9quilibr\u00e9",
+  equilibre: "Équilibré",
 };
 
 /* ─── Data fetching ────────────────────────────────────────────────── */
@@ -127,7 +127,7 @@ export async function MarketplaceSidebar({ quartierSlug }: Props) {
   ]);
 
   return (
-    <aside className="hidden md:block space-y-3 w-[272px] shrink-0">
+    <aside className="hidden md:block space-y-3 w-[240px] shrink-0">
 
       {/* ── 1. Mes recherches ──────────────────────────────────────── */}
       <div
@@ -252,7 +252,7 @@ export async function MarketplaceSidebar({ quartierSlug }: Props) {
         ) : (
           <div className="px-4 py-4">
             <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
-              Sauvegardez une recherche pour recevoir des alertes lorsque de nouvelles annonces correspondent \u00e0 vos crit\u00e8res.
+              Sauvegardez une recherche pour recevoir des alertes lorsque de nouvelles annonces correspondent à vos critères.
             </p>
           </div>
         )}
@@ -271,7 +271,7 @@ export async function MarketplaceSidebar({ quartierSlug }: Props) {
             className="text-[10px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--text-tertiary)" }}
           >
-            Forum {quartierNom ?? "G\u00e9n\u00e9ral"}
+            Forum {quartierNom ?? "Général"}
           </h3>
         </div>
 
@@ -346,7 +346,7 @@ export async function MarketplaceSidebar({ quartierSlug }: Props) {
         </div>
       </div>
 
-      {/* ── 4. Donn\u00e9es de march\u00e9 ─────────────────────────────────── */}
+      {/* ── 4. Données de marché ─────────────────────────────────── */}
       <div
         className="rounded-xl overflow-hidden"
         style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
@@ -356,16 +356,16 @@ export async function MarketplaceSidebar({ quartierSlug }: Props) {
             className="text-[10px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--text-tertiary)" }}
           >
-            Donn\u00e9es de march\u00e9 {quartierNom ? `- ${quartierNom}` : ""}
+            Données de marché {quartierNom ? `- ${quartierNom}` : ""}
           </h3>
         </div>
 
         <div className="grid grid-cols-2">
           {[
-            { label: "M\u00e9diane unifamiliale", valeur: marketData.uni },
-            { label: "M\u00e9diane condo", valeur: marketData.condo },
-            { label: "D\u00e9lai moyen vente", valeur: marketData.delai },
-            { label: "Type de march\u00e9", valeur: MARCHE_LABELS[marketData.marche] ?? marketData.marche },
+            { label: "Médiane unifamiliale", valeur: marketData.uni },
+            { label: "Médiane condo", valeur: marketData.condo },
+            { label: "Délai moyen vente", valeur: marketData.delai },
+            { label: "Type de marché", valeur: MARCHE_LABELS[marketData.marche] ?? marketData.marche },
           ].map((stat, i) => (
             <div
               key={stat.label}
@@ -397,7 +397,7 @@ export async function MarketplaceSidebar({ quartierSlug }: Props) {
             className="block px-4 py-2.5 text-[11px] font-medium text-center transition-opacity hover:opacity-80"
             style={{ color: "var(--green)" }}
           >
-            Donn\u00e9es compl\u00e8tes {quartierNom ?? ""}
+            Données complètes {quartierNom ?? ""}
           </Link>
         </div>
       </div>
