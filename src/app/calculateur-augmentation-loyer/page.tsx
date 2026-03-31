@@ -8,6 +8,7 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/calculateur-augmentation-loyer`;
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: "Calculateur augmentation de loyer Québec 2026 | TAL",
   description:
     "Calculez l'augmentation de loyer permise selon les critères du TAL 2026. Outil gratuit basé sur les règles officielles du Tribunal administratif du logement du Québec.",
