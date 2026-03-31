@@ -363,8 +363,8 @@ export function AnnoncesListeView() {
         </form>
 
         {/* ═══ C. Filter bar ═══ */}
-        {/* Row 1: Tab groups (scrollable on mobile) */}
-        <div className="mp-filter-row">
+        {/* Row 1: Tab groups (wrap on mobile, scroll on desktop) */}
+        <div className="mp-filter-row-wrap">
           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content" }}>
 
             {/* Tab group 1: Mode */}
@@ -379,6 +379,7 @@ export function AnnoncesListeView() {
               ].map((m) => (
                 <button
                   key={m.value}
+                  className="mp-pill-btn"
                   onClick={() => setFilters((f) => ({ ...f, mode: m.value }))}
                   style={{
                     fontSize: 12, padding: "5px 14px", borderRadius: 9999, border: "none", cursor: "pointer",
@@ -401,6 +402,7 @@ export function AnnoncesListeView() {
               {QUICK_TYPES.map((t) => (
                 <button
                   key={t.value}
+                  className="mp-pill-btn"
                   onClick={() => setFilters((f) => ({ ...f, type: t.value }))}
                   style={{
                     fontSize: 12, padding: "5px 14px", borderRadius: 9999, border: "none", cursor: "pointer",
@@ -417,91 +419,95 @@ export function AnnoncesListeView() {
           </div>
         </div>
 
-        {/* Row 2: Pill filters (scrollable on mobile) */}
-        <div className="mp-filter-row" style={{ marginBottom: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content" }}>
+        {/* Row 2: Pill filters (scroll with fade on mobile) */}
+        <div className="mp-filter-row2-wrapper">
+          <div className="mp-filter-row2">
+            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content", paddingRight: 16 }}>
 
-            {/* Pill filters */}
-            <select
-              value={filters.villeSlug}
-              onChange={(e) => setFilters((f) => ({ ...f, villeSlug: e.target.value }))}
-              style={{
-                fontSize: 12, padding: "6px 12px", borderRadius: 9999,
-                border: filters.villeSlug ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-                background: filters.villeSlug ? "var(--green-light-bg)" : "var(--bg-card)",
-                color: filters.villeSlug ? "var(--green-text)" : "var(--text-primary)",
-                fontFamily: "inherit", cursor: "pointer", outline: "none",
-              }}
-            >
-              <option value="">Ville</option>
-              {villes.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
-            </select>
+              {/* Pill filters */}
+              <select
+                value={filters.villeSlug}
+                onChange={(e) => setFilters((f) => ({ ...f, villeSlug: e.target.value }))}
+                style={{
+                  fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+                  border: filters.villeSlug ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                  background: filters.villeSlug ? "var(--green-light-bg)" : "var(--bg-card)",
+                  color: filters.villeSlug ? "var(--green-text)" : "var(--text-primary)",
+                  fontFamily: "inherit", cursor: "pointer", outline: "none",
+                }}
+              >
+                <option value="">Ville</option>
+                {villes.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
+              </select>
 
-            <input
-              type="number"
-              placeholder="Prix max $"
-              value={filters.prixMax}
-              onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
-              min={0}
-              step={10000}
-              style={{
-                fontSize: 12, padding: "6px 12px", borderRadius: 9999, width: 110,
-                border: filters.prixMax ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-                background: filters.prixMax ? "var(--green-light-bg)" : "var(--bg-card)",
-                color: filters.prixMax ? "var(--green-text)" : "var(--text-primary)",
-                fontFamily: "inherit", outline: "none",
-              }}
-            />
+              <input
+                type="number"
+                placeholder="Prix max $"
+                value={filters.prixMax}
+                onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value }))}
+                min={0}
+                step={10000}
+                style={{
+                  fontSize: 12, padding: "6px 12px", borderRadius: 9999, width: 110,
+                  border: filters.prixMax ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                  background: filters.prixMax ? "var(--green-light-bg)" : "var(--bg-card)",
+                  color: filters.prixMax ? "var(--green-text)" : "var(--text-primary)",
+                  fontFamily: "inherit", outline: "none",
+                }}
+              />
 
-            <select
-              value={filters.chambresMin}
-              onChange={(e) => setFilters((f) => ({ ...f, chambresMin: e.target.value }))}
-              style={{
-                fontSize: 12, padding: "6px 12px", borderRadius: 9999,
-                border: filters.chambresMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-                background: filters.chambresMin ? "var(--green-light-bg)" : "var(--bg-card)",
-                color: filters.chambresMin ? "var(--green-text)" : "var(--text-primary)",
-                fontFamily: "inherit", cursor: "pointer", outline: "none",
-              }}
-            >
-              <option value="">Chambres</option>
-              {CHAMBRES_OPTIONS.map((c) => <option key={c} value={c.replace("+", "")}>{c}</option>)}
-            </select>
+              <select
+                value={filters.chambresMin}
+                onChange={(e) => setFilters((f) => ({ ...f, chambresMin: e.target.value }))}
+                style={{
+                  fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+                  border: filters.chambresMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                  background: filters.chambresMin ? "var(--green-light-bg)" : "var(--bg-card)",
+                  color: filters.chambresMin ? "var(--green-text)" : "var(--text-primary)",
+                  fontFamily: "inherit", cursor: "pointer", outline: "none",
+                }}
+              >
+                <option value="">Chambres</option>
+                {CHAMBRES_OPTIONS.map((c) => <option key={c} value={c.replace("+", "")}>{c}</option>)}
+              </select>
 
-            <select
-              value={filters.sallesBainMin}
-              onChange={(e) => setFilters((f) => ({ ...f, sallesBainMin: e.target.value }))}
-              style={{
-                fontSize: 12, padding: "6px 12px", borderRadius: 9999,
-                border: filters.sallesBainMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-                background: filters.sallesBainMin ? "var(--green-light-bg)" : "var(--bg-card)",
-                color: filters.sallesBainMin ? "var(--green-text)" : "var(--text-primary)",
-                fontFamily: "inherit", cursor: "pointer", outline: "none",
-              }}
-            >
-              <option value="">Salles de bain</option>
-              {SDB_OPTIONS.map((s) => <option key={s} value={s.replace("+", "")}>{s}</option>)}
-            </select>
+              <select
+                value={filters.sallesBainMin}
+                onChange={(e) => setFilters((f) => ({ ...f, sallesBainMin: e.target.value }))}
+                style={{
+                  fontSize: 12, padding: "6px 12px", borderRadius: 9999,
+                  border: filters.sallesBainMin ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                  background: filters.sallesBainMin ? "var(--green-light-bg)" : "var(--bg-card)",
+                  color: filters.sallesBainMin ? "var(--green-text)" : "var(--text-primary)",
+                  fontFamily: "inherit", cursor: "pointer", outline: "none",
+                }}
+              >
+                <option value="">Salles de bain</option>
+                {SDB_OPTIONS.map((s) => <option key={s} value={s.replace("+", "")}>{s}</option>)}
+              </select>
 
-            {/* Filtres avances toggle */}
-            <button
-              onClick={() => setAdvancedOpen(!advancedOpen)}
-              style={{
-                fontSize: 12, padding: "6px 14px", borderRadius: 9999, cursor: "pointer",
-                fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
-                border: advancedOpen ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-                background: advancedOpen ? "var(--green-light-bg)" : "var(--bg-card)",
-                color: advancedOpen ? "var(--green-text)" : "var(--text-tertiary)",
-                display: "inline-flex", alignItems: "center", gap: 5,
-              }}
-            >
-              <svg style={{ width: 13, height: 13, stroke: "currentColor", fill: "none", strokeWidth: 1.5 }} viewBox="0 0 24 24">
-                <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
-                <circle cx="8" cy="6" r="2" /><circle cx="16" cy="12" r="2" /><circle cx="10" cy="18" r="2" />
-              </svg>
-              Filtres avancés
-            </button>
+              {/* Filtres avances toggle */}
+              <button
+                onClick={() => setAdvancedOpen(!advancedOpen)}
+                style={{
+                  fontSize: 12, padding: "6px 14px", borderRadius: 9999, cursor: "pointer",
+                  fontFamily: "inherit", fontWeight: 500, transition: "all 0.15s",
+                  border: advancedOpen ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                  background: advancedOpen ? "var(--green-light-bg)" : "var(--bg-card)",
+                  color: advancedOpen ? "var(--green-text)" : "var(--text-tertiary)",
+                  display: "inline-flex", alignItems: "center", gap: 5, whiteSpace: "nowrap",
+                }}
+              >
+                <svg style={{ width: 13, height: 13, stroke: "currentColor", fill: "none", strokeWidth: 1.5 }} viewBox="0 0 24 24">
+                  <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+                  <circle cx="8" cy="6" r="2" /><circle cx="16" cy="12" r="2" /><circle cx="10" cy="18" r="2" />
+                </svg>
+                Filtres avancés
+              </button>
+            </div>
           </div>
+          {/* Fade gradient hint */}
+          <div className="mp-filter-row2-fade" />
         </div>
 
         {/* ═══ D. Active filter chips ═══ */}
@@ -762,32 +768,35 @@ export function AnnoncesListeView() {
         )}
 
         {/* ═══ F. Results bar ═══ */}
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          marginBottom: 16, flexWrap: "wrap", gap: 8,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 14, fontWeight: 500 }}>
-              {total} annonce{total !== 1 ? "s" : ""}
-            </span>
-            <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>
-              {updateAgoLabel()}
-            </span>
+        <div style={{ marginBottom: 16 }}>
+          {/* Line 1: count + update time (left), save button (right) */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 14, fontWeight: 500 }}>
+                {total} annonce{total !== 1 ? "s" : ""}
+              </span>
+              <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>
+                {updateAgoLabel()}
+              </span>
+            </div>
           </div>
-          <select
-            value={filters.tri}
-            onChange={(e) => setFilters((f) => ({ ...f, tri: e.target.value }))}
-            style={{
-              fontSize: 12, padding: "6px 12px", borderRadius: 9999,
-              border: "0.5px solid var(--border-secondary)", background: "var(--bg-card)",
-              color: "var(--text-primary)", fontFamily: "inherit", cursor: "pointer", outline: "none",
-            }}
-          >
-            <option value="recent">Plus récent</option>
-            <option value="prix_asc">Prix croissant</option>
-            <option value="prix_desc">Prix décroissant</option>
-            <option value="populaire">Plus populaire</option>
-          </select>
+          {/* Line 2: sort select + view toggle */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <select
+              value={filters.tri}
+              onChange={(e) => setFilters((f) => ({ ...f, tri: e.target.value }))}
+              style={{
+                fontSize: 16, padding: "6px 12px", borderRadius: 9999,
+                border: "0.5px solid var(--border-secondary)", background: "var(--bg-card)",
+                color: "var(--text-primary)", fontFamily: "inherit", cursor: "pointer", outline: "none",
+              }}
+            >
+              <option value="recent">Plus récent</option>
+              <option value="prix_asc">Prix croissant</option>
+              <option value="prix_desc">Prix décroissant</option>
+              <option value="populaire">Plus populaire</option>
+            </select>
+          </div>
         </div>
 
         {/* ═══ G. Listing cards grid ═══ */}
@@ -829,24 +838,25 @@ export function AnnoncesListeView() {
           </div>
         ) : (
           <>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-              {listings.map((l) => {
+            <div className="mp-cards-grid">
+              {listings.map((l, idx) => {
                 const q = quartierBySlug[l.quartierSlug];
                 const quartierNom = q?.nom ?? l.quartierSlug;
+                const isFeatured = idx < 2;
                 return (
                   <Link
                     key={l.id}
                     href={`/annonces/${l.id}`}
                     onClick={() => trackClick(l.id)}
+                    className={`mp-card-hover ${isFeatured ? "mp-card-featured" : "mp-card-regular"}`}
                     style={{
                       background: "var(--bg-card)", border: "0.5px solid var(--border)", borderRadius: 12,
                       overflow: "hidden", cursor: "pointer", textDecoration: "none", color: "inherit",
                       display: "flex", flexDirection: "column", transition: "border-color 0.15s",
                     }}
-                    className="mp-card-hover"
                   >
                     {/* Image area */}
-                    <div style={{
+                    <div className={isFeatured ? "mp-card-img-featured" : "mp-card-img-regular"} style={{
                       height: 170, background: "var(--bg-secondary)", position: "relative",
                       overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center",
                     }}>

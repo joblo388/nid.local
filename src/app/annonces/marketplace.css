@@ -3,9 +3,43 @@
 /* --- Card grid hover (page /annonces) --- */
 .mp-card-hover:hover{border-color:var(--border-secondary) !important}
 
+/* --- Cards grid: desktop = auto-fill grid, mobile = stack --- */
+.mp-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+
+/* Mobile card layouts */
+@media(max-width:767px){
+  .mp-cards-grid{grid-template-columns:1fr;gap:12px}
+  /* Featured cards (first 2): vertical, image on top */
+  .mp-card-featured{flex-direction:column !important}
+  .mp-card-img-featured{width:100% !important;height:160px !important}
+  /* Regular cards (3+): horizontal, image left */
+  .mp-card-regular{flex-direction:row !important}
+  .mp-card-img-regular{width:120px !important;min-height:100px !important;height:auto !important;flex-shrink:0}
+}
+
 /* --- Filter bar scrollable rows (mobile) --- */
 .mp-filter-row{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:6px}
 .mp-filter-row::-webkit-scrollbar{display:none}
+
+/* Row 1: wrap on mobile, no scroll */
+.mp-filter-row-wrap{margin-bottom:6px}
+@media(max-width:767px){
+  .mp-filter-row-wrap{display:flex;flex-wrap:wrap;gap:6px}
+  .mp-filter-row-wrap .mp-pill-btn{padding:5px 10px !important}
+}
+@media(min-width:768px){
+  .mp-filter-row-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .mp-filter-row-wrap::-webkit-scrollbar{display:none}
+}
+
+/* Row 2: scroll with fade on mobile */
+.mp-filter-row2-wrapper{position:relative;overflow:hidden;margin-bottom:8px}
+.mp-filter-row2{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mp-filter-row2::-webkit-scrollbar{display:none}
+.mp-filter-row2-fade{display:none}
+@media(max-width:767px){
+  .mp-filter-row2-fade{display:block;position:absolute;right:0;top:0;bottom:0;width:40px;background:linear-gradient(to right,transparent,var(--bg-page));pointer-events:none;z-index:1;transition:opacity 0.2s}
+}
 
 /* --- Advanced panel responsive --- */
 @media(max-width:640px){
