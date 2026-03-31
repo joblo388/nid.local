@@ -36,6 +36,9 @@ export async function GET(req: NextRequest) {
   const chauffage = searchParams.get("chauffage");
   const extrasRaw = searchParams.get("extras"); // comma-separated
   const sousSol = searchParams.get("sousSol");
+  const sousType = searchParams.get("sousType");
+  const stMin = searchParams.get("stMin");
+  const prixNegociable = searchParams.get("prixNegociable");
 
   /* ── Text search (new param name "search", keep legacy "q" too) ── */
   const search = (searchParams.get("search") ?? searchParams.get("q"))?.trim();
@@ -103,6 +106,31 @@ export async function GET(req: NextRequest) {
     where.sousSol = sousSol;
   }
 
+  // Sous-type
+  if (sousType) {
+    where.sousType = sousType;
+  }
+
+  // Stationnement minimum (interieur + exterieur)
+  if (stMin) {
+    const val = parseInt(stMin);
+    if (!isNaN(val) && val > 0) {
+      where.AND = [...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
+        {
+          OR: [
+            { stInterieur: { gte: val } },
+            { stExterieur: { gte: val } },
+          ],
+        },
+      ];
+    }
+  }
+
+  // Prix negociable
+  if (prixNegociable === "oui") {
+    where.prixNegociable = true;
+  }
+
   // Extras (comma-separated, stored as JSON string in extras field)
   // Match listings whose extras JSON array contains ALL requested extras
   if (extrasRaw) {
@@ -121,10 +149,17 @@ export async function GET(req: NextRequest) {
         }
       }
       // For remaining extras, search in the JSON string field
+      // Normalize: replace hyphens with underscores so both formats match
       if (realExtras.length > 0) {
-        const extrasConditions: Prisma.ListingWhereInput[] = realExtras.map((ex) => ({
-          extras: { contains: ex, mode: "insensitive" as const },
-        }));
+        const extrasConditions: Prisma.ListingWhereInput[] = realExtras.map((ex) => {
+          const normalizedExtra = ex.replace(/-/g, "_");
+          return {
+            OR: [
+              { extras: { contains: ex, mode: "insensitive" as const } },
+              { extras: { contains: normalizedExtra, mode: "insensitive" as const } },
+            ],
+          };
+        });
         where.AND = [...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []), ...extrasConditions];
       }
     }

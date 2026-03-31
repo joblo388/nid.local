@@ -22,6 +22,9 @@ type Filters = {
   sousSol: string;
   search: string;
   tri: string;
+  sousType: string;
+  stMin: string;
+  prixNegociable: string;
 };
 
 type Props = {
@@ -56,6 +59,23 @@ const EXTRAS_OPTIONS = [
   { value: "sous-sol-fini", label: "Sous-sol fini" },
   { value: "foyer", label: "Foyer" },
   { value: "borne-ve", label: "Borne VE" },
+  { value: "spa", label: "Spa" },
+  { value: "cabanon", label: "Cabanon" },
+  { value: "serre", label: "Serre" },
+  { value: "alarme", label: "Alarme" },
+];
+
+const SOUS_TYPE_OPTIONS = [
+  { value: "detache", label: "Detache" },
+  { value: "jumele", label: "Jumele" },
+  { value: "maison-de-ville", label: "Maison de ville" },
+  { value: "plain-pied", label: "Plain-pied" },
+  { value: "a-etages", label: "A etages" },
+];
+
+const STATIONNEMENT_OPTIONS = [
+  { value: "1", label: "1+ place" },
+  { value: "2", label: "2+ places" },
 ];
 
 const CHAMBRES_OPTS = ["1", "2", "3", "4", "5"];
@@ -168,6 +188,9 @@ export function MobileMarketplaceFilters({ filters, setFilters, total, activeCou
   const [draftAnneeMax, setDraftAnneeMax] = useState(filters.anneeMax);
   const [draftExtras, setDraftExtras] = useState<string[]>([...filters.extras]);
   const [draftSuperficieMin, setDraftSuperficieMin] = useState(filters.superficieMin);
+  const [draftSousType, setDraftSousType] = useState(filters.sousType);
+  const [draftStMin, setDraftStMin] = useState(filters.stMin);
+  const [draftPrixNegociable, setDraftPrixNegociable] = useState(filters.prixNegociable);
 
   const pillsRef = useRef<HTMLDivElement>(null);
 
@@ -183,6 +206,9 @@ export function MobileMarketplaceFilters({ filters, setFilters, total, activeCou
     setDraftAnneeMax(filters.anneeMax);
     setDraftExtras([...filters.extras]);
     setDraftSuperficieMin(filters.superficieMin);
+    setDraftSousType(filters.sousType);
+    setDraftStMin(filters.stMin);
+    setDraftPrixNegociable(filters.prixNegociable);
   }, [filters]);
 
   // Open a drawer and sync draft
@@ -195,6 +221,9 @@ export function MobileMarketplaceFilters({ filters, setFilters, total, activeCou
     setDraftAnneeMax(filters.anneeMax);
     setDraftExtras([...filters.extras]);
     setDraftSuperficieMin(filters.superficieMin);
+    setDraftSousType(filters.sousType);
+    setDraftStMin(filters.stMin);
+    setDraftPrixNegociable(filters.prixNegociable);
     setOpenDrawer("all");
   }
 
@@ -212,6 +241,9 @@ export function MobileMarketplaceFilters({ filters, setFilters, total, activeCou
       anneeMax: draftAnneeMax,
       extras: draftExtras,
       superficieMin: draftSuperficieMin,
+      sousType: draftSousType,
+      stMin: draftStMin,
+      prixNegociable: draftPrixNegociable,
     }));
     close();
   }
@@ -614,6 +646,9 @@ export function MobileMarketplaceFilters({ filters, setFilters, total, activeCou
                 setDraftAnneeMax("");
                 setDraftExtras([]);
                 setDraftSuperficieMin("");
+                setDraftSousType("");
+                setDraftStMin("");
+                setDraftPrixNegociable("");
               }}
               style={{
                 flex: 1, fontSize: 13, padding: "10px 0", borderRadius: 9999,
@@ -693,6 +728,48 @@ export function MobileMarketplaceFilters({ filters, setFilters, total, activeCou
                 color: "var(--text-primary)", fontFamily: "inherit", outline: "none",
               }}
             />
+          </div>
+        </div>
+
+        {/* Sous-type */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{
+            fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)",
+            marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5,
+          }}>
+            Sous-type
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {SOUS_TYPE_OPTIONS.map((st) => (
+              <button
+                key={st.value}
+                onClick={() => setDraftSousType(draftSousType === st.value ? "" : st.value)}
+                style={pillStyle(draftSousType === st.value)}
+              >
+                {st.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Stationnement */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{
+            fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)",
+            marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5,
+          }}>
+            Stationnement
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {STATIONNEMENT_OPTIONS.map((st) => (
+              <button
+                key={st.value}
+                onClick={() => setDraftStMin(draftStMin === st.value ? "" : st.value)}
+                style={pillStyle(draftStMin === st.value)}
+              >
+                {st.label}
+              </button>
+            ))}
           </div>
         </div>
 

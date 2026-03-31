@@ -49,6 +49,9 @@ type Filters = {
   sousSol: string;
   search: string;
   tri: string;
+  sousType: string;
+  stMin: string;
+  prixNegociable: string;
 };
 
 const EMPTY_FILTERS: Filters = {
@@ -68,6 +71,9 @@ const EMPTY_FILTERS: Filters = {
   sousSol: "",
   search: "",
   tri: "recent",
+  sousType: "",
+  stMin: "",
+  prixNegociable: "",
 };
 
 /* ─── Constants ─────────────────────────────────────────────────── */
@@ -131,8 +137,25 @@ const EXTRAS_OPTIONS = [
   { value: "garage", label: "Garage" },
   { value: "piscine", label: "Piscine" },
   { value: "foyer", label: "Foyer" },
-  { value: "borne-ve", label: "Borne VÉ" },
-  { value: "acces-pmr", label: "Accès PMR" },
+  { value: "borne-ve", label: "Borne VE" },
+  { value: "acces-pmr", label: "Acces PMR" },
+  { value: "spa", label: "Spa" },
+  { value: "cabanon", label: "Cabanon" },
+  { value: "serre", label: "Serre" },
+  { value: "alarme", label: "Alarme" },
+];
+
+const SOUS_TYPE_OPTIONS = [
+  { value: "detache", label: "Detache" },
+  { value: "jumele", label: "Jumele" },
+  { value: "maison-de-ville", label: "Maison de ville" },
+  { value: "plain-pied", label: "Plain-pied" },
+  { value: "a-etages", label: "A etages" },
+];
+
+const STATIONNEMENT_OPTIONS = [
+  { value: "1", label: "1+ place" },
+  { value: "2", label: "2+ places" },
 ];
 
 const VILLE_LABELS: Record<string, string> = {};
@@ -162,7 +185,8 @@ function hasActiveFilters(f: Filters): boolean {
     f.mode || f.type || f.villeSlug || f.quartierSlug ||
     f.prixMin || f.prixMax || f.chambresMin || f.sallesBainMin ||
     f.superficieMin || f.anneeMin || f.anneeMax || f.chauffage ||
-    f.extras.length > 0 || f.sousSol || f.search
+    f.extras.length > 0 || f.sousSol || f.search ||
+    f.sousType || f.stMin || f.prixNegociable
   );
 }
 
@@ -188,6 +212,12 @@ function getActiveChips(f: Filters): { key: string; label: string }[] {
     chips.push({ key: `extra:${ex}`, label: el?.label ?? ex });
   });
   if (f.sousSol) chips.push({ key: "sousSol", label: `Sous-sol: ${f.sousSol}` });
+  if (f.sousType) {
+    const st = SOUS_TYPE_OPTIONS.find((s) => s.value === f.sousType);
+    chips.push({ key: "sousType", label: st?.label ?? f.sousType });
+  }
+  if (f.stMin) chips.push({ key: "stMin", label: `${f.stMin}+ stat.` });
+  if (f.prixNegociable) chips.push({ key: "prixNegociable", label: "Prix negociable" });
   if (f.search) chips.push({ key: "search", label: `"${f.search}"` });
   return chips;
 }
@@ -240,6 +270,9 @@ export function AnnoncesListeView() {
     if (filters.chauffage) params.set("chauffage", filters.chauffage);
     if (filters.extras.length > 0) params.set("extras", filters.extras.join(","));
     if (filters.sousSol) params.set("sousSol", filters.sousSol);
+    if (filters.sousType) params.set("sousType", filters.sousType);
+    if (filters.stMin) params.set("stMin", filters.stMin);
+    if (filters.prixNegociable) params.set("prixNegociable", filters.prixNegociable);
     if (filters.search) params.set("search", filters.search);
     if (filters.tri) params.set("tri", filters.tri);
     params.set("page", String(p));
@@ -327,6 +360,7 @@ export function AnnoncesListeView() {
     filters.prixMin, filters.prixMax, filters.chambresMin, filters.sallesBainMin,
     filters.superficieMin, filters.anneeMin, filters.anneeMax, filters.chauffage,
     filters.sousSol, filters.search,
+    filters.sousType, filters.stMin, filters.prixNegociable,
   ].filter(Boolean).length + filters.extras.length;
 
   /* ── Render ─────────────────────────────────────────────── */
@@ -696,6 +730,48 @@ export function AnnoncesListeView() {
                     );
                   })}
                 </div>
+
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, marginTop: 18, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Sous-type
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 18 }}>
+                  {SOUS_TYPE_OPTIONS.map((st) => (
+                    <button
+                      key={st.value}
+                      onClick={() => setFilters((f) => ({ ...f, sousType: f.sousType === st.value ? "" : st.value }))}
+                      style={{
+                        fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                        fontFamily: "inherit", transition: "all 0.15s",
+                        background: filters.sousType === st.value ? "var(--green-light-bg)" : "transparent",
+                        color: filters.sousType === st.value ? "var(--green-text)" : "var(--text-tertiary)",
+                        border: filters.sousType === st.value ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                      }}
+                    >
+                      {st.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Stationnement
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {STATIONNEMENT_OPTIONS.map((st) => (
+                    <button
+                      key={st.value}
+                      onClick={() => setFilters((f) => ({ ...f, stMin: f.stMin === st.value ? "" : st.value }))}
+                      style={{
+                        fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                        fontFamily: "inherit", transition: "all 0.15s",
+                        background: filters.stMin === st.value ? "var(--green-light-bg)" : "transparent",
+                        color: filters.stMin === st.value ? "var(--green-text)" : "var(--text-tertiary)",
+                        border: filters.stMin === st.value ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                      }}
+                    >
+                      {st.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Col 2 */}
@@ -812,6 +888,24 @@ export function AnnoncesListeView() {
                       {ch.label}
                     </button>
                   ))}
+                </div>
+
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, marginTop: 18, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Prix negociable
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button
+                    onClick={() => setFilters((f) => ({ ...f, prixNegociable: f.prixNegociable === "oui" ? "" : "oui" }))}
+                    style={{
+                      fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
+                      fontFamily: "inherit", transition: "all 0.15s",
+                      background: filters.prixNegociable === "oui" ? "var(--green-light-bg)" : "transparent",
+                      color: filters.prixNegociable === "oui" ? "var(--green-text)" : "var(--text-tertiary)",
+                      border: filters.prixNegociable === "oui" ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
+                    }}
+                  >
+                    Oui
+                  </button>
                 </div>
               </div>
             </div>
