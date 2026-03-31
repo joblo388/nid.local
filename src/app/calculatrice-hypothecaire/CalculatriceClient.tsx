@@ -1,9 +1,32 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { ShareCalculation } from "@/components/ShareCalculation";
 
 export function CalculatriceClient() {
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const syncUrlParams = useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const prix = (document.getElementById("price") as HTMLInputElement)?.value ?? "";
+      const mise = (document.getElementById("down") as HTMLInputElement)?.value ?? "";
+      const taux = (document.getElementById("rate") as HTMLInputElement)?.value ?? "";
+      const amort = (document.getElementById("amort") as HTMLInputElement)?.value ?? "";
+      const typeLogement = (document.getElementById("prop-type") as HTMLSelectElement)?.value ?? "";
+      const params = new URLSearchParams();
+      if (prix) params.set("prix", prix);
+      if (mise) params.set("mise", mise);
+      if (taux) params.set("taux", taux);
+      if (amort) params.set("amortissement", amort);
+      if (freqKey && freqKey !== "monthly") params.set("frequence", freqKey);
+      if (typeLogement && typeLogement !== "unifamilial") params.set("typeLogement", typeLogement);
+      const qs = params.toString();
+      const newUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+      window.history.replaceState(null, "", newUrl);
+    }, 500);
+  }, []);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.toString()) {
@@ -34,8 +57,23 @@ export function CalculatriceClient() {
       onTypeChange();
     }
     calc();
+
+    // Listen for input/change/click events to sync URL params (debounced)
+    const container = document.querySelector(".calc");
+    if (container) {
+      const handler = () => syncUrlParams();
+      container.addEventListener("input", handler);
+      container.addEventListener("change", handler);
+      container.addEventListener("click", handler);
+      return () => {
+        container.removeEventListener("input", handler);
+        container.removeEventListener("change", handler);
+        container.removeEventListener("click", handler);
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+      };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [syncUrlParams]);
 
   return (
     <>
@@ -51,6 +89,10 @@ export function CalculatriceClient() {
           <div className="rate-pill" onClick={(e) => selectRate(e.currentTarget as HTMLElement, 5.09)}>10 ans 5,09%</div>
           <span className="rate-source">Taux indicatifs</span>
         </div>
+        <p className="text-[11px] mt-2" style={{ color: "var(--text-tertiary)" }}>
+          Taux indicatifs au {new Date("2026-03-31").toLocaleDateString("fr-CA", { day: "numeric", month: "long", year: "numeric" })}{" "}·{" "}
+          <a href="https://www.banqueducanada.ca/taux/" target="_blank" rel="noopener" style={{ color: "var(--green)" }}>Banque du Canada</a>
+        </p>
         <div className="calc-grid">
           <div className="field full">
             <label>Type de propriété</label>

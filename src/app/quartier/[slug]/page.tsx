@@ -59,6 +59,7 @@ export default async function QuartierPage({ params }: Props) {
   ]);
 
   const postsQuartier = dbPostsQuartier.map(dbPostToAppPost);
+  const topCategories = [...new Set(postsQuartier.map(p => p.categorie))].slice(0, 3);
   const initialVotedPostIds = userVotes.map((v) => v.postId);
   const initialBookmarkedPostIds = userBookmarks.map((b) => b.postId);
 
@@ -303,6 +304,16 @@ export default async function QuartierPage({ params }: Props) {
                     </div>
                   </div>
 
+                  <Link
+                    href={`/annonces?quartier=${slug}`}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium mt-3 transition-colors"
+                    style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--green)", color: "var(--green-text)" }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M1 6l6-4 6 4v7a1 1 0 01-1 1H2a1 1 0 01-1-1V6z"/><path d="M5 13V8h4v5"/></svg>
+                    Voir les annonces à {quartier.nom}
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth={2}><path d="M2 5.5h7M5.5 2l3.5 3.5-3.5 3.5"/></svg>
+                  </Link>
+
                   {/* Description et tags */}
                   <div
                     className="rounded-xl p-4"
@@ -372,6 +383,26 @@ export default async function QuartierPage({ params }: Props) {
                 quartierSlug={slug}
                 isAdmin={isAdmin}
               />
+            )}
+
+            {totalQuartier < 5 && (
+              <div className="rounded-xl p-4 mt-4" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <p className="text-[12px] font-semibold mb-3" style={{ color: "var(--text-tertiary)" }}>
+                  Voir plus de discussions sur ces sujets
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {topCategories.map((cat) => (
+                    <Link
+                      key={cat}
+                      href={`/?categorie=${cat}`}
+                      className="text-[12px] px-3 py-1.5 rounded-full transition-colors"
+                      style={{ border: "0.5px solid var(--border)", color: "var(--text-secondary)" }}
+                    >
+                      {cat.charAt(0).toUpperCase() + cat.slice(1)} →
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
           <Sidebar />

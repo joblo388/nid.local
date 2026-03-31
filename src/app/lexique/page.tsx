@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { CommunityCTA } from "@/components/CommunityCTA";
+import { LexiqueSearch } from "@/components/LexiqueSearch";
+import { ReadingProgress } from "@/components/ReadingProgress";
+import { BackToTop } from "@/components/BackToTop";
 import { glossaire, glossaireByLettre } from "@/data/glossaire";
 import type { Metadata } from "next";
 
@@ -117,6 +120,7 @@ const jsonLd = {
 export default function LexiquePage() {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
+      <ReadingProgress />
       <Header />
 
       {/* JSON-LD */}
@@ -157,6 +161,8 @@ export default function LexiquePage() {
           définitions claires et des liens vers nos outils gratuits pour passer
           de la théorie à la pratique.
         </p>
+
+        <LexiqueSearch terms={glossaire.map(g => ({ slug: g.slug, terme: g.terme, lettre: g.lettre, definition: g.definition, lienCalculateur: g.lienCalculateur }))} />
 
         {/* ── Alphabet nav ─────────────────────────────────────────────── */}
         <nav
@@ -303,6 +309,7 @@ export default function LexiquePage() {
           <CommunityCTA contexte="general" />
         </div>
       </main>
+      <BackToTop />
     </div>
   );
 }

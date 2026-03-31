@@ -138,7 +138,10 @@ export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
 
   const fetchReviews = useCallback(async () => {
     try {
-      const res = await fetch(`/api/quartiers/${quartierSlug}/reviews`);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      const res = await fetch(`/api/quartiers/${quartierSlug}/reviews`, { signal: controller.signal });
+      clearTimeout(timeout);
       if (!res.ok) return;
       const data = await res.json();
       setReviews(data.reviews);
@@ -310,7 +313,7 @@ export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
           </div>
         ) : (
           <p className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-            Aucun avis pour l&apos;instant. Soyez le premier !
+            Aucun avis pour ce quartier. Partagez votre exp&#233;rience dans les discussions!
           </p>
         )}
 

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { ReadingProgress } from "@/components/ReadingProgress";
+import { BackToTop } from "@/components/BackToTop";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
 import type { Metadata } from "next";
@@ -627,6 +629,7 @@ export default async function GuidePremierAchatPage() {
 
   return (
     <>
+      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -1010,6 +1013,7 @@ export default async function GuidePremierAchatPage() {
           `,
         }}
       />
+      <BackToTop />
     </>
   );
 }

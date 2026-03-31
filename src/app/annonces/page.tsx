@@ -1,8 +1,11 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { AnnoncesListeView } from "./AnnoncesListeView";
 import { MarketplaceSidebar } from "@/components/MarketplaceSidebar";
 import { MobileCalcFab } from "@/components/MobileCalcFab";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Annonces immobilières",

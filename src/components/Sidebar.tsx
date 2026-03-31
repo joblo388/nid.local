@@ -90,7 +90,6 @@ export async function Sidebar() {
           {[
             { label: "Membres", valeur: "3 241" },
             { label: "Discussions", valeur: stats.totalPosts.toLocaleString("fr-CA") },
-            { label: "Vues totales", valeur: stats.totalVues.toLocaleString("fr-CA") },
             { label: "Réponses", valeur: stats.totalReponses.toLocaleString("fr-CA") },
           ].map((stat, i) => (
             <div

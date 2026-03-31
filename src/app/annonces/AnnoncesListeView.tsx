@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -193,6 +194,7 @@ function getActiveChips(f: Filters): { key: string; label: string }[] {
 
 export function AnnoncesListeView() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const [listings, setListings] = useState<ListingItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -203,6 +205,18 @@ export function AnnoncesListeView() {
   const [loading, setLoading] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+
+  useEffect(() => {
+    const q = searchParams.get("quartier");
+    const v = searchParams.get("villeSlug");
+    if (q || v) {
+      setFilters(f => ({
+        ...f,
+        ...(q ? { quartierSlug: q } : {}),
+        ...(v ? { villeSlug: v } : {}),
+      }));
+    }
+  }, []);
 
   /* ── Fetch ──────────────────────────────────────────────── */
 

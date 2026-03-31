@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { ReadingProgress } from "@/components/ReadingProgress";
 import { CommunityCTA } from "@/components/CommunityCTA";
 import type { Metadata } from "next";
 
@@ -131,6 +132,7 @@ const tocItems = [
 export default function DroitsLocatairePage() {
   return (
     <>
+      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

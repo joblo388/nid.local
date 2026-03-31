@@ -439,10 +439,31 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
   const [imageUploading, setImageUploading] = useState(false);
   const [erreur, setErreur] = useState("");
   const [loading, setLoading] = useState(false);
+  const [newReplies, setNewReplies] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const contenuRef = useRef<HTMLTextAreaElement>(null);
 
   const currentUserId = session?.user?.id;
+
+  // Check for new replies since last visit
+  useEffect(() => {
+    try {
+      const key = `replies_seen_${postId}`;
+      const lastSeen = parseInt(localStorage.getItem(key) ?? "0", 10);
+      const currentCount = initial.reduce((sum, c) => sum + 1 + (c.replies?.length ?? 0), 0);
+      if (lastSeen > 0 && currentCount > lastSeen) {
+        setNewReplies(currentCount - lastSeen);
+      }
+    } catch {}
+  }, [postId, initial]);
+
+  // Save current count after render
+  useEffect(() => {
+    try {
+      const currentCount = comments.reduce((sum, c) => sum + 1 + (c.replies?.length ?? 0), 0);
+      localStorage.setItem(`replies_seen_${postId}`, String(currentCount));
+    } catch {}
+  }, [comments, postId]);
 
   // Restore pending reply from localStorage after login
   useEffect(() => {
@@ -522,6 +543,17 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
       <h2 className="text-[14px] font-bold mb-4" style={{ color: "var(--text-primary)" }}>
         {totalCount} {totalCount === 1 ? "réponse" : "réponses"}
       </h2>
+
+      {newReplies > 0 && (
+        <div style={{
+          background: "var(--green-light-bg)", border: "0.5px solid var(--green)",
+          borderRadius: 8, padding: "10px 14px", marginBottom: 16,
+          fontSize: 13, color: "var(--green-text)", display: "flex", alignItems: "center", gap: 8,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth={1.5}><circle cx="7" cy="7" r="6"/><path d="M7 4v3l2 1"/></svg>
+          {newReplies} nouvelle{newReplies > 1 ? "s" : ""} réponse{newReplies > 1 ? "s" : ""} depuis votre dernière visite
+        </div>
+      )}
 
       {comments.length > 0 && (
         <div className="space-y-4 mb-6">
