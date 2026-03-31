@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 
 export function NotificationPermission() {
+  // Désactivé temporairement
+  return null;
+
+  // eslint-disable-next-line no-unreachable
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
