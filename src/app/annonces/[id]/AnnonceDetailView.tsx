@@ -215,7 +215,7 @@ export function AnnonceDetailView() {
             <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
               <div className="mp-detail-price">{fmtPrice(listing.prix)}</div>
               <div className="mp-detail-type">{TYPE_LABELS[listing.type] ?? listing.type} · {quartierNom}</div>
-              <PriceBadge prix={listing.prix} estimatedValue={getMarketEstimate(listing.quartierSlug, listing.type)} />
+              <PriceBadge prix={listing.prix} estimatedValue={getMarketEstimate(listing.quartierSlug, listing.type)} quartierNom={quartierNom} type={listing.type} />
             </div>
             <div className="mp-detail-title">{listing.titre}</div>
             <div className="mp-detail-address">{listing.adresse}</div>

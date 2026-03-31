@@ -479,17 +479,17 @@ export function LeftSidebar() {
           3. Feed navigation
       ═══════════════════════════════════════════════════════════════════════ */}
       <div className="pt-1 pb-0.5">
-        <Link
+        <a
           href="/"
           className={navItemClass(isActive("/") && !isActiveWithQuery("/?tri=recent"))}
           style={navItemStyle(isActive("/") && !isActiveWithQuery("/?tri=recent"))}
-          onClick={() => addRecent("nav:fil:Fil d'actualite")}
+          onClick={() => addRecent("nav:fil:Fil d'actualité")}
         >
           <span className="shrink-0" style={{ color: isActive("/") && !isActiveWithQuery("/?tri=recent") ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <FeedIcon />
           </span>
-          <span className="truncate">Fil d&apos;actualite</span>
-        </Link>
+          <span className="truncate">Fil d&apos;actualité</span>
+        </a>
 
         <Link
           href="/tendances"
@@ -509,17 +509,17 @@ export function LeftSidebar() {
           </span>
         </Link>
 
-        <Link
+        <a
           href="/?tri=recent"
           className={navItemClass(isActiveWithQuery("/?tri=recent"))}
           style={navItemStyle(isActiveWithQuery("/?tri=recent"))}
-          onClick={() => addRecent("nav:recent:Recent")}
+          onClick={() => addRecent("nav:recent:Récent")}
         >
           <span className="shrink-0" style={{ color: isActiveWithQuery("/?tri=recent") ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <ClockIcon />
           </span>
           <span className="truncate">Récent</span>
-        </Link>
+        </a>
 
         <Link
           href="/ressources"
