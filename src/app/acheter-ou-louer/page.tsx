@@ -10,9 +10,9 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/acheter-ou-louer`;
 
 export const metadata: Metadata = {
-  title: "Acheter ou louer au Québec en 2026 | Comparateur gratuit",
+  title: "Acheter ou louer Québec 2026 | Comparateur avec coût d'opportunité",
   description:
-    "Comparez gratuitement le coût réel d'acheter versus louer au Québec sur votre horizon de temps. Hypothèque, taxes, appréciation et épargne. Tous les facteurs sont pris en compte.",
+    "Comparez le coût réel d'acheter versus louer au Québec avec le coût d'opportunité. Hypothèque, taxes, appréciation et épargne inclus.",
   keywords: [
     "acheter ou louer québec", "acheter ou louer montréal", "comparateur acheter louer",
     "calculateur acheter vs louer", "coût achat vs location québec", "vaut-il mieux acheter ou louer",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Acheter ou louer au Québec en 2026 | Comparateur gratuit",
+    title: "Acheter ou louer Québec 2026 | Comparateur avec coût d'opportunité",
     description: "Comparez le coût réel d'acheter vs louer au Québec. Hypothèque, taxes, appréciation et épargne inclus.",
     url: PAGE_URL,
     siteName: "nid.local",

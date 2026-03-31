@@ -9,6 +9,7 @@ import { quartiers, villeBySlug, dbPostToAppPost } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { quartiersData } from "@/data/quartiers";
+import { generateDatasetSchema } from "@/lib/schema";
 
 export const dynamic = "force-dynamic";
 
@@ -72,9 +73,22 @@ export default async function QuartierPage({ params }: Props) {
     totalReponses: totaux._sum.nbCommentaires ?? 0,
   };
 
+  const datasetSchema = marketData ? generateDatasetSchema(
+    `Données marché immobilier ${quartier.nom} 2026`,
+    `Prix médians unifamiliale, condo et plex pour ${quartier.nom}`,
+    `/quartier/${slug}`
+  ) : null;
+
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
-      <Header />
+    <>
+      {datasetSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema) }}
+        />
+      )}
+      <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
+        <Header />
       <main className="max-w-[1100px] mx-auto px-5 py-5">
         <div className="flex gap-5 items-start">
           <div className="flex-1 min-w-0 space-y-3">
@@ -370,5 +384,6 @@ export default async function QuartierPage({ params }: Props) {
         </div>
       </main>
     </div>
+    </>
   );
 }

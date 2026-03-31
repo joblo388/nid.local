@@ -9,9 +9,9 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/premier-acheteur`;
 
 export const metadata: Metadata = {
-  title: "Premier acheteur au Québec 2026 | Guide complet, RAP, CELIAPP et aide",
+  title: "Premier acheteur Québec 2026 | RAP, CELIAPP et programmes d'aide",
   description:
-    "Guide complet pour les premiers acheteurs au Québec en 2026. CELIAPP (8 000 $/an, 40 000 $ à vie), RAP (60 000 $ par personne), crédit d'impôt fédéral, remise TPS/TVQ, programmes municipaux et étapes d'achat détaillées.",
+    "Guide premier acheteur Québec 2026. CELIAPP (8 000 $/an), RAP (60 000 $), crédit d'impôt fédéral, remise TPS/TVQ et programmes municipaux détaillés.",
   keywords: [
     "premier acheteur québec",
     "RAP régime accession propriété",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Premier acheteur au Québec 2026 | Guide complet, RAP, CELIAPP et aide",
+    title: "Premier acheteur Québec 2026 | RAP, CELIAPP et programmes d'aide",
     description:
       "Tout ce qu'un premier acheteur doit savoir au Québec : CELIAPP, RAP, crédits d'impôt, programmes municipaux et les 6 étapes pour acheter votre première maison.",
     url: PAGE_URL,

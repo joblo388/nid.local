@@ -11,7 +11,7 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/calculatrice-hypothecaire`;
 
 export const metadata: Metadata = {
-  title: "Calculatrice hypothécaire Québec 2026 | Paiement mensuel",
+  title: "Calculatrice hypothécaire Québec 2026 | Paiements mensuels",
   description:
     "Calculez gratuitement votre paiement hypothécaire mensuel selon les taux du marché québécois. Mise de fonds, prime SCHL, plex et amortissement inclus. Résultats instantanés.",
   keywords: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Calculatrice hypothécaire Québec 2026 | Paiement mensuel",
+    title: "Calculatrice hypothécaire Québec 2026 | Paiements mensuels",
     description:
       "Calculez votre paiement mensuel, les intérêts totaux et la prime SCHL selon votre mise de fonds et les taux du jour.",
     url: PAGE_URL,

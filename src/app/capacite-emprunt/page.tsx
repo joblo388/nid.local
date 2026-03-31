@@ -10,9 +10,9 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/capacite-emprunt`;
 
 export const metadata: Metadata = {
-  title: "Capacité d'emprunt hypothécaire Québec 2026 | Combien emprunter?",
+  title: "Calculateur capacité d'emprunt Québec 2026 | Ratios GDS/TDS",
   description:
-    "Calculez gratuitement votre capacité d'emprunt hypothécaire selon les ratios GDS/TDS des banques canadiennes. Stress test, revenus locatifs, co-emprunteur et pré-approbation hypothécaire inclus. Résultats instantanés.",
+    "Calculez votre capacité d'emprunt hypothécaire selon les ratios GDS/TDS des banques canadiennes. Stress test, revenus locatifs et pré-approbation inclus.",
   keywords: [
     "capacité emprunt québec",
     "combien emprunter hypothèque",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Capacité d'emprunt hypothécaire Québec 2026 | Combien emprunter?",
+    title: "Calculateur capacité d'emprunt Québec 2026 | Ratios GDS/TDS",
     description:
       "Estimez le prix maximum que vous pouvez vous permettre selon les ratios GDS/TDS, le stress test canadien et vos revenus. Co-emprunteur et revenus locatifs inclus.",
     url: PAGE_URL,

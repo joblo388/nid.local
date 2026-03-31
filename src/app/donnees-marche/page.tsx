@@ -10,8 +10,8 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/donnees-marche`;
 
 export const metadata: Metadata = {
-  title: "Prix immobilier Québec 2026 | Données de marché par ville et quartier",
-  description: "Prix médians des maisons, condos et plex au Québec en 2026. Tendances, délais de vente et conditions de marché par arrondissement de Montréal, Rive-Sud, Rive-Nord et régions.",
+  title: "Données marché immobilier Québec 2026 | Prix par ville et quartier",
+  description: "Prix médians des maisons, condos et plex au Québec en 2026. Tendances, délais de vente et conditions de marché par ville et quartier.",
   keywords: [
     "prix immobilier québec 2026", "prix maison montréal", "prix condo montréal 2026",
     "marché immobilier québec", "prix duplex montréal", "prix plex montréal",
@@ -20,9 +20,14 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Prix immobilier Québec 2026 | Données par ville et quartier",
+    title: "Données marché immobilier Québec 2026 | Prix par ville et quartier",
     description: "Prix médians, délais de vente et tendances immobilières au Québec. Montréal, Laval, Rive-Sud, Rive-Nord et régions.",
     url: PAGE_URL, siteName: "nid.local", locale: "fr_CA", type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Données marché immobilier Québec 2026 | Prix par ville et quartier",
+    description: "Prix médians, délais de vente et tendances immobilières au Québec. Montréal, Laval, Rive-Sud, Rive-Nord et régions.",
   },
 };
 

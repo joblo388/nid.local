@@ -10,7 +10,7 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/calculateur-plex`;
 
 export const metadata: Metadata = {
-  title: "Calculateur plex Québec 2026 | MRB, cashflow et rendement",
+  title: "Calculateur rentabilité plex Québec 2026 | MRB et cashflow",
   description:
     "Calculez gratuitement le MRB, cashflow mensuel, rendement sur mise de fonds et prise de valeur sur 5 ans pour un duplex, triplex ou quadruplex au Québec. Résultats instantanés.",
   keywords: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Calculateur plex Québec 2026 | MRB, cashflow et rendement",
+    title: "Calculateur rentabilité plex Québec 2026 | MRB et cashflow",
     description: "Calculez le MRB, cashflow et rendement sur mise de fonds pour un duplex, triplex ou quadruplex au Québec.",
     url: PAGE_URL,
     siteName: "nid.local",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Calculateur plex Québec 2026 | MRB, cashflow et rendement",
+    title: "Calculateur rentabilité plex Québec 2026 | MRB et cashflow",
     description: "MRB, cashflow mensuel, rendement et projection 5 ans pour les plex au Québec. Gratuit et instantané.",
   },
 };

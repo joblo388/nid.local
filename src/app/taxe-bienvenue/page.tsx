@@ -10,7 +10,7 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/taxe-bienvenue`;
 
 export const metadata: Metadata = {
-  title: "Calculateur de taxe de bienvenue Québec 2026 | Droits de mutation",
+  title: "Calculateur taxe de bienvenue Québec 2026 | Droits de mutation",
   description:
     "Calculez la taxe de bienvenue (droits de mutation immobilière) pour votre achat au Québec. Montréal, Laval, Québec et toutes les villes.",
   keywords: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Calculateur de taxe de bienvenue Québec 2026 | Droits de mutation",
+    title: "Calculateur taxe de bienvenue Québec 2026 | Droits de mutation",
     description:
       "Calculez la taxe de bienvenue (droits de mutation immobilière) pour votre achat au Québec. Montréal, Laval, Québec et toutes les villes.",
     url: PAGE_URL,
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Calculateur de taxe de bienvenue Québec 2026",
+    title: "Calculateur taxe de bienvenue Québec 2026",
     description:
       "Calculez la taxe de bienvenue pour votre achat immobilier au Québec. Taux par tranche, surcharge Montréal, exemptions premier achat.",
   },
