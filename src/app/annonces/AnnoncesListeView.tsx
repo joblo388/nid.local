@@ -618,7 +618,7 @@ export function AnnoncesListeView() {
                   <input
                     type="range"
                     min={0}
-                    max={2000000}
+                    max={20000000}
                     step={25000}
                     value={filters.prixMax || 0}
                     onChange={(e) => setFilters((f) => ({ ...f, prixMax: e.target.value === "0" ? "" : e.target.value }))}
