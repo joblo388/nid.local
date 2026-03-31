@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { quartierBySlug } from "@/lib/data";
 import { MARKET } from "@/lib/donneesMarche";
 import { QuickCalcClient } from "@/components/QuickCalcClient";
+import { ConciergeCard } from "@/components/ConciergeCard";
 
 /* ─── Types ────────────────────────────────────────────────────────── */
 
@@ -260,6 +261,9 @@ export async function MarketplaceSidebar({ quartierSlug }: Props) {
 
       {/* ── 2. Calculateur rapide (client component) ───────────────── */}
       <QuickCalcClient />
+
+      {/* ── 2b. Concierge promo ────────────────────────────────────── */}
+      <ConciergeCard />
 
       {/* ── 3. Forum du quartier ───────────────────────────────────── */}
       <div

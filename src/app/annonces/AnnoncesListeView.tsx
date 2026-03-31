@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { villes, quartierBySlug } from "@/lib/data";
 import { SkeletonListingCard } from "@/components/Skeleton";
 import { MobileMarketplaceFilters } from "@/components/MobileMarketplaceFilters";
+import { ConciergeModal } from "@/components/ConciergeModal";
 import "./marketplace.css";
 
 /* ─── Types ─────────────────────────────────────────────────────── */
@@ -205,6 +206,7 @@ export function AnnoncesListeView() {
   const [searchInput, setSearchInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [conciergeOpen, setConciergeOpen] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
   useEffect(() => {
@@ -391,6 +393,51 @@ export function AnnoncesListeView() {
           total={total}
           activeCount={activeCount}
         />
+
+        {/* ═══ Mobile concierge banner ═══ */}
+        <div
+          className="md:hidden"
+          style={{
+            background: "var(--amber-bg)",
+            border: "0.5px solid var(--amber-text)",
+            borderRadius: 12,
+            padding: "12px 16px",
+            marginBottom: 16,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, margin: 0, color: "var(--text-primary)" }}>
+              Vous voulez vendre?
+            </p>
+            <p style={{ fontSize: 11, margin: "2px 0 0", color: "var(--amber-text)" }}>
+              On publie pour vous, gratuitement.
+            </p>
+          </div>
+          <button
+            onClick={() => setConciergeOpen(true)}
+            className="btn-press"
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              padding: "7px 14px",
+              borderRadius: 9999,
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "inherit",
+              background: "var(--amber-text)",
+              color: "#fff",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            Soumettre
+          </button>
+        </div>
+        <ConciergeModal open={conciergeOpen} onClose={() => setConciergeOpen(false)} />
 
         {/* ═══ C. Filter bar (desktop only) ═══ */}
         {/* Row 1: Tab groups (wrap on mobile, scroll on desktop) */}
