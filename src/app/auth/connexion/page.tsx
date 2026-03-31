@@ -28,8 +28,9 @@ function ConnexionForm() {
         redirect: false,
       });
 
-      if (res?.code === "email_not_verified") {
-        router.push(`/auth/verifier-courriel?email=${encodeURIComponent(email)}`);
+      if (res?.code === "email_not_verified" || res?.error?.includes("email_not_verified")) {
+        setError("email_not_verified");
+        setLoading(false);
         return;
       }
 
@@ -131,9 +132,47 @@ function ConnexionForm() {
               />
             </div>
 
-            {error && (
+            {error && error !== "email_not_verified" && (
               <p className="text-[12px] px-3 py-2 rounded-lg" style={{ background: "var(--red-bg)", color: "var(--red-text)" }}>
                 {error}
+              </p>
+            )}
+            {error === "email_not_verified" && (
+              <div className="px-3 py-3 rounded-lg space-y-2" style={{ background: "var(--amber-bg)", border: "0.5px solid var(--amber-text)" }}>
+                <p className="text-[12px] font-semibold" style={{ color: "var(--amber-text)" }}>
+                  Courriel non vérifié
+                </p>
+                <p className="text-[11px]" style={{ color: "var(--amber-text)" }}>
+                  Vérifiez votre boite de réception et cliquez sur le lien de confirmation.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setError("");
+                      try {
+                        const r = await fetch("/api/auth/resend-verification", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ email }),
+                        });
+                        if (r.ok) setError("verification_sent");
+                        else setError("Impossible de renvoyer le courriel.");
+                      } catch {
+                        setError("Impossible de contacter le serveur.");
+                      }
+                    }}
+                    className="text-[11px] font-semibold px-3 py-1.5 rounded-lg"
+                    style={{ background: "var(--green)", color: "#fff", border: "none", cursor: "pointer" }}
+                  >
+                    Renvoyer le courriel
+                  </button>
+                </div>
+              </div>
+            )}
+            {error === "verification_sent" && (
+              <p className="text-[12px] px-3 py-2 rounded-lg" style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}>
+                Courriel de vérification envoyé! Vérifiez votre boite de réception.
               </p>
             )}
 
