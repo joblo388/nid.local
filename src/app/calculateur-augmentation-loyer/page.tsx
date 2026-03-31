@@ -9,7 +9,7 @@ const BASE_URL =
 const PAGE_URL = `${BASE_URL}/calculateur-augmentation-loyer`;
 
 export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
   title: "Calculateur augmentation de loyer Quebec 2026 | TAL",
   description:
     "Calculez l'augmentation de loyer permise selon les criteres du TAL 2026. Outil gratuit base sur les regles officielles du Tribunal administratif du logement du Quebec.",
