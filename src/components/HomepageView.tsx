@@ -523,40 +523,28 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
 
   return (
     <PullToRefresh onRefresh={handlePullToRefresh}>
-      {/* Catégories — sticky sous le header, visible mobile/tablette seulement */}
+      {/* Tri — sticky sous le header, visible mobile/tablette seulement */}
       <div className="sticky z-40 lg:hidden" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
         <div className="max-w-[1100px] mx-auto px-3 md:px-5">
-          <div style={{ position: "relative", overflow: "hidden" }}>
-            <div
-              ref={catScrollRef}
-              onScroll={handleCatScroll}
-              className="flex gap-1 py-2 items-center overflow-x-auto"
-              style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch", paddingRight: 16 }}
-            >
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setCategorie(cat.value)}
-                  className="px-3 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
-                  style={
-                    categorie === cat.value
-                      ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
-                      : { color: "var(--text-secondary)" }
-                  }
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-            {/* Fade hint */}
-            <div
-              style={{
-                position: "absolute", right: 0, top: 0, bottom: 0, width: 40,
-                background: "linear-gradient(to right, transparent, var(--bg-card))",
-                pointerEvents: "none", zIndex: 1,
-                opacity: catScrolledEnd ? 0 : 1, transition: "opacity 0.2s",
-              }}
-            />
+          <div className="flex gap-1 py-2 items-center">
+            {[
+              { value: "populaire" as const, label: "Fil" },
+              { value: "recent" as const, label: "Récent" },
+              { value: "actif" as const, label: "Populaire" },
+            ].map((t) => (
+              <button
+                key={t.value}
+                onClick={() => setTri(t.value)}
+                className="px-4 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
+                style={
+                  tri === t.value
+                    ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
+                    : { color: "var(--text-secondary)" }
+                }
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
