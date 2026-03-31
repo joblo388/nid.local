@@ -1,5 +1,5 @@
 /// Service Worker — nid.local PWA
-const CACHE_NAME = "nidlocal-v6";
+const CACHE_NAME = "nidlocal-v7";
 const OFFLINE_URL = "/offline.html";
 
 // Pages calculatrices — client-side, fonctionnent hors-ligne
