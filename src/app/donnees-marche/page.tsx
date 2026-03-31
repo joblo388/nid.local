@@ -4,6 +4,7 @@ import { CommunityCTA } from "@/components/CommunityCTA";
 import { DonneesMarche } from "./DonneesMarche";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
+import { CITY_SEO } from "@/lib/donneesMarche";
 import type { Metadata } from "next";
 
 const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.local";
@@ -87,20 +88,7 @@ export default async function DonneesPage() {
                   Consultez les données détaillées pour chaque ville du Québec.
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {[
-                    { slug: "montreal", nom: "Montréal" },
-                    { slug: "quebec", nom: "Québec" },
-                    { slug: "laval", nom: "Laval" },
-                    { slug: "longueuil", nom: "Longueuil" },
-                    { slug: "sherbrooke", nom: "Sherbrooke" },
-                    { slug: "gatineau", nom: "Gatineau" },
-                    { slug: "trois-rivieres", nom: "Trois-Rivières" },
-                    { slug: "saguenay", nom: "Saguenay" },
-                    { slug: "levis", nom: "Lévis" },
-                    { slug: "terrebonne", nom: "Terrebonne" },
-                    { slug: "rimouski", nom: "Rimouski" },
-                    { slug: "drummondville", nom: "Drummondville" },
-                  ].map((v) => (
+                  {Object.values(CITY_SEO).map((v) => (
                     <Link
                       key={v.slug}
                       href={`/donnees-marche/${v.slug}`}
