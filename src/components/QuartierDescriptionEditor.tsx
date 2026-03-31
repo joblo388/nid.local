@@ -111,13 +111,28 @@ export function QuartierDescriptionEditor({ slug, quartierNom, defaultDescriptio
             </span>
           )}
         </div>
-        <div className="space-y-2.5">
-          {paragraphs.map((p, i) => (
-            <p key={i} className="text-[13px] leading-[1.6]" style={{ color: "var(--text-secondary)" }}>
-              {p}
+        {paragraphs.length > 0 ? (
+          <div className="space-y-2.5">
+            {paragraphs.map((p, i) => (
+              <p key={i} className="text-[13px] leading-[1.6]" style={{ color: "var(--text-secondary)" }}>
+                {p}
+              </p>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-6">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" strokeWidth={1.5} style={{ margin: "0 auto 8px" }}>
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <p className="text-[13px] mb-1" style={{ color: "var(--text-secondary)" }}>
+              Aucune description pour ce quartier
             </p>
-          ))}
-        </div>
+            <p className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
+              Vous connaissez {quartierNom}? Partagez vos connaissances avec la communauté!
+            </p>
+          </div>
+        )}
         <div className="flex flex-wrap gap-1.5 mt-3">
           {tags.map((tag) => (
             <span
@@ -153,7 +168,7 @@ export function QuartierDescriptionEditor({ slug, quartierNom, defaultDescriptio
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth={1.5}>
               <path d="M8.5 1.5l2 2L4 10H2v-2L8.5 1.5z" />
             </svg>
-            Modifier la description
+            {paragraphs.length > 0 ? "Modifier la description" : "Ajouter une description"}
           </button>
         </div>
       </div>

@@ -328,6 +328,16 @@ export default async function QuartierPage({ params }: Props) {
               );
             })()}
 
+            {/* Description éditable quand pas de données de marché */}
+            {!marketData && (
+              <QuartierDescriptionEditor
+                slug={slug}
+                quartierNom={quartier.nom}
+                defaultDescription={[]}
+                defaultTags={[]}
+              />
+            )}
+
             <QuartierReviews quartierSlug={slug} />
 
             {postsQuartier.length === 0 ? (
