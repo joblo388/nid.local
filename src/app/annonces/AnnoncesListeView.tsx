@@ -116,15 +116,6 @@ const ALL_TYPES = [
 
 const CHAMBRES_OPTIONS = ["1+", "2+", "3+", "4+", "5+"];
 const SDB_OPTIONS = ["1+", "2+", "3+", "4+"];
-const ANNEE_OPTIONS = [
-  { value: "2020", label: "2020+" },
-  { value: "2010", label: "2010+" },
-  { value: "2000", label: "2000+" },
-  { value: "1990", label: "1990+" },
-  { value: "1980", label: "1980+" },
-  { value: "avant1980", label: "Avant 1980" },
-];
-
 const CHAUFFAGE_OPTIONS = [
   { value: "electrique", label: "Électrique" },
   { value: "gaz", label: "Gaz" },
@@ -184,7 +175,7 @@ function getActiveChips(f: Filters): { key: string; label: string }[] {
   if (f.chambresMin) chips.push({ key: "chambresMin", label: `${f.chambresMin}+ chambres` });
   if (f.sallesBainMin) chips.push({ key: "sallesBainMin", label: `${f.sallesBainMin}+ sdb` });
   if (f.superficieMin) chips.push({ key: "superficieMin", label: `${parseInt(f.superficieMin).toLocaleString("fr-CA")}+ pi²` });
-  if (f.anneeMin && f.anneeMin !== "avant1980") chips.push({ key: "anneeMin", label: `${f.anneeMin}+` });
+  if (f.anneeMin) chips.push({ key: "anneeMin", label: `Après ${f.anneeMin}` });
   if (f.anneeMax) chips.push({ key: "anneeMax", label: `Avant ${f.anneeMax}` });
   if (f.chauffage) {
     const cl = CHAUFFAGE_OPTIONS.find((c) => c.value === f.chauffage);
@@ -297,18 +288,6 @@ export function AnnoncesListeView() {
       ...f,
       extras: f.extras.includes(val) ? f.extras.filter((x) => x !== val) : [...f.extras, val],
     }));
-  }
-
-  function handleAnneeSelect(opt: { value: string; label: string }) {
-    if (opt.value === "avant1980") {
-      setFilters((f) => ({ ...f, anneeMin: "", anneeMax: "1980" }));
-    } else {
-      setFilters((f) => ({
-        ...f,
-        anneeMin: f.anneeMin === opt.value ? "" : opt.value,
-        anneeMax: "",
-      }));
-    }
   }
 
   function trackClick(id: string) {
@@ -499,29 +478,21 @@ export function AnnoncesListeView() {
             {SDB_OPTIONS.map((s) => <option key={s} value={s.replace("+", "")}>{s}</option>)}
           </select>
 
-          <select
-            value={filters.anneeMin || (filters.anneeMax === "1980" ? "avant1980" : "")}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v === "avant1980") {
-                setFilters((f) => ({ ...f, anneeMin: "", anneeMax: "1980" }));
-              } else if (v) {
-                setFilters((f) => ({ ...f, anneeMin: v, anneeMax: "" }));
-              } else {
-                setFilters((f) => ({ ...f, anneeMin: "", anneeMax: "" }));
-              }
-            }}
+          <button
+            onClick={() => setAdvancedOpen((o) => !o)}
             style={{
               fontSize: 12, padding: "6px 12px", borderRadius: 9999,
               border: (filters.anneeMin || filters.anneeMax) ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
               background: (filters.anneeMin || filters.anneeMax) ? "var(--green-light-bg)" : "var(--bg-card)",
               color: (filters.anneeMin || filters.anneeMax) ? "var(--green-text)" : "var(--text-primary)",
-              fontFamily: "inherit", cursor: "pointer", outline: "none",
+              fontFamily: "inherit", cursor: "pointer",
             }}
           >
-            <option value="">Année</option>
-            {ANNEE_OPTIONS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
-          </select>
+            {filters.anneeMin && filters.anneeMax ? `${filters.anneeMin} à ${filters.anneeMax}`
+              : filters.anneeMin ? `Après ${filters.anneeMin}`
+              : filters.anneeMax ? `Avant ${filters.anneeMax}`
+              : "Année"}
+          </button>
 
           {/* Filtres avances toggle */}
           <button
@@ -695,27 +666,34 @@ export function AnnoncesListeView() {
                 <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, marginTop: 14, textTransform: "uppercase", letterSpacing: 0.5 }}>
                   Année de construction
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {ANNEE_OPTIONS.map((a) => {
-                    const isActive = a.value === "avant1980"
-                      ? filters.anneeMax === "1980"
-                      : filters.anneeMin === a.value;
-                    return (
-                      <button
-                        key={a.value}
-                        onClick={() => handleAnneeSelect(a)}
-                        style={{
-                          fontSize: 12, padding: "5px 12px", borderRadius: 9999, cursor: "pointer",
-                          fontFamily: "inherit", transition: "all 0.15s",
-                          background: isActive ? "var(--green-light-bg)" : "transparent",
-                          color: isActive ? "var(--green-text)" : "var(--text-tertiary)",
-                          border: isActive ? "0.5px solid var(--green)" : "0.5px solid var(--border-secondary)",
-                        }}
-                      >
-                        {a.label}
-                      </button>
-                    );
-                  })}
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.anneeMin}
+                    onChange={(e) => setFilters((f) => ({ ...f, anneeMin: e.target.value }))}
+                    min="1800"
+                    max="2026"
+                    style={{
+                      flex: 1, fontSize: 13, padding: "8px 10px", borderRadius: 8,
+                      border: "0.5px solid var(--border-secondary)", background: "var(--bg-page)",
+                      color: "var(--text-primary)", fontFamily: "inherit", outline: "none",
+                    }}
+                  />
+                  <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>à</span>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={filters.anneeMax}
+                    onChange={(e) => setFilters((f) => ({ ...f, anneeMax: e.target.value }))}
+                    min="1800"
+                    max="2026"
+                    style={{
+                      flex: 1, fontSize: 13, padding: "8px 10px", borderRadius: 8,
+                      border: "0.5px solid var(--border-secondary)", background: "var(--bg-page)",
+                      color: "var(--text-primary)", fontFamily: "inherit", outline: "none",
+                    }}
+                  />
                 </div>
               </div>
 
