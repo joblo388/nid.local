@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { villes, quartiers } from "@/lib/data";
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
@@ -292,6 +292,7 @@ function Divider() {
 
 export function LeftSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -479,17 +480,16 @@ export function LeftSidebar() {
           3. Feed navigation
       ═══════════════════════════════════════════════════════════════════════ */}
       <div className="pt-1 pb-0.5">
-        <a
-          href="/"
+        <button
           className={navItemClass(isActive("/") && !isActiveWithQuery("/?tri=recent"))}
           style={navItemStyle(isActive("/") && !isActiveWithQuery("/?tri=recent"))}
-          onClick={() => addRecent("nav:fil:Fil d'actualité")}
+          onClick={() => { addRecent("nav:fil:Fil d'actualité"); router.push("/"); }}
         >
           <span className="shrink-0" style={{ color: isActive("/") && !isActiveWithQuery("/?tri=recent") ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <FeedIcon />
           </span>
           <span className="truncate">Fil d&apos;actualité</span>
-        </a>
+        </button>
 
         <Link
           href="/tendances"
@@ -509,17 +509,16 @@ export function LeftSidebar() {
           </span>
         </Link>
 
-        <a
-          href="/?tri=recent"
+        <button
           className={navItemClass(isActiveWithQuery("/?tri=recent"))}
           style={navItemStyle(isActiveWithQuery("/?tri=recent"))}
-          onClick={() => addRecent("nav:recent:Récent")}
+          onClick={() => { addRecent("nav:recent:Récent"); router.push("/?tri=recent"); }}
         >
           <span className="shrink-0" style={{ color: isActiveWithQuery("/?tri=recent") ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <ClockIcon />
           </span>
           <span className="truncate">Récent</span>
-        </a>
+        </button>
 
         <Link
           href="/ressources"
