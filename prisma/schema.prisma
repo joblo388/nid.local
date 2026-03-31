@@ -54,6 +54,7 @@ model User {
   proComments         ProComment[]
   viewHistory         ViewHistory[]
   pageViews           PageView[]
+  quartierEdits       QuartierDescription[]
 }
 
 model Post {
@@ -599,6 +600,21 @@ model ViewHistory {
   @@index([userId])
   @@index([userId, targetType])
   @@unique([userId, targetType, targetId])
+}
+
+model QuartierDescription {
+  id             String   @id @default(cuid())
+  quartierSlug   String   @unique
+  contenu        String   // JSON array of paragraphs
+  tags           String?  // JSON array of tags
+  editeurId      String
+  editeurNom     String
+  modifieLe      DateTime @updatedAt
+  creeLe         DateTime @default(now())
+
+  editeur User @relation(fields: [editeurId], references: [id], onDelete: Cascade)
+
+  @@index([quartierSlug])
 }
 
 model PageView {

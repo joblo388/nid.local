@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { quartiersData } from "@/data/quartiers";
 import { generateDatasetSchema } from "@/lib/schema";
+import { QuartierDescriptionEditor } from "@/components/QuartierDescriptionEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -304,54 +305,25 @@ export default async function QuartierPage({ params }: Props) {
                     </div>
                   </div>
 
-                  <Link
-                    href={`/annonces?quartier=${slug}`}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium mt-3 transition-colors"
-                    style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--green)", color: "var(--green-text)" }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M1 6l6-4 6 4v7a1 1 0 01-1 1H2a1 1 0 01-1-1V6z"/><path d="M5 13V8h4v5"/></svg>
-                    Voir les annonces à {quartier.nom}
-                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth={2}><path d="M2 5.5h7M5.5 2l3.5 3.5-3.5 3.5"/></svg>
-                  </Link>
-
-                  {/* Description et tags */}
-                  <div
-                    className="rounded-xl p-4"
-                    style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-                  >
-                    <h2
-                      className="text-[14px] font-bold mb-3"
-                      style={{ color: "var(--text-primary)" }}
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <Link
+                      href={`/annonces?quartier=${slug}`}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors"
+                      style={{ background: "var(--green-light-bg)", border: "0.5px solid var(--green)", color: "var(--green-text)" }}
                     >
-                      À propos de {marketData.nom}
-                    </h2>
-                    <div className="space-y-2.5">
-                      {marketData.description.map((p, i) => (
-                        <p
-                          key={i}
-                          className="text-[13px] leading-[1.6]"
-                          style={{ color: "var(--text-secondary)" }}
-                        >
-                          {p}
-                        </p>
-                      ))}
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {marketData.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[11px] px-2 py-0.5 rounded-full"
-                          style={{
-                            background: "var(--bg-secondary)",
-                            color: "var(--text-secondary)",
-                            border: "0.5px solid var(--border)",
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M1 6l6-4 6 4v7a1 1 0 01-1 1H2a1 1 0 01-1-1V6z"/><path d="M5 13V8h4v5"/></svg>
+                      Voir les annonces à {quartier.nom}
+                      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth={2}><path d="M2 5.5h7M5.5 2l3.5 3.5-3.5 3.5"/></svg>
+                    </Link>
                   </div>
+
+                  {/* Description et tags (éditable par la communauté) */}
+                  <QuartierDescriptionEditor
+                    slug={slug}
+                    quartierNom={marketData.nom}
+                    defaultDescription={marketData.description}
+                    defaultTags={marketData.tags}
+                  />
                 </div>
               );
             })()}
