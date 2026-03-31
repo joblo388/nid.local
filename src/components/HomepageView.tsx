@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Post, Categorie } from "@/lib/types";
 import { villes, quartiers, quartiersDeVille, villeBySlug } from "@/lib/data";
@@ -263,10 +264,14 @@ type Props = {
 };
 
 export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, initialBookmarkedPostIds, sidebarStats }: Props) {
+  const searchParams = useSearchParams();
+  const urlTri = searchParams.get("tri");
+  const initialTri = (urlTri === "recent" || urlTri === "actif") ? urlTri : "populaire";
+
   const [villeSlug, setVilleSlug] = useState("");
   const [quartierSlug, setQuartierSlug] = useState("tous");
   const [categorie, setCategorie] = useState<string>("tous");
-  const [tri, setTri] = useState<"recent" | "populaire" | "actif">("populaire");
+  const [tri, setTri] = useState<"recent" | "populaire" | "actif">(initialTri);
 
   const [posts, setPosts] = useState<Post[]>(initialPosts ?? []);
   const [total, setTotal] = useState(initialTotal);
@@ -278,6 +283,13 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
   const [hasMore, setHasMore] = useState(initialTotal > PAGE_SIZE);
   const listRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Sync tri with URL query param when it changes
+  useEffect(() => {
+    const t = searchParams.get("tri");
+    if (t === "recent" || t === "actif") setTri(t);
+    else setTri("populaire");
+  }, [searchParams]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
