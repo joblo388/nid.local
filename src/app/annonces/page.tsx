@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { AnnoncesListeView } from "./AnnoncesListeView";
 import { MarketplaceSidebar } from "@/components/MarketplaceSidebar";
+import { MobileCalcFab } from "@/components/MobileCalcFab";
 
 export const metadata: Metadata = {
   title: "Annonces immobilières",
@@ -20,6 +21,7 @@ export default function AnnoncesPage() {
           <MarketplaceSidebar />
         </div>
       </main>
+      <MobileCalcFab />
     </div>
   );
 }
