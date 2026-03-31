@@ -81,12 +81,12 @@ const TYPE_LABELS: Record<string, string> = {
   terrain: "Terrain",
   commercial: "Commercial",
   chalet: "Chalet",
-  "1_et_demi": "1\u00BD",
-  "2_et_demi": "2\u00BD",
-  "3_et_demi": "3\u00BD",
-  "4_et_demi": "4\u00BD",
-  "5_et_demi": "5\u00BD",
-  "6_et_demi": "6\u00BD",
+  "1_et_demi": "1½",
+  "2_et_demi": "2½",
+  "3_et_demi": "3½",
+  "4_et_demi": "4½",
+  "5_et_demi": "5½",
+  "6_et_demi": "6½",
   studio: "Studio",
   loft: "Loft",
   autre: "Autre",
@@ -126,10 +126,10 @@ const ANNEE_OPTIONS = [
 ];
 
 const CHAUFFAGE_OPTIONS = [
-  { value: "electrique", label: "\u00c9lectrique" },
+  { value: "electrique", label: "Électrique" },
   { value: "gaz", label: "Gaz" },
   { value: "mazout", label: "Mazout" },
-  { value: "geothermie", label: "G\u00e9othermie" },
+  { value: "geothermie", label: "Géothermie" },
   { value: "bois", label: "Bois" },
 ];
 
@@ -138,8 +138,8 @@ const EXTRAS_OPTIONS = [
   { value: "garage", label: "Garage" },
   { value: "piscine", label: "Piscine" },
   { value: "foyer", label: "Foyer" },
-  { value: "borne-ve", label: "Borne V\u00c9" },
-  { value: "acces-pmr", label: "Acc\u00e8s PMR" },
+  { value: "borne-ve", label: "Borne VÉ" },
+  { value: "acces-pmr", label: "Accès PMR" },
 ];
 
 const VILLE_LABELS: Record<string, string> = {};
@@ -154,7 +154,7 @@ function fmtPrice(p: number, mode?: string) {
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const h = Math.floor(diff / 3600000);
-  if (h < 1) return "il y a moins d\u20191h";
+  if (h < 1) return "il y a moins d’1h";
   if (h < 24) return `il y a ${h}h`;
   const days = Math.floor(diff / 86400000);
   if (days === 1) return "il y a 1j";
@@ -183,7 +183,7 @@ function getActiveChips(f: Filters): { key: string; label: string }[] {
   if (f.prixMax) chips.push({ key: "prixMax", label: `Max ${parseInt(f.prixMax).toLocaleString("fr-CA")} $` });
   if (f.chambresMin) chips.push({ key: "chambresMin", label: `${f.chambresMin}+ chambres` });
   if (f.sallesBainMin) chips.push({ key: "sallesBainMin", label: `${f.sallesBainMin}+ sdb` });
-  if (f.superficieMin) chips.push({ key: "superficieMin", label: `${parseInt(f.superficieMin).toLocaleString("fr-CA")}+ pi\u00B2` });
+  if (f.superficieMin) chips.push({ key: "superficieMin", label: `${parseInt(f.superficieMin).toLocaleString("fr-CA")}+ pi²` });
   if (f.anneeMin && f.anneeMin !== "avant1980") chips.push({ key: "anneeMin", label: `${f.anneeMin}+` });
   if (f.anneeMax) chips.push({ key: "anneeMax", label: `Avant ${f.anneeMax}` });
   if (f.chauffage) {
@@ -320,9 +320,9 @@ export function AnnoncesListeView() {
   function updateAgoLabel(): string {
     const diff = Date.now() - lastUpdate.getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "Mise \u00e0 jour \u00e0 l\u2019instant";
-    if (mins < 60) return `Mise \u00e0 jour il y a ${mins} min`;
-    return `Mise \u00e0 jour il y a ${Math.floor(mins / 60)}h`;
+    if (mins < 1) return "Mise à jour à l’instant";
+    if (mins < 60) return `Mise à jour il y a ${mins} min`;
+    return `Mise à jour il y a ${Math.floor(mins / 60)}h`;
   }
 
   const chips = getActiveChips(filters);
@@ -337,9 +337,9 @@ export function AnnoncesListeView() {
         {/* ═══ A. Page header ═══ */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", margin: "24px 0 20px", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>Annonces immobili\u00e8res</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>Annonces immobilières</h1>
             <p style={{ fontSize: 13, color: "var(--text-tertiary)", margin: "4px 0 0" }}>
-              Propri\u00e9t\u00e9s vendues directement par les propri\u00e9taires, sans commission.
+              Propriétés vendues directement par les propriétaires, sans commission.
             </p>
           </div>
           <Link
@@ -519,7 +519,7 @@ export function AnnoncesListeView() {
               fontFamily: "inherit", cursor: "pointer", outline: "none",
             }}
           >
-            <option value="">Ann\u00e9e</option>
+            <option value="">Année</option>
             {ANNEE_OPTIONS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
           </select>
 
@@ -539,7 +539,7 @@ export function AnnoncesListeView() {
               <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
               <circle cx="8" cy="6" r="2" /><circle cx="16" cy="12" r="2" /><circle cx="10" cy="18" r="2" />
             </svg>
-            Filtres avanc\u00e9s
+            Filtres avancés
           </button>
         </div>
 
@@ -585,7 +585,7 @@ export function AnnoncesListeView() {
               {/* Col 1 */}
               <div>
                 <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                  Type de propri\u00e9t\u00e9
+                  Type de propriété
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 18 }}>
                   {ALL_TYPES.map((t) => (
@@ -670,7 +670,7 @@ export function AnnoncesListeView() {
                     style={{ width: "100%", accentColor: "var(--green)" }}
                   />
                   <div style={{ fontSize: 12, color: "var(--text-tertiary)", textAlign: "right" }}>
-                    {filters.prixMax ? `${parseInt(filters.prixMax).toLocaleString("fr-CA")} $` : "Illimit\u00e9"}
+                    {filters.prixMax ? `${parseInt(filters.prixMax).toLocaleString("fr-CA")} $` : "Illimité"}
                   </div>
                 </div>
 
@@ -688,12 +688,12 @@ export function AnnoncesListeView() {
                     style={{ width: "100%", accentColor: "var(--green)" }}
                   />
                   <div style={{ fontSize: 12, color: "var(--text-tertiary)", textAlign: "right" }}>
-                    {filters.superficieMin ? `${parseInt(filters.superficieMin).toLocaleString("fr-CA")} pi\u00B2` : "Aucun minimum"}
+                    {filters.superficieMin ? `${parseInt(filters.superficieMin).toLocaleString("fr-CA")} pi²` : "Aucun minimum"}
                   </div>
                 </div>
 
                 <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, marginTop: 14, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                  Ann\u00e9e de construction
+                  Année de construction
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {ANNEE_OPTIONS.map((a) => {
@@ -722,7 +722,7 @@ export function AnnoncesListeView() {
               {/* Col 3 */}
               <div>
                 <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-tertiary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                  B\u00e2timent et syst\u00e8mes
+                  Bâtiment et systèmes
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 18 }}>
                   {EXTRAS_OPTIONS.map((ex) => (
@@ -778,7 +778,7 @@ export function AnnoncesListeView() {
                   color: "var(--text-tertiary)", cursor: "pointer", fontFamily: "inherit",
                 }}
               >
-                R\u00e9initialiser
+                Réinitialiser
               </button>
               <button
                 onClick={() => setAdvancedOpen(false)}
@@ -815,9 +815,9 @@ export function AnnoncesListeView() {
               color: "var(--text-primary)", fontFamily: "inherit", cursor: "pointer", outline: "none",
             }}
           >
-            <option value="recent">Plus r\u00e9cent</option>
+            <option value="recent">Plus récent</option>
             <option value="prix_asc">Prix croissant</option>
-            <option value="prix_desc">Prix d\u00e9croissant</option>
+            <option value="prix_desc">Prix décroissant</option>
             <option value="populaire">Plus populaire</option>
           </select>
         </div>
@@ -832,9 +832,9 @@ export function AnnoncesListeView() {
             background: "var(--bg-card)", borderRadius: 12, border: "0.5px solid var(--border)",
             textAlign: "center", padding: 48,
           }}>
-            <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>Aucune annonce trouv\u00e9e</div>
+            <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>Aucune annonce trouvée</div>
             <div style={{ fontSize: 13, color: "var(--text-tertiary)", marginBottom: 16 }}>
-              {hasActiveFilters(filters) ? "Aucun r\u00e9sultat ne correspond \u00e0 vos crit\u00e8res." : "Soyez le premier \u00e0 publier une propri\u00e9t\u00e9."}
+              {hasActiveFilters(filters) ? "Aucun résultat ne correspond à vos critères." : "Soyez le premier à publier une propriété."}
             </div>
             {hasActiveFilters(filters) ? (
               <button
@@ -896,7 +896,7 @@ export function AnnoncesListeView() {
                         background: l.mode === "location" ? "var(--blue-bg)" : "var(--green-light-bg)",
                         color: l.mode === "location" ? "var(--blue-text)" : "var(--green-text)",
                       }}>
-                        {l.mode === "location" ? "\u00c0 louer" : "\u00c0 vendre"}
+                        {l.mode === "location" ? "À louer" : "À vendre"}
                       </div>
                       {/* Favorite button */}
                       <button
@@ -948,7 +948,7 @@ export function AnnoncesListeView() {
                           <svg viewBox="0 0 14 14" style={{ width: 13, height: 13, stroke: "var(--text-tertiary)", fill: "none", strokeWidth: 1.5 }}>
                             <rect x="1" y="1" width="12" height="12" rx="1" /><path d="M1 5h12M5 1v12" />
                           </svg>
-                          {l.superficie.toLocaleString("fr-CA")} pi\u00B2
+                          {l.superficie.toLocaleString("fr-CA")} pi²
                         </span>
                       </div>
                     </div>
