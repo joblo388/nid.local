@@ -534,6 +534,20 @@ export function LeftSidebar() {
           </span>
           <span className="truncate">Outils</span>
         </Link>
+
+        <Link
+          href="/annonces"
+          className={navItemClass(isActive("/annonces"))}
+          style={navItemStyle(isActive("/annonces"))}
+          onClick={() => addRecent("nav:marketplace:Marketplace")}
+        >
+          <span className="shrink-0" style={{ color: isActive("/annonces") ? "var(--green-text)" : "var(--text-tertiary)" }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 6l7-4 7 4v8a1 1 0 01-1 1H2a1 1 0 01-1-1V6z" /><path d="M6 15V9h4v6" />
+            </svg>
+          </span>
+          <span className="truncate">Marketplace</span>
+        </Link>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════
