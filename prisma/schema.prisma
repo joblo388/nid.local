@@ -617,6 +617,23 @@ model QuartierDescription {
   @@index([quartierSlug])
 }
 
+model ConciergeSubmission {
+  id          String   @id @default(cuid())
+  nom         String
+  contact     String
+  prix        Int?
+  adresse     String?
+  type        String?
+  description String?
+  lien        String?
+  nbFichiers  Int      @default(0)
+  statut      String   @default("nouveau") // "nouveau" | "en_cours" | "publie" | "refuse"
+  creeLe      DateTime @default(now())
+
+  @@index([statut])
+  @@index([creeLe])
+}
+
 model PageView {
   id        String   @id @default(cuid())
   page      String   // URL path: "/calculatrice-hypothecaire", "/capacite-emprunt", etc.

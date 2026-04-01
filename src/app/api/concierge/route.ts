@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import sgMail from "@sendgrid/mail";
+import { prisma } from "@/lib/prisma";
 
 const API_KEY = process.env.SENDGRID_API_KEY;
 const FROM = process.env.SENDGRID_FROM_EMAIL || "noreply@nidlocal.com";
@@ -62,6 +63,21 @@ export async function POST(req: Request) {
         </table>
       </div>
     `;
+
+    /* ── Save to DB ──────────────────────────────────────────────────── */
+
+    await prisma.conciergeSubmission.create({
+      data: {
+        nom: nom || "Sans nom",
+        contact: contact || "",
+        prix: prix ? parseInt(prix) || null : null,
+        adresse: adresse || null,
+        type: type || null,
+        description: description || null,
+        lien: lien || null,
+        nbFichiers: attachments.length,
+      },
+    });
 
     /* ── Send ────────────────────────────────────────────────────────── */
 
