@@ -70,8 +70,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "jeff@hellodarwin.com";
+
     await sgMail.send({
-      to: FROM,
+      to: ADMIN_EMAIL,
       from: { email: FROM, name: "nid.local" },
       subject: `Concierge: ${nom || "Sans nom"} - ${adresse || "Adresse non spécifiée"}`,
       html,
