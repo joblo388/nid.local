@@ -31,6 +31,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/premier-acheteur`, changeFrequency: "weekly" as const, priority: 0.9 },
     { url: `${BASE}/frais-achat`, changeFrequency: "weekly" as const, priority: 0.9 },
     { url: `${BASE}/lexique`, changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${BASE}/calculateur-augmentation-loyer`, changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${BASE}/guide/droits-locataire-quebec`, changeFrequency: "monthly" as const, priority: 0.85 },
 
     // City-specific market data pages (priority 0.85)
     ...Object.keys(CITY_SEO).map((slug) => ({
