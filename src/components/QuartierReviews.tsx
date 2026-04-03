@@ -230,18 +230,8 @@ export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
         ) / 10
       : 0;
 
-  if (loading) {
-    return (
-      <div
-        className="rounded-xl p-5"
-        style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
-      >
-        <div className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-          Chargement des avis...
-        </div>
-      </div>
-    );
-  }
+  // Don't show loading state (bad for SEO, Google sees "Chargement...")
+  if (loading) return null;
 
   return (
     <div className="space-y-3">
