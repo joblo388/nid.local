@@ -339,11 +339,11 @@ body {
     fill: none;
     stroke-width: 1.5;
   }
-  /* pad body for bottom nav */
+  /* pad body for bottom nav + iOS safe area */
   body {
-    padding-bottom: 60px;
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
   main {
-    padding-bottom: 70px;
+    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
   }
 }
