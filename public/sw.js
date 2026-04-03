@@ -1,5 +1,5 @@
 /// Service Worker — nid.local PWA
-const CACHE_NAME = "nidlocal-v7";
+const CACHE_NAME = "nidlocal-v8";
 const OFFLINE_URL = "/offline.html";
 
 // Pages calculatrices — client-side, fonctionnent hors-ligne
@@ -64,11 +64,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Ressources statiques (images, fonts, JS, CSS) : cache-first
+  // Images & fonts : cache-first (contenu immuable)
   if (
     url.pathname.startsWith("/icons/") ||
-    url.pathname.startsWith("/_next/static/") ||
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|webp|woff2?)$/)
+    url.pathname.match(/\.(png|jpg|jpeg|svg|webp|woff2?)$/)
   ) {
     event.respondWith(
       caches.match(request).then(
@@ -80,6 +79,23 @@ self.addEventListener("fetch", (event) => {
             return response;
           })
       )
+    );
+    return;
+  }
+
+  // JS & CSS bundles : network-first (evite les problemes d'hydration)
+  if (
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname.match(/\.(js|css)$/)
+  ) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          return response;
+        })
+        .catch(() => caches.match(request))
     );
     return;
   }
