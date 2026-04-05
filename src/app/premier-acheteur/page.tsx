@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { CommunityCTA } from "@/components/CommunityCTA";
+import { RapCeliappCalc } from "@/components/RapCeliappCalc";
+import { SalaireRequis } from "@/components/SalaireRequis";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
 import type { Metadata } from "next";
@@ -21,6 +23,9 @@ export const metadata: Metadata = {
     "mise de fonds premier achat",
     "subvention premier acheteur québec 2026",
     "acheter première maison québec",
+    "combien gagner pour acheter maison",
+    "calculateur RAP CELIAPP",
+    "salaire requis achat maison québec",
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
@@ -127,6 +132,13 @@ export default async function PremierAcheteurPage() {
   });
   const popularPosts = dbPosts.map(dbPostToAppPost);
 
+  const forumPosts = await prisma.post.findMany({
+    where: { categorie: { in: ["question", "financement"] } },
+    orderBy: { nbVotes: "desc" },
+    take: 3,
+    select: { id: true, titre: true, nbVotes: true, nbCommentaires: true, categorie: true, quartierSlug: true },
+  });
+
   return (
     <>
       <ReadingProgress />
@@ -155,10 +167,9 @@ export default async function PremierAcheteurPage() {
                   Premier acheteur au Québec | Guide complet 2026
                 </h1>
                 <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Acheter sa première maison au Québec est un projet excitant, mais aussi complexe. Entre le CELIAPP, le RAP,
+                  Acheter sa première maison au Québec est un projet excitant, mais aussi complexe. En 2026, le prix médian d&apos;une unifamiliale au Québec est de 536 000 $. Entre le CELIAPP, le RAP,
                   les crédits d&apos;impôt et les programmes municipaux, il existe plusieurs leviers pour réduire le coût de votre
-                  premier achat. Ce guide regroupe toutes les informations essentielles pour vous préparer et maximiser l&apos;aide
-                  financière disponible en 2026.
+                  premier achat. Voici tous les programmes et étapes pour réaliser votre projet.
                 </p>
               </div>
 
@@ -212,6 +223,12 @@ export default async function PremierAcheteurPage() {
                 </div>
               </div>
 
+              {/* CTA: CELIAPP → capacité d'emprunt */}
+              <div className="rounded-lg p-4 flex items-center justify-between flex-wrap gap-3" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
+                <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>Calculez votre capacité d&apos;emprunt avec le CELIAPP</p>
+                <Link href="/capacite-emprunt" className="text-[12px] font-semibold px-4 py-2 rounded-lg" style={{ background: "var(--green)", color: "#fff" }}>Calculer ma capacité</Link>
+              </div>
+
               {/* ── RAP ── */}
               <div
                 className="rounded-xl p-6 space-y-4"
@@ -259,6 +276,12 @@ export default async function PremierAcheteurPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* CTA: RAP → estimation */}
+              <div className="rounded-lg p-4 flex items-center justify-between flex-wrap gap-3" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
+                <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>Combien vaut votre propriété actuelle?</p>
+                <Link href="/estimation" className="text-[12px] font-semibold px-4 py-2 rounded-lg" style={{ background: "var(--green)", color: "#fff" }}>Estimer la valeur</Link>
               </div>
 
               {/* ── Autres programmes d'aide ── */}
@@ -406,6 +429,12 @@ export default async function PremierAcheteurPage() {
                 </div>
               </div>
 
+              {/* ── Simulateur RAP + CELIAPP ── */}
+              <div className="rounded-xl p-6" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <h2 className="text-[15px] font-bold mb-4" style={{ color: "var(--text-primary)" }}>Simulateur RAP + CELIAPP + épargne</h2>
+                <RapCeliappCalc />
+              </div>
+
               {/* ── FAQ ── */}
               <div
                 className="rounded-xl p-6 space-y-4"
@@ -427,6 +456,27 @@ export default async function PremierAcheteurPage() {
                   ))}
                 </dl>
               </div>
+
+              {/* ── Salaire requis ── */}
+              <SalaireRequis />
+
+              {/* ── Discussions de premiers acheteurs ── */}
+              {forumPosts.length > 0 && (
+                <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                  <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
+                    <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Discussions de premiers acheteurs</h2>
+                  </div>
+                  {forumPosts.map((p, i) => (
+                    <Link key={p.id} href={`/post/${p.id}`} className="block px-4 py-3 transition-colors hover-bg" style={{ borderBottom: i < forumPosts.length - 1 ? "0.5px solid var(--border)" : "none" }}>
+                      <p className="text-[13px] font-medium line-clamp-2" style={{ color: "var(--text-primary)" }}>{p.titre}</p>
+                      <p className="text-[11px] mt-1" style={{ color: "var(--text-tertiary)" }}>{p.nbVotes} votes, {p.nbCommentaires} réponses</p>
+                    </Link>
+                  ))}
+                  <div className="px-4 py-2.5">
+                    <Link href="/?categorie=financement" className="text-[12px] font-medium" style={{ color: "var(--green)" }}>Voir toutes les discussions</Link>
+                  </div>
+                </div>
+              )}
 
               {/* CTA community */}
               <CommunityCTA
