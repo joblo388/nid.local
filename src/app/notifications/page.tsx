@@ -3,9 +3,14 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Notifications" };
+
+export const metadata: Metadata = {
+  title: "Notifications",
+  robots: { index: false, follow: false },
+};
 
 function tempsRelatif(dateStr: Date): string {
   const diff = Date.now() - new Date(dateStr).getTime();

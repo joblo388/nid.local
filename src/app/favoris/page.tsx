@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Mes favoris",
+  robots: { index: false, follow: false },
 };
 
 const TYPE_LABELS: Record<string, string> = {

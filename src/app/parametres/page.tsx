@@ -3,10 +3,14 @@ import { Header } from "@/components/Header";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { ParametresForm } from "./ParametresForm";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Paramètres" };
+export const metadata: Metadata = {
+  title: "Paramètres",
+  robots: { index: false, follow: false },
+};
 
 export default async function ParametresPage() {
   const session = await auth();
