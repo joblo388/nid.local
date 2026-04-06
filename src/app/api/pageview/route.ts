@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { getIp } from "@/lib/rateLimit";
 
-const EXCLUDED_IPS = ["67.218.223.166"];
+const EXCLUDED_IPS = ["67.218.223.166", "184.163.100.115"];
 
 export async function POST(req: Request) {
   try {
