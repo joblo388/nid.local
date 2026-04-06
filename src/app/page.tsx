@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { auth } from "@/auth";
 import { Sidebar } from "@/components/Sidebar";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // ISR: regenerate every 60 seconds
 
 const PAGE_SIZE = 20;
 
