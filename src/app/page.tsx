@@ -70,6 +70,7 @@ export default async function HomePage() {
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     <div className="flex flex-col min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
+      <h1 className="sr-only">nid.local | Forum immobilier Québec | Discussions, annonces et outils</h1>
       <HomepageView
         initialPosts={initialPosts}
         initialTotal={total}

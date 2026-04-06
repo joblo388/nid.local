@@ -9,24 +9,24 @@ const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.lo
 const PAGE_URL = `${BASE_URL}/frais-achat`;
 
 export const metadata: Metadata = {
-  title: "Frais d\u2019achat d\u2019une maison au Qu\u00e9bec 2026 \u2014 Liste compl\u00e8te et montants",
+  title: "Frais d’achat d’une maison au Québec 2026 | Liste complète et montants",
   description:
-    "Tous les frais \u00e0 pr\u00e9voir lors de l\u2019achat d\u2019une propri\u00e9t\u00e9 au Qu\u00e9bec : notaire, inspection, taxe de bienvenue, assurance, d\u00e9m\u00e9nagement. Montants estimatifs et conseils pour \u00e9viter les surprises.",
+    "Tous les frais à prévoir lors de l’achat d’une propriété au Québec : notaire, inspection, taxe de bienvenue, assurance, déménagement. Montants estimatifs et conseils pour éviter les surprises.",
   keywords: [
-    "frais achat maison qu\u00e9bec",
-    "frais de notaire achat maison qu\u00e9bec",
-    "inspection pr\u00e9achat prix",
-    "co\u00fbt achat maison",
-    "frais cach\u00e9s achat maison",
+    "frais achat maison québec",
+    "frais de notaire achat maison québec",
+    "inspection préachat prix",
+    "coût achat maison",
+    "frais cachés achat maison",
     "taxe de bienvenue",
     "assurance titre",
-    "frais d\u00e9m\u00e9nagement",
+    "frais déménagement",
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Frais d\u2019achat d\u2019une maison au Qu\u00e9bec 2026 \u2014 Liste compl\u00e8te et montants",
+    title: "Frais d’achat d’une maison au Québec 2026 | Liste complète et montants",
     description:
-      "Tous les frais \u00e0 pr\u00e9voir lors de l\u2019achat d\u2019une propri\u00e9t\u00e9 au Qu\u00e9bec : notaire, inspection, taxe de bienvenue, assurance, d\u00e9m\u00e9nagement. Montants estimatifs et conseils.",
+      "Tous les frais à prévoir lors de l’achat d’une propriété au Québec : notaire, inspection, taxe de bienvenue, assurance, déménagement. Montants estimatifs et conseils.",
     url: PAGE_URL,
     siteName: "nid.local",
     locale: "fr_CA",
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Frais d\u2019achat d\u2019une maison au Qu\u00e9bec 2026 \u2014 Liste compl\u00e8te",
+    title: "Frais d’achat d’une maison au Québec 2026 | Liste complète",
     description:
-      "Notaire, inspection, taxe de bienvenue, assurance titre, d\u00e9m\u00e9nagement\u2026 Tous les frais \u00e0 pr\u00e9voir pour acheter une propri\u00e9t\u00e9 au Qu\u00e9bec.",
+      "Notaire, inspection, taxe de bienvenue, assurance titre, déménagement… Tous les frais à prévoir pour acheter une propriété au Québec.",
   },
 };
 
@@ -47,7 +47,7 @@ const jsonLd = {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "nid.local", item: BASE_URL },
-        { "@type": "ListItem", position: 2, name: "Frais d\u2019achat", item: PAGE_URL },
+        { "@type": "ListItem", position: 2, name: "Frais d’achat", item: PAGE_URL },
       ],
     },
     {
@@ -55,42 +55,42 @@ const jsonLd = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "Combien co\u00fbte un notaire pour l\u2019achat d\u2019une maison au Qu\u00e9bec?",
+          name: "Combien coûte un notaire pour l’achat d’une maison au Québec?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Les frais de notaire pour un achat immobilier au Qu\u00e9bec varient g\u00e9n\u00e9ralement entre 1\u00a0500\u00a0$ et 2\u00a0500\u00a0$. Ce montant couvre l\u2019examen des titres de propri\u00e9t\u00e9, la publication de l\u2019acte de vente au Registre foncier et, si applicable, la radiation de l\u2019ancienne hypoth\u00e8que. Les honoraires peuvent varier selon la complexit\u00e9 de la transaction.",
+            text: "Les frais de notaire pour un achat immobilier au Québec varient généralement entre 1 500 $ et 2 500 $. Ce montant couvre l’examen des titres de propriété, la publication de l’acte de vente au Registre foncier et, si applicable, la radiation de l’ancienne hypothèque. Les honoraires peuvent varier selon la complexité de la transaction.",
           },
         },
         {
           "@type": "Question",
-          name: "L\u2019inspection pr\u00e9achat est-elle obligatoire au Qu\u00e9bec?",
+          name: "L’inspection préachat est-elle obligatoire au Québec?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "L\u2019inspection pr\u00e9achat n\u2019est pas l\u00e9galement obligatoire au Qu\u00e9bec, mais elle est fortement recommand\u00e9e. Elle co\u00fbte entre 500\u00a0$ et 800\u00a0$ et permet de d\u00e9tecter des probl\u00e8mes de structure, toiture, plomberie ou \u00e9lectricit\u00e9 avant de finaliser l\u2019achat. Sans inspection, l\u2019acheteur assume tous les risques de vices cach\u00e9s.",
+            text: "L’inspection préachat n’est pas légalement obligatoire au Québec, mais elle est fortement recommandée. Elle coûte entre 500 $ et 800 $ et permet de détecter des problèmes de structure, toiture, plomberie ou électricité avant de finaliser l’achat. Sans inspection, l’acheteur assume tous les risques de vices cachés.",
           },
         },
         {
           "@type": "Question",
-          name: "Quel pourcentage du prix d\u2019achat pr\u00e9voir en frais suppl\u00e9mentaires?",
+          name: "Quel pourcentage du prix d’achat prévoir en frais supplémentaires?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "En r\u00e8gle g\u00e9n\u00e9rale, il faut pr\u00e9voir entre 3\u00a0% et 5\u00a0% du prix d\u2019achat en frais suppl\u00e9mentaires. Pour une maison \u00e0 450\u00a0000\u00a0$, cela repr\u00e9sente environ 17\u00a0000\u00a0$ \u00e0 25\u00a0000\u00a0$ en frais de notaire, inspection, taxe de bienvenue, assurances, d\u00e9m\u00e9nagement et ajustements de taxes.",
+            text: "En règle générale, il faut prévoir entre 3 % et 5 % du prix d’achat en frais supplémentaires. Pour une maison à 450 000 $, cela représente environ 17 000 $ à 25 000 $ en frais de notaire, inspection, taxe de bienvenue, assurances, déménagement et ajustements de taxes.",
           },
         },
         {
           "@type": "Question",
-          name: "Qui paie le certificat de localisation lors d\u2019un achat?",
+          name: "Qui paie le certificat de localisation lors d’un achat?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Au Qu\u00e9bec, c\u2019est g\u00e9n\u00e9ralement le vendeur qui fournit le certificat de localisation \u00e0 jour. Cependant, cette obligation doit \u00eatre pr\u00e9cis\u00e9e dans la promesse d\u2019achat. Si le certificat a plus de 10\u00a0ans ou si des travaux ont \u00e9t\u00e9 effectu\u00e9s, un nouveau certificat (1\u00a0500\u00a0$ \u00e0 2\u00a0000\u00a0$) sera n\u00e9cessaire.",
+            text: "Au Québec, c’est généralement le vendeur qui fournit le certificat de localisation à jour. Cependant, cette obligation doit être précisée dans la promesse d’achat. Si le certificat a plus de 10 ans ou si des travaux ont été effectués, un nouveau certificat (1 500 $ à 2 000 $) sera nécessaire.",
           },
         },
         {
           "@type": "Question",
-          name: "Peut-on inclure les frais d\u2019achat dans l\u2019hypoth\u00e8que?",
+          name: "Peut-on inclure les frais d’achat dans l’hypothèque?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Non, les frais d\u2019achat (notaire, taxe de bienvenue, inspection, etc.) ne peuvent g\u00e9n\u00e9ralement pas \u00eatre financ\u00e9s par l\u2019hypoth\u00e8que au Qu\u00e9bec. Ces montants doivent \u00eatre pay\u00e9s comptant au moment de la transaction ou dans les semaines suivant l\u2019achat. Il est donc essentiel de les pr\u00e9voir dans son budget.",
+            text: "Non, les frais d’achat (notaire, taxe de bienvenue, inspection, etc.) ne peuvent généralement pas être financés par l’hypothèque au Québec. Ces montants doivent être payés comptant au moment de la transaction ou dans les semaines suivant l’achat. Il est donc essentiel de les prévoir dans son budget.",
           },
         },
       ],
@@ -102,16 +102,16 @@ const fraisAchat = [
   {
     lettre: "a",
     titre: "Notaire",
-    montant: "1\u00a0500\u00a0$ \u00e0 2\u00a0500\u00a0$",
-    description: "Examen des titres de propri\u00e9t\u00e9, publication de l\u2019acte de vente au Registre foncier et radiation de l\u2019ancienne hypoth\u00e8que si applicable.",
+    montant: "1 500 $ à 2 500 $",
+    description: "Examen des titres de propriété, publication de l’acte de vente au Registre foncier et radiation de l’ancienne hypothèque si applicable.",
     couleur: "var(--blue-bg)",
     textColor: "var(--blue-text)",
   },
   {
     lettre: "b",
-    titre: "Inspection pr\u00e9achat",
-    montant: "500\u00a0$ \u00e0 800\u00a0$",
-    description: "Recommand\u00e9e m\u00eame si non obligatoire. Couvre la structure, la toiture, la plomberie et l\u2019\u00e9lectricit\u00e9. Un investissement qui peut vous \u00e9viter des milliers de dollars en r\u00e9parations.",
+    titre: "Inspection préachat",
+    montant: "500 $ à 800 $",
+    description: "Recommandée même si non obligatoire. Couvre la structure, la toiture, la plomberie et l’électricité. Un investissement qui peut vous éviter des milliers de dollars en réparations.",
     couleur: "var(--green-light-bg)",
     textColor: "var(--green-text)",
   },
@@ -119,40 +119,40 @@ const fraisAchat = [
     lettre: "c",
     titre: "Taxe de bienvenue (droits de mutation)",
     montant: "Variable",
-    description: "Calcul\u00e9e par tranches progressives sur le plus \u00e9lev\u00e9 entre le prix d\u2019achat et l\u2019\u00e9valuation municipale.",
-    lien: { href: "/taxe-bienvenue", label: "Calculer la taxe de bienvenue \u2192" },
+    description: "Calculée par tranches progressives sur le plus élevé entre le prix d’achat et l’évaluation municipale.",
+    lien: { href: "/taxe-bienvenue", label: "Calculer la taxe de bienvenue →" },
     couleur: "var(--amber-bg)",
     textColor: "var(--amber-text)",
   },
   {
     lettre: "d",
     titre: "Assurance habitation",
-    montant: "800\u00a0$ \u00e0 2\u00a0000\u00a0$/an",
-    description: "Obligatoire si vous avez une hypoth\u00e8que. Couvre les dommages \u00e0 la propri\u00e9t\u00e9, le vol et la responsabilit\u00e9 civile. Magasinez plusieurs assureurs pour obtenir le meilleur taux.",
+    montant: "800 $ à 2 000 $/an",
+    description: "Obligatoire si vous avez une hypothèque. Couvre les dommages à la propriété, le vol et la responsabilité civile. Magasinez plusieurs assureurs pour obtenir le meilleur taux.",
     couleur: "var(--blue-bg)",
     textColor: "var(--blue-text)",
   },
   {
     lettre: "e",
     titre: "Assurance titre",
-    montant: "250\u00a0$ \u00e0 400\u00a0$ (une fois)",
-    description: "Prot\u00e8ge contre les vices de titre cach\u00e9s, les empi\u00e9tements non d\u00e9clar\u00e9s et les erreurs dans les registres fonciers. Prime unique pay\u00e9e \u00e0 l\u2019achat.",
+    montant: "250 $ à 400 $ (une fois)",
+    description: "Protège contre les vices de titre cachés, les empiétements non déclarés et les erreurs dans les registres fonciers. Prime unique payée à l’achat.",
     couleur: "var(--green-light-bg)",
     textColor: "var(--green-text)",
   },
   {
     lettre: "f",
     titre: "Certificat de localisation",
-    montant: "1\u00a0500\u00a0$ \u00e0 2\u00a0000\u00a0$",
-    description: "Souvent pay\u00e9 par le vendeur, mais \u00e0 v\u00e9rifier dans la promesse d\u2019achat. N\u00e9cessaire si le certificat existant a plus de 10\u00a0ans ou si des travaux ont \u00e9t\u00e9 effectu\u00e9s.",
+    montant: "1 500 $ à 2 000 $",
+    description: "Souvent payé par le vendeur, mais à vérifier dans la promesse d’achat. Nécessaire si le certificat existant a plus de 10 ans ou si des travaux ont été effectués.",
     couleur: "var(--amber-bg)",
     textColor: "var(--amber-text)",
   },
   {
     lettre: "g",
-    titre: "D\u00e9m\u00e9nagement",
-    montant: "500\u00a0$ \u00e0 3\u00a0000\u00a0$",
-    description: "Varie selon la distance, le volume de biens et la p\u00e9riode de l\u2019ann\u00e9e. Les d\u00e9m\u00e9nagements en juillet co\u00fbtent g\u00e9n\u00e9ralement plus cher.",
+    titre: "Déménagement",
+    montant: "500 $ à 3 000 $",
+    description: "Varie selon la distance, le volume de biens et la période de l’année. Les déménagements en juillet coûtent généralement plus cher.",
     couleur: "var(--blue-bg)",
     textColor: "var(--blue-text)",
   },
@@ -160,61 +160,61 @@ const fraisAchat = [
     lettre: "h",
     titre: "Ajustements de taxes",
     montant: "Variable",
-    description: "Taxes municipales et scolaires prorat\u00e9es \u00e0 la date de prise de possession. Votre notaire calcule la r\u00e9partition entre vendeur et acheteur.",
+    description: "Taxes municipales et scolaires proratées à la date de prise de possession. Votre notaire calcule la répartition entre vendeur et acheteur.",
     couleur: "var(--green-light-bg)",
     textColor: "var(--green-text)",
   },
   {
     lettre: "i",
-    titre: "Raccordements et changements d\u2019adresse",
-    montant: "100\u00a0$ \u00e0 300\u00a0$",
-    description: "Transfert des services : Hydro-Qu\u00e9bec, internet, assurances, SAAQ, R\u00e9gie de l\u2019assurance maladie, institutions financi\u00e8res.",
+    titre: "Raccordements et changements d’adresse",
+    montant: "100 $ à 300 $",
+    description: "Transfert des services : Hydro-Québec, internet, assurances, SAAQ, Régie de l’assurance maladie, institutions financières.",
     couleur: "var(--amber-bg)",
     textColor: "var(--amber-text)",
   },
   {
     lettre: "j",
-    titre: "R\u00e9serve pour impr\u00e9vus",
-    montant: "1\u00a0% \u00e0 3\u00a0% du prix d\u2019achat",
-    description: "R\u00e9parations urgentes, ajustements post-achat, achats de mat\u00e9riel. Un coussin financier essentiel pour les premiers mois dans votre nouvelle propri\u00e9t\u00e9.",
+    titre: "Réserve pour imprévus",
+    montant: "1 % à 3 % du prix d’achat",
+    description: "Réparations urgentes, ajustements post-achat, achats de matériel. Un coussin financier essentiel pour les premiers mois dans votre nouvelle propriété.",
     couleur: "var(--red-bg)",
     textColor: "var(--red-text)",
   },
 ];
 
 const exempleCalcul = [
-  { poste: "Notaire", montantBas: "1\u00a0800\u00a0$", montantHaut: "2\u00a0200\u00a0$" },
-  { poste: "Inspection pr\u00e9achat", montantBas: "600\u00a0$", montantHaut: "750\u00a0$" },
-  { poste: "Taxe de bienvenue", montantBas: "4\u00a0500\u00a0$", montantHaut: "4\u00a0500\u00a0$" },
-  { poste: "Assurance habitation (1\u00e8re ann\u00e9e)", montantBas: "1\u00a0200\u00a0$", montantHaut: "1\u00a0800\u00a0$" },
-  { poste: "Assurance titre", montantBas: "300\u00a0$", montantHaut: "400\u00a0$" },
-  { poste: "Certificat de localisation", montantBas: "0\u00a0$ (vendeur)", montantHaut: "1\u00a0800\u00a0$" },
-  { poste: "D\u00e9m\u00e9nagement", montantBas: "800\u00a0$", montantHaut: "2\u00a0000\u00a0$" },
-  { poste: "Ajustements de taxes", montantBas: "1\u00a0500\u00a0$", montantHaut: "3\u00a0000\u00a0$" },
-  { poste: "Raccordements", montantBas: "100\u00a0$", montantHaut: "250\u00a0$" },
-  { poste: "R\u00e9serve impr\u00e9vus (2\u00a0%)", montantBas: "4\u00a0500\u00a0$", montantHaut: "9\u00a0000\u00a0$" },
+  { poste: "Notaire", montantBas: "1 800 $", montantHaut: "2 200 $" },
+  { poste: "Inspection préachat", montantBas: "600 $", montantHaut: "750 $" },
+  { poste: "Taxe de bienvenue", montantBas: "4 500 $", montantHaut: "4 500 $" },
+  { poste: "Assurance habitation (1ère année)", montantBas: "1 200 $", montantHaut: "1 800 $" },
+  { poste: "Assurance titre", montantBas: "300 $", montantHaut: "400 $" },
+  { poste: "Certificat de localisation", montantBas: "0 $ (vendeur)", montantHaut: "1 800 $" },
+  { poste: "Déménagement", montantBas: "800 $", montantHaut: "2 000 $" },
+  { poste: "Ajustements de taxes", montantBas: "1 500 $", montantHaut: "3 000 $" },
+  { poste: "Raccordements", montantBas: "100 $", montantHaut: "250 $" },
+  { poste: "Réserve imprévus (2 %)", montantBas: "4 500 $", montantHaut: "9 000 $" },
 ];
 
 const faqItems = [
   {
-    q: "Combien co\u00fbte un notaire pour l\u2019achat d\u2019une maison au Qu\u00e9bec?",
-    r: "Les frais de notaire pour un achat immobilier au Qu\u00e9bec varient g\u00e9n\u00e9ralement entre 1\u00a0500\u00a0$ et 2\u00a0500\u00a0$. Ce montant couvre l\u2019examen des titres de propri\u00e9t\u00e9, la publication de l\u2019acte de vente au Registre foncier et, si applicable, la radiation de l\u2019ancienne hypoth\u00e8que. Les honoraires peuvent varier selon la complexit\u00e9 de la transaction.",
+    q: "Combien coûte un notaire pour l’achat d’une maison au Québec?",
+    r: "Les frais de notaire pour un achat immobilier au Québec varient généralement entre 1 500 $ et 2 500 $. Ce montant couvre l’examen des titres de propriété, la publication de l’acte de vente au Registre foncier et, si applicable, la radiation de l’ancienne hypothèque. Les honoraires peuvent varier selon la complexité de la transaction.",
   },
   {
-    q: "L\u2019inspection pr\u00e9achat est-elle obligatoire au Qu\u00e9bec?",
-    r: "L\u2019inspection pr\u00e9achat n\u2019est pas l\u00e9galement obligatoire au Qu\u00e9bec, mais elle est fortement recommand\u00e9e. Elle co\u00fbte entre 500\u00a0$ et 800\u00a0$ et permet de d\u00e9tecter des probl\u00e8mes de structure, toiture, plomberie ou \u00e9lectricit\u00e9 avant de finaliser l\u2019achat. Sans inspection, l\u2019acheteur assume tous les risques de vices cach\u00e9s.",
+    q: "L’inspection préachat est-elle obligatoire au Québec?",
+    r: "L’inspection préachat n’est pas légalement obligatoire au Québec, mais elle est fortement recommandée. Elle coûte entre 500 $ et 800 $ et permet de détecter des problèmes de structure, toiture, plomberie ou électricité avant de finaliser l’achat. Sans inspection, l’acheteur assume tous les risques de vices cachés.",
   },
   {
-    q: "Quel pourcentage du prix d\u2019achat pr\u00e9voir en frais suppl\u00e9mentaires?",
-    r: "En r\u00e8gle g\u00e9n\u00e9rale, il faut pr\u00e9voir entre 3\u00a0% et 5\u00a0% du prix d\u2019achat en frais suppl\u00e9mentaires. Pour une maison \u00e0 450\u00a0000\u00a0$, cela repr\u00e9sente environ 17\u00a0000\u00a0$ \u00e0 25\u00a0000\u00a0$ en frais de notaire, inspection, taxe de bienvenue, assurances, d\u00e9m\u00e9nagement et ajustements de taxes.",
+    q: "Quel pourcentage du prix d’achat prévoir en frais supplémentaires?",
+    r: "En règle générale, il faut prévoir entre 3 % et 5 % du prix d’achat en frais supplémentaires. Pour une maison à 450 000 $, cela représente environ 17 000 $ à 25 000 $ en frais de notaire, inspection, taxe de bienvenue, assurances, déménagement et ajustements de taxes.",
   },
   {
-    q: "Qui paie le certificat de localisation lors d\u2019un achat?",
-    r: "Au Qu\u00e9bec, c\u2019est g\u00e9n\u00e9ralement le vendeur qui fournit le certificat de localisation \u00e0 jour. Cependant, cette obligation doit \u00eatre pr\u00e9cis\u00e9e dans la promesse d\u2019achat. Si le certificat a plus de 10\u00a0ans ou si des travaux ont \u00e9t\u00e9 effectu\u00e9s, un nouveau certificat (1\u00a0500\u00a0$ \u00e0 2\u00a0000\u00a0$) sera n\u00e9cessaire.",
+    q: "Qui paie le certificat de localisation lors d’un achat?",
+    r: "Au Québec, c’est généralement le vendeur qui fournit le certificat de localisation à jour. Cependant, cette obligation doit être précisée dans la promesse d’achat. Si le certificat a plus de 10 ans ou si des travaux ont été effectués, un nouveau certificat (1 500 $ à 2 000 $) sera nécessaire.",
   },
   {
-    q: "Peut-on inclure les frais d\u2019achat dans l\u2019hypoth\u00e8que?",
-    r: "Non, les frais d\u2019achat (notaire, taxe de bienvenue, inspection, etc.) ne peuvent g\u00e9n\u00e9ralement pas \u00eatre financ\u00e9s par l\u2019hypoth\u00e8que au Qu\u00e9bec. Ces montants doivent \u00eatre pay\u00e9s comptant au moment de la transaction ou dans les semaines suivant l\u2019achat. Il est donc essentiel de les pr\u00e9voir dans son budget.",
+    q: "Peut-on inclure les frais d’achat dans l’hypothèque?",
+    r: "Non, les frais d’achat (notaire, taxe de bienvenue, inspection, etc.) ne peuvent généralement pas être financés par l’hypothèque au Québec. Ces montants doivent être payés comptant au moment de la transaction ou dans les semaines suivant l’achat. Il est donc essentiel de les prévoir dans son budget.",
   },
 ];
 
@@ -385,14 +385,14 @@ export default async function FraisAchatPage() {
                       icon: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z",
                     },
                     {
-                      titre: "Calculatrice hypoth\u00e9caire",
-                      description: "Estimez vos paiements mensuels et le co\u00fbt total",
+                      titre: "Calculatrice hypothécaire",
+                      description: "Estimez vos paiements mensuels et le coût total",
                       href: "/calculatrice-hypothecaire",
                       icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
                     },
                     {
-                      titre: "Capacit\u00e9 d\u2019emprunt",
-                      description: "Calculez votre budget maximal d\u2019achat",
+                      titre: "Capacité d’emprunt",
+                      description: "Calculez votre budget maximal d’achat",
                       href: "/capacite-emprunt",
                       icon: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3",
                     },
@@ -449,7 +449,7 @@ export default async function FraisAchatPage() {
               {/* CTA community */}
               <CommunityCTA
                 contexte="general"
-                titre="Des questions sur les frais d'achat? La communaut\u00e9 peut vous aider!"
+                titre="Des questions sur les frais d'achat? La communauté peut vous aider!"
               />
             </div>
 
