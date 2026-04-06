@@ -272,7 +272,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
   const [categorie, setCategorie] = useState<string>("tous");
   const [tri, setTri] = useState<"recent" | "populaire" | "actif">(initialTri);
 
-  const [posts, setPosts] = useState<Post[]>(initialPosts ?? []);
+  const [posts, setPosts] = useState<Post[]>(initialTri === "populaire" ? (initialPosts ?? []) : []);
   const [total, setTotal] = useState(initialTotal);
   const [votedPostIds, setVotedPostIds] = useState<Set<string>>(() => new Set(initialVotedPostIds));
   const [bookmarkedPostIds, setBookmarkedPostIds] = useState<Set<string>>(() => new Set(initialBookmarkedPostIds));
