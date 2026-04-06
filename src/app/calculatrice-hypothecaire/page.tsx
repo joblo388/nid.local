@@ -323,9 +323,9 @@ export default async function CalculatriceHypothecairePage() {
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
                 <div className="grid sm:grid-cols-3 gap-3">
                   {[
-                    { href: "/capacite-emprunt", label: "Capacit\u00e9 d\u2019emprunt", desc: "Calculez combien vous pouvez emprunter selon vos revenus et dettes." },
-                    { href: "/taxe-bienvenue", label: "Taxe de bienvenue", desc: "Estimez les droits de mutation pour votre achat au Qu\u00e9bec." },
-                    { href: "/acheter-ou-louer", label: "Acheter ou louer?", desc: "Comparez le co\u00fbt r\u00e9el d\u2019acheter vs louer sur votre horizon." },
+                    { href: "/capacite-emprunt", label: "Capacité d’emprunt", desc: "Calculez combien vous pouvez emprunter selon vos revenus et dettes." },
+                    { href: "/taxe-bienvenue", label: "Taxe de bienvenue", desc: "Estimez les droits de mutation pour votre achat au Québec." },
+                    { href: "/acheter-ou-louer", label: "Acheter ou louer?", desc: "Comparez le coût réel d’acheter vs louer sur votre horizon." },
                   ].map((tool) => (
                     <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
                       <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>

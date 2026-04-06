@@ -173,9 +173,9 @@ export default async function CalculateurPlexPage() {
               <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
               <div className="grid sm:grid-cols-3 gap-3">
                 {[
-                  { href: "/calculatrice-hypothecaire", label: "Calculatrice hypoth\u00e9caire", desc: "Calculez votre paiement mensuel et la prime SCHL." },
-                  { href: "/donnees-marche", label: "Donn\u00e9es de march\u00e9", desc: "Prix m\u00e9dians et tendances par ville et quartier au Qu\u00e9bec." },
-                  { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d\u2019une propri\u00e9t\u00e9 dans votre quartier." },
+                  { href: "/calculatrice-hypothecaire", label: "Calculatrice hypothécaire", desc: "Calculez votre paiement mensuel et la prime SCHL." },
+                  { href: "/donnees-marche", label: "Données de marché", desc: "Prix médians et tendances par ville et quartier au Québec." },
+                  { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d’une propriété dans votre quartier." },
                 ].map((tool) => (
                   <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
                     <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>

@@ -30,13 +30,13 @@ const CATEGORIE_LABELS: Record<string, string> = {
   vente: "Vente",
   location: "Location",
   question: "Questions",
-  renovation: "R\u00e9novation",
+  renovation: "Rénovation",
   voisinage: "Voisinage",
   alerte: "Alertes",
   construction: "Construction",
-  legal: "L\u00e9gal",
+  legal: "Légal",
   financement: "Financement",
-  copropriete: "Copropri\u00e9t\u00e9",
+  copropriete: "Copropriété",
 };
 
 type Props = { searchParams: Promise<{ periode?: string }> };
@@ -111,7 +111,7 @@ export default async function TendancesPage({ searchParams }: Props) {
         {trendingPosts.length > 0 && (
           <p className="text-[13px] mb-4" style={{ color: "var(--text-secondary)" }}>
             {totalVotes} vote{totalVotes !== 1 ? "s" : ""} {periodeLabel}
-            {topCategorieLabel && <>{" "}· {"Cat\u00e9gorie la plus active : "}{topCategorieLabel}</>}
+            {topCategorieLabel && <>{" "}· {"Catégorie la plus active : "}{topCategorieLabel}</>}
           </p>
         )}
 

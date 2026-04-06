@@ -124,7 +124,7 @@ export default async function DonneesPage() {
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
                 <div className="grid sm:grid-cols-3 gap-3">
                   {[
-                    { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d\u2019une propri\u00e9t\u00e9 dans votre quartier." },
+                    { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d’une propriété dans votre quartier." },
                     { href: "/comparer-quartiers", label: "Comparer les quartiers", desc: "Comparez les prix, tendances et profil de deux quartiers." },
                     { href: "/calculateur-plex", label: "Calculateur plex", desc: "MRB, cashflow et rendement pour un duplex, triplex ou quadruplex." },
                   ].map((tool) => (

@@ -73,9 +73,9 @@ export function CapaciteEmprunt() {
     return { prix: h + mise, pmt: hypo2pmt(h) };
   }
   const scenarios = [
-    { label: "Confortable — GDS 25%", ...scenarioPrix(0.25) },
-    { label: "Standard — GDS 32%", ...scenarioPrix(0.32) },
-    { label: "Maximum — TDS 44%", prix: hTDS + mise, pmt: hypo2pmt(hTDS) },
+    { label: "Confortable (GDS 25%)", ...scenarioPrix(0.25) },
+    { label: "Standard (GDS 32%)", ...scenarioPrix(0.32) },
+    { label: "Maximum (TDS 44%)", prix: hTDS + mise, pmt: hypo2pmt(hTDS) },
   ];
 
   function renderField(id: string, label: string, unit: string, hint?: string, isSelect?: boolean) {
@@ -103,9 +103,9 @@ export function CapaciteEmprunt() {
           <label>% revenus locatifs inclus</label>
           <div className="ce-field-input">
             <select value={vals.pctLoc} onChange={(e) => set("pctLoc", e.target.value)}>
-              <option value="0.5">50% — standard</option>
-              <option value="0.8">80% — certaines institutions</option>
-              <option value="1">100% — commercial</option>
+              <option value="0.5">50%, standard</option>
+              <option value="0.8">80%, certaines institutions</option>
+              <option value="1">100%, commercial</option>
             </select>
           </div>
         </div>
@@ -124,13 +124,13 @@ export function CapaciteEmprunt() {
       <div className="ce-section-title">Paramètres hypothécaires</div>
       <div className="ce-grid">
         {renderField("mise", "Mise de fonds disponible", "$")}
-        {renderField("tauxQual", "Taux de qualification", "%", "Stress test — laissez 5,25% si incertain")}
+        {renderField("tauxQual", "Taux de qualification", "%", "Stress test, laissez 5,25% si incertain")}
         <div className="ce-field">
           <label>Amortissement</label>
           <div className="ce-field-input">
             <select value={vals.amort} onChange={(e) => set("amort", e.target.value)}>
-              <option value="25">25 ans — standard</option>
-              <option value="30">30 ans — premiers acheteurs</option>
+              <option value="25">25 ans, standard</option>
+              <option value="30">30 ans, premiers acheteurs</option>
             </select>
           </div>
         </div>
@@ -160,12 +160,12 @@ export function CapaciteEmprunt() {
       <div className="ce-section-title">Ratios d&apos;endettement</div>
       <div style={{ marginBottom: 16 }}>
         <div className="ce-ratio-row">
-          <div className="ce-ratio-header"><span className="ce-ratio-name">GDS — Charges de logement</span><span className="ce-ratio-val" style={{ color: gc }}>{gds.toFixed(1)}%</span></div>
+          <div className="ce-ratio-header"><span className="ce-ratio-name">GDS, Charges de logement</span><span className="ce-ratio-val" style={{ color: gc }}>{gds.toFixed(1)}%</span></div>
           <div className="ce-ratio-bar"><div className="ce-ratio-fill" style={{ width: `${Math.min(100, gds / 40 * 100)}%`, background: gc }} /><div className="ce-ratio-limit" style={{ left: "80%" }} /></div>
           <div className="ce-ratio-sub">Limite : 32%</div>
         </div>
         <div className="ce-ratio-row">
-          <div className="ce-ratio-header"><span className="ce-ratio-name">TDS — Endettement total</span><span className="ce-ratio-val" style={{ color: tc }}>{tds.toFixed(1)}%</span></div>
+          <div className="ce-ratio-header"><span className="ce-ratio-name">TDS, Endettement total</span><span className="ce-ratio-val" style={{ color: tc }}>{tds.toFixed(1)}%</span></div>
           <div className="ce-ratio-bar"><div className="ce-ratio-fill" style={{ width: `${Math.min(100, tds / 55 * 100)}%`, background: tc }} /><div className="ce-ratio-limit" style={{ left: "80%" }} /></div>
           <div className="ce-ratio-sub">Limite : 44%</div>
         </div>
@@ -191,7 +191,7 @@ export function CapaciteEmprunt() {
             type="capacite_emprunt"
             getDonnees={() => vals}
             getResultats={() => ({ prixMax: Math.round(maxPrix), hypothequeMax: Math.round(maxH), paiementMensuel: Math.round(pmtMax), gds: +gds.toFixed(1), tds: +tds.toFixed(1) })}
-            getTitre={() => `Capacité ${fmtCAD(maxPrix)} — GDS ${gds.toFixed(1)}% · TDS ${tds.toFixed(1)}%`}
+            getTitre={() => `Capacité ${fmtCAD(maxPrix)} (GDS ${gds.toFixed(1)}% · TDS ${tds.toFixed(1)}%`}
           />
           <ShareCalculation getData={() => vals} />
         </div>

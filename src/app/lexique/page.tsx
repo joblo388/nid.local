@@ -45,29 +45,29 @@ export const metadata: Metadata = {
 
 const faqItems = [
   {
-    question: "Qu\u2019est-ce que le MRB en immobilier?",
+    question: "Qu’est-ce que le MRB en immobilier?",
     answer:
-      "Le MRB (multiplicateur de revenus bruts) est un ratio qui permet d\u2019évaluer rapidement la valeur d\u2019un immeuble à revenus. Il se calcule en divisant le prix de vente par les revenus de loyers bruts annuels. Par exemple, un duplex vendu 500 000 $ avec 36 000 $ de loyers annuels a un MRB de 13,9x.",
+      "Le MRB (multiplicateur de revenus bruts) est un ratio qui permet d’évaluer rapidement la valeur d’un immeuble à revenus. Il se calcule en divisant le prix de vente par les revenus de loyers bruts annuels. Par exemple, un duplex vendu 500 000 $ avec 36 000 $ de loyers annuels a un MRB de 13,9x.",
   },
   {
-    question: "C\u2019est quoi le GDS et le TDS?",
+    question: "C’est quoi le GDS et le TDS?",
     answer:
       "Le GDS (ratio du service de la dette brute) est le pourcentage de votre revenu brut consacré aux frais de logement (hypothèque, taxes, chauffage, frais de condo). Le TDS (ratio du service de la dette totale) inclut toutes vos dettes en plus du logement. Pour obtenir un prêt hypothécaire au Canada, le GDS ne doit pas dépasser 39 % et le TDS ne doit pas dépasser 44 %.",
   },
   {
     question: "Combien coûte la taxe de bienvenue au Québec?",
     answer:
-      "La taxe de bienvenue (droits de mutation) se calcule par tranches sur le plus élevé entre le prix payé et l\u2019évaluation municipale : 0,5 % sur les premiers 58 900 $, 1 % de 58 900 $ à 294 600 $, 1,5 % de 294 600 $ à 500 000 $, et 3 % au-delà (les seuils sont ajustés annuellement). Montréal applique un taux de 3,5 % au-delà de 1 M$ et 4 % au-delà de 2 M$.",
+      "La taxe de bienvenue (droits de mutation) se calcule par tranches sur le plus élevé entre le prix payé et l’évaluation municipale : 0,5 % sur les premiers 58 900 $, 1 % de 58 900 $ à 294 600 $, 1,5 % de 294 600 $ à 500 000 $, et 3 % au-delà (les seuils sont ajustés annuellement). Montréal applique un taux de 3,5 % au-delà de 1 M$ et 4 % au-delà de 2 M$.",
   },
   {
-    question: "Qu\u2019est-ce qu\u2019un vice caché?",
+    question: "Qu’est-ce qu’un vice caché?",
     answer:
-      "Un vice caché est un défaut grave d\u2019un immeuble qui existait avant la vente, qui n\u2019était pas apparent lors d\u2019une inspection raisonnable et que le vendeur n\u2019a pas déclaré. Le vendeur est légalement responsable des vices cachés même s\u2019il les ignorait. L\u2019acheteur dispose de 3 ans après la découverte du vice pour intenter un recours.",
+      "Un vice caché est un défaut grave d’un immeuble qui existait avant la vente, qui n’était pas apparent lors d’une inspection raisonnable et que le vendeur n’a pas déclaré. Le vendeur est légalement responsable des vices cachés même s’il les ignorait. L’acheteur dispose de 3 ans après la découverte du vice pour intenter un recours.",
   },
   {
-    question: "C\u2019est quoi le CELIAPP?",
+    question: "C’est quoi le CELIAPP?",
     answer:
-      "Le CELIAPP (compte d\u2019épargne libre d\u2019impôt pour l\u2019achat d\u2019une première propriété) est un régime d\u2019épargne canadien. Les contributions sont déductibles d\u2019impôt (jusqu\u2019à 8 000 $ par an, maximum 40 000 $ à vie) et les retraits pour un premier achat sont non imposables. Il combine les avantages du REER et du CELI.",
+      "Le CELIAPP (compte d’épargne libre d’impôt pour l’achat d’une première propriété) est un régime d’épargne canadien. Les contributions sont déductibles d’impôt (jusqu’à 8 000 $ par an, maximum 40 000 $ à vie) et les retraits pour un premier achat sont non imposables. Il combine les avantages du REER et du CELI.",
   },
 ];
 

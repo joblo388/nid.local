@@ -194,7 +194,7 @@ export default function CalculateurAugmentationLoyerPage() {
                       className="w-7 h-7 rounded-full text-[13px] font-bold flex items-center justify-center shrink-0 text-white"
                       style={{ background: "var(--green)" }}
                     >
-                      {"\u2460"}
+                      {"①"}
                     </span>
                     <div className="flex-1">
                       <p
@@ -240,7 +240,7 @@ export default function CalculateurAugmentationLoyerPage() {
                       className="w-7 h-7 rounded-full text-[13px] font-bold flex items-center justify-center shrink-0 text-white"
                       style={{ background: "var(--green)" }}
                     >
-                      {"\u2461"}
+                      {"②"}
                     </span>
                     <div className="flex-1">
                       <p
@@ -288,7 +288,7 @@ export default function CalculateurAugmentationLoyerPage() {
                       className="w-7 h-7 rounded-full text-[13px] font-bold flex items-center justify-center shrink-0 text-white"
                       style={{ background: "var(--green)" }}
                     >
-                      {"\u2462"}
+                      {"③"}
                     </span>
                     <div className="flex-1">
                       <p
@@ -335,7 +335,7 @@ export default function CalculateurAugmentationLoyerPage() {
                       className="w-7 h-7 rounded-full text-[13px] font-bold flex items-center justify-center shrink-0 text-white"
                       style={{ background: "var(--green)" }}
                     >
-                      {"\u2463"}
+                      {"④"}
                     </span>
                     <div className="flex-1">
                       <p

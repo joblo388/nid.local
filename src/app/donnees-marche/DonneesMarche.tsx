@@ -185,7 +185,7 @@ export function DonneesMarche() {
                         <svg className={`dm-card-expand-icon${isExpanded ? " open" : ""}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M4 6l4 4 4-4" />
                         </svg>
-                        {isExpanded ? "Masquer l\u2019historique" : "Voir l\u2019historique des prix"}
+                        {isExpanded ? "Masquer l’historique" : "Voir l’historique des prix"}
                       </div>
                     )}
                     <div className={`dm-chart-wrapper${isExpanded ? " open" : ""}`} onClick={(e) => e.stopPropagation()}>

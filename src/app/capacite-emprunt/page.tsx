@@ -257,9 +257,9 @@ export default async function CapaciteEmpruntPage() {
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
                 <div className="grid sm:grid-cols-3 gap-3">
                   {[
-                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypoth\u00e9caire", desc: "Estimez votre paiement mensuel et la prime SCHL." },
-                    { href: "/premier-acheteur", label: "Guide premier acheteur", desc: "CELIAPP, RAP et programmes d\u2019aide pour votre premier achat." },
-                    { href: "/frais-achat", label: "Frais d\u2019achat", desc: "Tous les frais \u00e0 pr\u00e9voir : notaire, inspection, taxes et plus." },
+                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypothécaire", desc: "Estimez votre paiement mensuel et la prime SCHL." },
+                    { href: "/premier-acheteur", label: "Guide premier acheteur", desc: "CELIAPP, RAP et programmes d’aide pour votre premier achat." },
+                    { href: "/frais-achat", label: "Frais d’achat", desc: "Tous les frais à prévoir : notaire, inspection, taxes et plus." },
                   ].map((tool) => (
                     <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
                       <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>

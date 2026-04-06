@@ -153,7 +153,7 @@ export default async function DonneesVillePage({ params }: Props) {
                 <div className="grid sm:grid-cols-3 gap-3">
                   {[
                     { href: "/calculatrice-hypothecaire", label: "Calculatrice hypothécaire", desc: "Estimez vos paiements mensuels et le coût total de votre prêt." },
-                    { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d\u2019une propriété dans votre quartier." },
+                    { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d’une propriété dans votre quartier." },
                     { href: "/comparer-quartiers", label: "Comparer les quartiers", desc: "Comparez les prix, tendances et profil de deux quartiers." },
                   ].map((tool) => (
                     <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>

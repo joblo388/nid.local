@@ -147,7 +147,7 @@ export function PublierAnnonceForm() {
 
     const isLocation = form.mode === "location";
     const payload = {
-      titre: form.adresse || `${form.type} — ${form.quartierSlug}`,
+      titre: form.adresse || `${form.type}, ${form.quartierSlug}`,
       description: form.description,
       prix: parseNum(form.prix),
       mode: form.mode,
@@ -395,18 +395,18 @@ export function PublierAnnonceForm() {
               <div className="mp-field full">
                 <label>Description</label>
                 <div className="mp-field-input">
-                  <textarea placeholder={form.mode === "location" ? "Décrivez le logement — inclusions, état, environnement..." : "Décrivez votre propriété — rénovations, points forts, environnement..."} value={form.description} onChange={(e) => setField("description", e.target.value)} />
+                  <textarea placeholder={form.mode === "location" ? "Décrivez le logement, inclusions, état, environnement..." : "Décrivez votre propriété, rénovations, points forts, environnement..."} value={form.description} onChange={(e) => setField("description", e.target.value)} />
                 </div>
               </div>
             </div>
 
-            {/* Accordion — hidden in location mode */}
+            {/* Accordion, hidden in location mode */}
             {form.mode !== "location" && (
             <div className="mp-accordion">
               <div className="mp-accordion-header" onClick={() => setAccOpen(!accOpen)}>
                 <div>
                   <div className="mp-accordion-title">Détails supplémentaires</div>
-                  <div className="mp-accordion-sub">Style, terrain, chauffage, eau chaude — optionnel</div>
+                  <div className="mp-accordion-sub">Style, terrain, chauffage, eau chaude, optionnel</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span className={`mp-accordion-badge${accFilled > 0 ? " filled" : ""}`}>
@@ -417,12 +417,12 @@ export function PublierAnnonceForm() {
               </div>
               <div className={`mp-accordion-body${accOpen ? " open" : ""}`}>
                 <div className="mp-grid" style={{ marginTop: 14 }}>
-                  <div className="mp-field"><label>Style architectural</label><div className="mp-field-input"><select value={form.style} onChange={(e) => setField("style", e.target.value)}><option value="">— Sélectionner —</option><option value="maison_de_ville">Maison de ville</option><option value="cottage">Cottage</option><option value="bungalow">Bungalow</option><option value="bi_generation">Bi-génération</option><option value="loft">Loft</option><option value="penthouse">Penthouse</option></select></div></div>
+                  <div className="mp-field"><label>Style architectural</label><div className="mp-field-input"><select value={form.style} onChange={(e) => setField("style", e.target.value)}><option value="">Sélectionner</option><option value="maison_de_ville">Maison de ville</option><option value="cottage">Cottage</option><option value="bungalow">Bungalow</option><option value="bi_generation">Bi-génération</option><option value="loft">Loft</option><option value="penthouse">Penthouse</option></select></div></div>
                   <div className="mp-field"><label>Superficie du terrain</label><div className="mp-field-input"><input type="text" placeholder="2 400" value={form.superficieTerrain} onChange={(e) => setField("superficieTerrain", e.target.value)} /><span className="mp-unit">pi²</span></div></div>
-                  <div className="mp-field"><label>Type de chauffage</label><div className="mp-field-input"><select value={form.chauffage} onChange={(e) => setField("chauffage", e.target.value)}><option value="">— Sélectionner —</option><option>Thermopompe</option><option>Électrique (plinthes)</option><option>Gaz naturel</option><option>Mazout</option><option>Géothermie</option></select></div></div>
-                  <div className="mp-field"><label>Eau chaude</label><div className="mp-field-input"><select value={form.eauChaude} onChange={(e) => setField("eauChaude", e.target.value)}><option value="">— Sélectionner —</option><option>Électrique</option><option>Gaz naturel</option><option>Thermopompe</option><option>Solaire</option></select></div></div>
-                  <div className="mp-field"><label>Sous-sol</label><div className="mp-field-input"><select value={form.sousSol} onChange={(e) => setField("sousSol", e.target.value)}><option value="">— Sélectionner —</option><option>Aménagé</option><option>Partiellement aménagé</option><option>Non aménagé</option><option>Aucun</option></select></div></div>
-                  <div className="mp-field"><label>Piscine</label><div className="mp-field-input"><select value={form.piscine} onChange={(e) => setField("piscine", e.target.value)}><option value="">— Sélectionner —</option><option>Aucune</option><option>Creusée</option><option>Hors-terre</option></select></div></div>
+                  <div className="mp-field"><label>Type de chauffage</label><div className="mp-field-input"><select value={form.chauffage} onChange={(e) => setField("chauffage", e.target.value)}><option value="">Sélectionner</option><option>Thermopompe</option><option>Électrique (plinthes)</option><option>Gaz naturel</option><option>Mazout</option><option>Géothermie</option></select></div></div>
+                  <div className="mp-field"><label>Eau chaude</label><div className="mp-field-input"><select value={form.eauChaude} onChange={(e) => setField("eauChaude", e.target.value)}><option value="">Sélectionner</option><option>Électrique</option><option>Gaz naturel</option><option>Thermopompe</option><option>Solaire</option></select></div></div>
+                  <div className="mp-field"><label>Sous-sol</label><div className="mp-field-input"><select value={form.sousSol} onChange={(e) => setField("sousSol", e.target.value)}><option value="">Sélectionner</option><option>Aménagé</option><option>Partiellement aménagé</option><option>Non aménagé</option><option>Aucun</option></select></div></div>
+                  <div className="mp-field"><label>Piscine</label><div className="mp-field-input"><select value={form.piscine} onChange={(e) => setField("piscine", e.target.value)}><option value="">Sélectionner</option><option>Aucune</option><option>Creusée</option><option>Hors-terre</option></select></div></div>
                 </div>
               </div>
             </div>
@@ -489,7 +489,7 @@ export function PublierAnnonceForm() {
             <div className="mp-divider" />
             <div className="mp-form-section-title">Visite virtuelle</div>
             <div className="mp-field">
-              <label>Lien externe <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>(Matterport, YouTube, etc.) — optionnel</span></label>
+              <label>Lien externe <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>(Matterport, YouTube, etc.), optionnel</span></label>
               <div className="mp-field-input"><input type="url" placeholder="https://my.matterport.com/..." value={form.lienVisite} onChange={(e) => setField("lienVisite", e.target.value)} /></div>
             </div>
 
@@ -498,7 +498,7 @@ export function PublierAnnonceForm() {
                 <div className="mp-divider" />
                 <div className="mp-form-section-title">Numéro MLS</div>
                 <div className="mp-field">
-                  <label>Numéro MLS <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>(optionnel — ajoute de la crédibilité)</span></label>
+                  <label>Numéro MLS <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>(optionnel, ajoute de la crédibilité)</span></label>
                   <div className="mp-field-input"><input type="text" placeholder="Ex: 28574839" value={form.mls} onChange={(e) => setField("mls", e.target.value)} /></div>
                   {form.mls && (
                     <div style={{ display: "flex", gap: 12, marginTop: 6, fontSize: 12 }}>
@@ -545,7 +545,7 @@ export function PublierAnnonceForm() {
             </div>
 
             <div className="mp-field">
-              <label>Numéro de téléphone <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>(optionnel — sera visible publiquement)</span></label>
+              <label>Numéro de téléphone <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>(optionnel, sera visible publiquement)</span></label>
               <div className="mp-field-input">
                 <input type="tel" placeholder="514 555-1234" value={form.telephone} onChange={(e) => setField("telephone", e.target.value)} />
               </div>

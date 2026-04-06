@@ -10,7 +10,7 @@ const PAGE_URL = `${BASE_URL}/comparer-quartiers`;
 export const metadata: Metadata = {
   title: "Comparer les quartiers du Québec 2026 | Prix, avis et tendances",
   description:
-    "Comparez les quartiers de Montréal et du Québec côte à côte : prix médians, avis de résidents, tendances du marché, annonces actives et potentiel d\u2019investissement. Outil gratuit pour choisir le meilleur quartier.",
+    "Comparez les quartiers de Montréal et du Québec côte à côte : prix médians, avis de résidents, tendances du marché, annonces actives et potentiel d’investissement. Outil gratuit pour choisir le meilleur quartier.",
   keywords: [
     "comparer quartiers montréal",
     "meilleur quartier montréal",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Comparer les quartiers du Québec 2026 | Prix, avis et tendances",
     description:
-      "Comparez jusqu\u2019à 3 quartiers côte à côte : prix médians, avis de résidents, discussions et annonces actives. Trouvez le meilleur quartier pour votre projet immobilier.",
+      "Comparez jusqu’à 3 quartiers côte à côte : prix médians, avis de résidents, discussions et annonces actives. Trouvez le meilleur quartier pour votre projet immobilier.",
     url: PAGE_URL,
     siteName: "nid.local",
     locale: "fr_CA",
@@ -71,7 +71,7 @@ const jsonLd = {
           "name": "Quel est le meilleur quartier pour acheter à Montréal en 2026?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Le meilleur quartier dépend de vos priorités : budget, style de vie et objectifs d\u2019investissement. Rosemont\u2013La Petite-Patrie et Villeray\u2013Saint-Michel offrent un bon équilibre entre prix et qualité de vie. Le Plateau-Mont-Royal reste prisé pour son ambiance, tandis que Verdun et Pointe-Saint-Charles attirent les acheteurs en quête de quartiers en pleine transformation avec un potentiel d\u2019appréciation. Utilisez notre comparateur pour évaluer les prix, les avis et les tendances de chaque quartier.",
+            "text": "Le meilleur quartier dépend de vos priorités : budget, style de vie et objectifs d’investissement. Rosemont–La Petite-Patrie et Villeray–Saint-Michel offrent un bon équilibre entre prix et qualité de vie. Le Plateau-Mont-Royal reste prisé pour son ambiance, tandis que Verdun et Pointe-Saint-Charles attirent les acheteurs en quête de quartiers en pleine transformation avec un potentiel d’appréciation. Utilisez notre comparateur pour évaluer les prix, les avis et les tendances de chaque quartier.",
           },
         },
         {
@@ -79,7 +79,7 @@ const jsonLd = {
           "name": "Quels critères considérer pour choisir un quartier?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Les critères essentiels incluent le prix médian des propriétés, la proximité des transports en commun et des services, la qualité des écoles pour les familles, le taux de criminalité, l\u2019accès aux parcs et espaces verts, la vie commerciale et culturelle, ainsi que le potentiel d\u2019appréciation à moyen terme. Notre outil vous permet de comparer ces facteurs côte à côte grâce aux avis de résidents et aux données du marché.",
+            "text": "Les critères essentiels incluent le prix médian des propriétés, la proximité des transports en commun et des services, la qualité des écoles pour les familles, le taux de criminalité, l’accès aux parcs et espaces verts, la vie commerciale et culturelle, ainsi que le potentiel d’appréciation à moyen terme. Notre outil vous permet de comparer ces facteurs côte à côte grâce aux avis de résidents et aux données du marché.",
           },
         },
         {
@@ -92,7 +92,7 @@ const jsonLd = {
         },
         {
           "@type": "Question",
-          "name": "Comment les avis des résidents aident-ils dans le choix d\u2019un quartier?",
+          "name": "Comment les avis des résidents aident-ils dans le choix d’un quartier?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Les avis des résidents offrent une perspective authentique que les statistiques seules ne peuvent fournir. Sur nid.local, chaque quartier est évalué par ses habitants sur cinq critères : sécurité, transports, commerces, ambiance et rapport qualité-prix. Ces témoignages révèlent les réalités du quotidien (bruit, stationnement, vie de quartier) et vous aident à identifier les quartiers qui correspondent réellement à votre mode de vie.",
@@ -100,10 +100,10 @@ const jsonLd = {
         },
         {
           "@type": "Question",
-          "name": "Quels quartiers de Montréal ont le meilleur potentiel d\u2019appréciation?",
+          "name": "Quels quartiers de Montréal ont le meilleur potentiel d’appréciation?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Les quartiers avec le meilleur potentiel d\u2019appréciation en 2026 sont ceux qui bénéficient de projets d\u2019infrastructure ou de renouvellement urbain. Pointe-Saint-Charles, Saint-Henri et Verdun continuent leur transformation avec l\u2019arrivée de nouveaux commerces et résidents. Hochelaga-Maisonneuve et le Sud-Ouest profitent de projets de transport et de développements résidentiels. Comparez l\u2019évolution des prix et les tendances du marché avec notre outil pour repérer les opportunités.",
+            "text": "Les quartiers avec le meilleur potentiel d’appréciation en 2026 sont ceux qui bénéficient de projets d’infrastructure ou de renouvellement urbain. Pointe-Saint-Charles, Saint-Henri et Verdun continuent leur transformation avec l’arrivée de nouveaux commerces et résidents. Hochelaga-Maisonneuve et le Sud-Ouest profitent de projets de transport et de développements résidentiels. Comparez l’évolution des prix et les tendances du marché avec notre outil pour repérer les opportunités.",
           },
         },
       ],
@@ -114,23 +114,23 @@ const jsonLd = {
 const faqItems = [
   {
     q: "Quel est le meilleur quartier pour acheter à Montréal en 2026?",
-    r: "Le meilleur quartier dépend de vos priorités : budget, style de vie et objectifs d\u2019investissement. Rosemont\u2013La Petite-Patrie et Villeray\u2013Saint-Michel offrent un bon équilibre entre prix et qualité de vie. Le Plateau-Mont-Royal reste prisé pour son ambiance, tandis que Verdun et Pointe-Saint-Charles attirent les acheteurs en quête de quartiers en pleine transformation avec un potentiel d\u2019appréciation. Utilisez notre comparateur pour évaluer les prix, les avis et les tendances de chaque quartier.",
+    r: "Le meilleur quartier dépend de vos priorités : budget, style de vie et objectifs d’investissement. Rosemont–La Petite-Patrie et Villeray–Saint-Michel offrent un bon équilibre entre prix et qualité de vie. Le Plateau-Mont-Royal reste prisé pour son ambiance, tandis que Verdun et Pointe-Saint-Charles attirent les acheteurs en quête de quartiers en pleine transformation avec un potentiel d’appréciation. Utilisez notre comparateur pour évaluer les prix, les avis et les tendances de chaque quartier.",
   },
   {
     q: "Quels critères considérer pour choisir un quartier?",
-    r: "Les critères essentiels incluent le prix médian des propriétés, la proximité des transports en commun et des services, la qualité des écoles pour les familles, le taux de criminalité, l\u2019accès aux parcs et espaces verts, la vie commerciale et culturelle, ainsi que le potentiel d\u2019appréciation à moyen terme. Notre outil vous permet de comparer ces facteurs côte à côte grâce aux avis de résidents et aux données du marché.",
+    r: "Les critères essentiels incluent le prix médian des propriétés, la proximité des transports en commun et des services, la qualité des écoles pour les familles, le taux de criminalité, l’accès aux parcs et espaces verts, la vie commerciale et culturelle, ainsi que le potentiel d’appréciation à moyen terme. Notre outil vous permet de comparer ces facteurs côte à côte grâce aux avis de résidents et aux données du marché.",
   },
   {
     q: "Quels quartiers de Montréal sont les plus abordables?",
     r: "En 2026, les quartiers les plus abordables de Montréal incluent Montréal-Nord, Saint-Léonard, Rivière-des-Prairies et certains secteurs de LaSalle. Les prix médians y sont significativement plus bas que dans les quartiers centraux comme le Plateau ou Outremont. Ces secteurs offrent souvent de bonnes opportunités pour les premiers acheteurs et les investisseurs en plex. Comparez les prix médians directement dans notre outil pour trouver le quartier qui correspond à votre budget.",
   },
   {
-    q: "Comment les avis des résidents aident-ils dans le choix d\u2019un quartier?",
+    q: "Comment les avis des résidents aident-ils dans le choix d’un quartier?",
     r: "Les avis des résidents offrent une perspective authentique que les statistiques seules ne peuvent fournir. Sur nid.local, chaque quartier est évalué par ses habitants sur cinq critères : sécurité, transports, commerces, ambiance et rapport qualité-prix. Ces témoignages révèlent les réalités du quotidien (bruit, stationnement, vie de quartier) et vous aident à identifier les quartiers qui correspondent réellement à votre mode de vie.",
   },
   {
-    q: "Quels quartiers de Montréal ont le meilleur potentiel d\u2019appréciation?",
-    r: "Les quartiers avec le meilleur potentiel d\u2019appréciation en 2026 sont ceux qui bénéficient de projets d\u2019infrastructure ou de renouvellement urbain. Pointe-Saint-Charles, Saint-Henri et Verdun continuent leur transformation avec l\u2019arrivée de nouveaux commerces et résidents. Hochelaga-Maisonneuve et le Sud-Ouest profitent de projets de transport et de développements résidentiels. Comparez l\u2019évolution des prix et les tendances du marché avec notre outil pour repérer les opportunités.",
+    q: "Quels quartiers de Montréal ont le meilleur potentiel d’appréciation?",
+    r: "Les quartiers avec le meilleur potentiel d’appréciation en 2026 sont ceux qui bénéficient de projets d’infrastructure ou de renouvellement urbain. Pointe-Saint-Charles, Saint-Henri et Verdun continuent leur transformation avec l’arrivée de nouveaux commerces et résidents. Hochelaga-Maisonneuve et le Sud-Ouest profitent de projets de transport et de développements résidentiels. Comparez l’évolution des prix et les tendances du marché avec notre outil pour repérer les opportunités.",
   },
 ];
 

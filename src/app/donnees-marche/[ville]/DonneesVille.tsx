@@ -62,7 +62,7 @@ export function DonneesVille({ villeSlug, villeNom, stats }: Props) {
             <div className="dm-pstat-lbl">Condo médian</div>
             <div className="dm-pstat-sub">{stats.tendanceMoyenne} vs 2025</div>
           </div>
-          {stats.plexMedian !== "\u2014" && (
+          {stats.plexMedian !== "—" && (
             <div className="dm-pstat">
               <div className="dm-pstat-val">{stats.plexMedian}</div>
               <div className="dm-pstat-lbl">Plex médian</div>
@@ -129,7 +129,7 @@ export function DonneesVille({ villeSlug, villeNom, stats }: Props) {
                     <svg className={`dm-card-expand-icon${isExpanded ? " open" : ""}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M4 6l4 4 4-4" />
                     </svg>
-                    {isExpanded ? "Masquer l\u2019historique" : "Voir l\u2019historique des prix"}
+                    {isExpanded ? "Masquer l’historique" : "Voir l’historique des prix"}
                   </div>
                 )}
                 <div className={`dm-chart-wrapper${isExpanded ? " open" : ""}`} onClick={(e) => e.stopPropagation()}>

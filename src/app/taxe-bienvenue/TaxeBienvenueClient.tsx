@@ -286,7 +286,7 @@ export function TaxeBienvenueClient() {
             {/* Share */}
             <div style={{ marginTop: 16 }}>
               <ShareCalculation
-                label="Taxe de bienvenue — nid.local"
+                label="Taxe de bienvenue | nid.local"
                 getData={() => ({
                   prix: (document.getElementById("tb-price") as HTMLInputElement)?.value ?? "",
                   ville: (document.getElementById("tb-ville") as HTMLSelectElement)?.value ?? "",

@@ -1060,22 +1060,22 @@ export function CalculateurLoyerClient() {
             <div className="divide-y" style={{ borderColor: "var(--border)" }}>
               {[
                 {
-                  num: "\u2460",
+                  num: "①",
                   label: "Ajustement de base (IPC 3,1%)",
                   value: result.baseIPC,
                 },
                 {
-                  num: "\u2461",
+                  num: "②",
                   label: "Taxes et assurances",
                   value: result.ajustTaxes,
                 },
                 {
-                  num: "\u2462",
+                  num: "③",
                   label: "Reparations majeures",
                   value: result.ajustReno,
                 },
                 {
-                  num: "\u2463",
+                  num: "④",
                   label: "Nouveaux services",
                   value: result.ajustServ,
                 },

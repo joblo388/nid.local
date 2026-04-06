@@ -170,9 +170,9 @@ export default async function AcheterOuLouerPage() {
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
                 <div className="grid sm:grid-cols-3 gap-3">
                   {[
-                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypoth\u00e9caire", desc: "Estimez votre paiement mensuel selon les taux du march\u00e9." },
-                    { href: "/capacite-emprunt", label: "Capacit\u00e9 d\u2019emprunt", desc: "D\u00e9couvrez combien vous pouvez emprunter selon vos revenus." },
-                    { href: "/donnees-marche", label: "Donn\u00e9es de march\u00e9", desc: "Prix m\u00e9dians et tendances par ville et quartier au Qu\u00e9bec." },
+                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypothécaire", desc: "Estimez votre paiement mensuel selon les taux du marché." },
+                    { href: "/capacite-emprunt", label: "Capacité d’emprunt", desc: "Découvrez combien vous pouvez emprunter selon vos revenus." },
+                    { href: "/donnees-marche", label: "Données de marché", desc: "Prix médians et tendances par ville et quartier au Québec." },
                   ].map((tool) => (
                     <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
                       <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>

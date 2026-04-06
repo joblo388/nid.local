@@ -167,7 +167,7 @@ export async function GET(req: NextRequest) {
 
   // Text search
   if (search) {
-    const searchSlug = search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
+    const searchSlug = search.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-");
     where.OR = [
       { titre: { contains: search, mode: "insensitive" } },
       { adresse: { contains: search, mode: "insensitive" } },
@@ -244,12 +244,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!rateLimit(getIp(req), 3, 60_000)) {
-    return NextResponse.json({ error: "Trop de requ\u00eates." }, { status: 429 });
+    return NextResponse.json({ error: "Trop de requêtes." }, { status: 429 });
   }
 
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Non authentifi\u00e9." }, { status: 401 });
+    return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   }
 
   const body = await req.json();
@@ -273,17 +273,17 @@ export async function POST(req: NextRequest) {
   }
 
   if (!titre?.trim() || titre.trim().length < 5) {
-    return NextResponse.json({ error: "Le titre doit avoir au moins 5 caract\u00e8res." }, { status: 400 });
+    return NextResponse.json({ error: "Le titre doit avoir au moins 5 caractères." }, { status: 400 });
   }
   if (!description?.trim() || description.trim().length < 20) {
-    return NextResponse.json({ error: "La description doit avoir au moins 20 caract\u00e8res." }, { status: 400 });
+    return NextResponse.json({ error: "La description doit avoir au moins 20 caractères." }, { status: 400 });
   }
   const minPrix = mode === "location" ? 100 : 1000;
   if (!prix || prix < minPrix) {
     return NextResponse.json({ error: "Prix invalide." }, { status: 400 });
   }
   if (!TYPES_VALIDES.includes(type)) {
-    return NextResponse.json({ error: "Type de propri\u00e9t\u00e9 invalide." }, { status: 400 });
+    return NextResponse.json({ error: "Type de propriété invalide." }, { status: 400 });
   }
   if (!quartierSlug || !adresse?.trim()) {
     return NextResponse.json({ error: "Quartier et adresse requis." }, { status: 400 });
