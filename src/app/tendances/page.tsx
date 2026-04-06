@@ -9,9 +9,15 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nidlocal.com";
+
 export const metadata: Metadata = {
   title: "Tendances",
   description: "Les discussions les plus actives cette semaine sur nid.local",
+  keywords: ["tendances immobilier québec", "discussions populaires immobilier", "marché immobilier 2026", "forum immobilier populaire"],
+  alternates: { canonical: `${BASE_URL}/tendances` },
+  openGraph: { title: "Tendances", description: "Les discussions les plus actives cette semaine sur nid.local", url: `${BASE_URL}/tendances`, siteName: "nid.local", locale: "fr_CA", type: "website" },
+  twitter: { card: "summary_large_image", title: "Tendances", description: "Les discussions les plus actives cette semaine sur nid.local" },
 };
 
 const PERIODES = [

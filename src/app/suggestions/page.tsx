@@ -3,9 +3,13 @@ import { Header } from "@/components/Header";
 import { SuggestionForm } from "./SuggestionForm";
 import type { Metadata } from "next";
 
+const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nidlocal.com";
+
 export const metadata: Metadata = {
   title: "Suggestions",
   description: "Envoyez vos suggestions pour améliorer nid.local",
+  keywords: ["suggestions nid.local", "amélioration site immobilier"],
+  alternates: { canonical: `${BASE_URL}/suggestions` },
 };
 
 export default function SuggestionsPage() {

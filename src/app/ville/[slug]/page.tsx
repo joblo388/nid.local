@@ -9,6 +9,8 @@ import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
+const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nidlocal.com";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props) {
@@ -18,6 +20,8 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: ville.nom,
     description: `Forum immobilier de ${ville.nom}. Questions, annonces et discussions par quartier.`,
+    keywords: [`immobilier ${ville.nom.toLowerCase()}`, `acheter ${ville.nom.toLowerCase()}`, `maison ${ville.nom.toLowerCase()}`],
+    alternates: { canonical: `${BASE_URL}/ville/${slug}` },
   };
 }
 
