@@ -8,6 +8,7 @@ import { villes, quartiers, quartiersDeVille, villeBySlug } from "@/lib/data";
 import { PostCard } from "./PostCard";
 import { SkeletonPostCard } from "./Skeleton";
 import { PullToRefresh } from "./PullToRefresh";
+import { useLocale } from "@/lib/useLocale";
 
 const PAGE_SIZE = 20;
 
@@ -78,28 +79,29 @@ function Pagination({ page, total, onPage }: { page: number; total: number; onPa
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
-const CATEGORIES: { value: Categorie | "tous"; label: string }[] = [
-  { value: "tous", label: "Tout" },
-  { value: "vente", label: "Vente" },
-  { value: "location", label: "Location" },
-  { value: "question", label: "Questions" },
-  { value: "renovation", label: "Conseils" },
-  { value: "voisinage", label: "Voisinage" },
-  { value: "construction", label: "Construction" },
-  { value: "legal", label: "Légal" },
-  { value: "financement", label: "Financement" },
-  { value: "copropriete", label: "Condo" },
+const CATEGORY_VALUES: (Categorie | "tous")[] = [
+  "tous", "vente", "location", "question", "renovation",
+  "voisinage", "construction", "legal", "financement", "copropriete",
 ];
 
-const TRIS = [
-  { value: "recent", label: "Récents" },
-  { value: "populaire", label: "Populaires" },
-  { value: "actif", label: "Actifs" },
-] as const;
+const CATEGORY_KEYS: Record<string, string> = {
+  tous: "home.tout",
+  vente: "cat.vente", location: "cat.location", question: "cat.question",
+  renovation: "cat.renovation", voisinage: "cat.voisinage",
+  construction: "cat.construction", legal: "cat.legal",
+  financement: "cat.financement", copropriete: "cat.condo",
+};
 
-const badgeLabels: Record<string, string> = {
-  alerte: "Alerte", question: "Question", vente: "Vente",
-  location: "Location", renovation: "Conseil", voisinage: "Voisinage",
+const TRI_VALUES = ["recent", "populaire", "actif"] as const;
+const TRI_KEYS: Record<string, string> = {
+  recent: "home.recents",
+  populaire: "home.populaires",
+  actif: "home.actifs",
+};
+
+const badgeLabelKeys: Record<string, string> = {
+  alerte: "common.alertes", question: "cat.question", vente: "cat.vente",
+  location: "cat.location", renovation: "cat.renovation", voisinage: "cat.voisinage",
 };
 
 // ─── VilleBar ─────────────────────────────────────────────────────────────────
@@ -131,8 +133,8 @@ function VilleBar({ selected, onSelect }: { selected: string; onSelect: (slug: s
 
 // ─── QuartierBar ──────────────────────────────────────────────────────────────
 
-function QuartierBar({ villeSlug, selected, onSelect }: {
-  villeSlug: string; selected: string; onSelect: (slug: string) => void;
+function QuartierBar({ villeSlug, selected, onSelect, t }: {
+  villeSlug: string; selected: string; onSelect: (slug: string) => void; t: (k: string) => string;
 }) {
   const qDeVille = quartiersDeVille(villeSlug);
   if (qDeVille.length <= 1) return null;
@@ -146,7 +148,7 @@ function QuartierBar({ villeSlug, selected, onSelect }: {
             className="px-2.5 py-1 rounded-md text-[12px] font-medium whitespace-nowrap shrink-0 transition-colors"
             style={selected === "tous" ? { background: "var(--green)", color: "#fff" } : { color: "var(--text-secondary)" }}
           >
-            Tous
+            {t("common.tous")}
           </button>
           {qDeVille.map((q) => (
             <button
@@ -167,7 +169,7 @@ function QuartierBar({ villeSlug, selected, onSelect }: {
 
 // ─── SearchBar ────────────────────────────────────────────────────────────────
 
-function SearchBar({ value, onChange }: { value: string; onChange: (q: string) => void }) {
+function SearchBar({ value, onChange, t }: { value: string; onChange: (q: string) => void; t: (k: string) => string }) {
   return (
     <div
       className="flex items-center gap-2 px-3 h-[38px] rounded-xl w-full"
@@ -183,7 +185,7 @@ function SearchBar({ value, onChange }: { value: string; onChange: (q: string) =
       </svg>
       <input
         type="text"
-        placeholder="Rechercher une discussion, une ville…"
+        placeholder={t("home.rechercher")}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="flex-1 bg-transparent text-[13px] outline-none min-w-0"
@@ -202,7 +204,7 @@ function SearchBar({ value, onChange }: { value: string; onChange: (q: string) =
 
 // ─── SearchDropdown ────────────────────────────────────────────────────────────
 
-function SearchDropdown({ results, query, onSelect }: { results: Post[]; query: string; onSelect: () => void }) {
+function SearchDropdown({ results, query, onSelect, t }: { results: Post[]; query: string; onSelect: () => void; t: (k: string) => string }) {
   if (results.length === 0) return null;
   return (
     <div
@@ -225,7 +227,7 @@ function SearchDropdown({ results, query, onSelect }: { results: Post[]; query: 
             className="shrink-0 mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none"
             style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
           >
-            {badgeLabels[post.categorie] ?? post.categorie}
+            {badgeLabelKeys[post.categorie] ? t(badgeLabelKeys[post.categorie]) : post.categorie}
           </span>
           <div className="flex-1 min-w-0">
             <p className="text-[13px] font-medium truncate" style={{ color: "var(--text-primary)" }}>
@@ -243,7 +245,7 @@ function SearchDropdown({ results, query, onSelect }: { results: Post[]; query: 
         className="flex items-center justify-between px-4 py-2.5 text-[12px] font-medium transition-colors hover-bg"
         style={{ color: "var(--green)" }}
       >
-        <span>Voir tous les résultats pour &ldquo;{query}&rdquo;</span>
+        <span>{t("home.voir_resultats")} &ldquo;{query}&rdquo;</span>
         <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
@@ -263,6 +265,7 @@ type Props = {
 };
 
 export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, initialBookmarkedPostIds, sidebar }: Props) {
+  const { t } = useLocale();
   const searchParams = useSearchParams();
   const urlTri = searchParams.get("tri");
   const initialTri = (urlTri === "recent" || urlTri === "actif") ? urlTri : "populaire";
@@ -527,22 +530,22 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
       <div className="sticky z-40 lg:hidden" style={{ top: "52px", background: "var(--bg-card)", borderBottom: "0.5px solid var(--border)" }}>
         <div className="max-w-[1100px] mx-auto px-3 md:px-5">
           <div className="flex gap-1 py-2 items-center">
-            {[
-              { value: "populaire" as const, label: "Fil" },
-              { value: "recent" as const, label: "Récent" },
-              { value: "actif" as const, label: "Populaire" },
-            ].map((t) => (
+            {([
+              { value: "populaire" as const, key: "nav.fil" },
+              { value: "recent" as const, key: "nav.recent" },
+              { value: "actif" as const, key: "nav.populaire" },
+            ]).map((item) => (
               <button
-                key={t.value}
-                onClick={() => setTri(t.value)}
+                key={item.value}
+                onClick={() => setTri(item.value)}
                 className="px-4 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors"
                 style={
-                  tri === t.value
+                  tri === item.value
                     ? { background: "var(--green-light-bg)", color: "var(--green-text)" }
                     : { color: "var(--text-secondary)" }
                 }
               >
-                {t.label}
+                {t(item.key)}
               </button>
             ))}
           </div>
@@ -559,7 +562,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
             <div className="flex items-center justify-between lg:hidden">
               <div className="hidden md:flex items-center gap-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                  Discussions{" "}
+                  {t("sidebar.discussions")}{" "}
                   <span
                     className="ml-1 px-1.5 py-0.5 rounded-md text-[11px] font-bold normal-case tracking-normal"
                     style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
@@ -568,18 +571,18 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                   </span>
                 </p>
                 <div className="flex items-center gap-0.5">
-                  {TRIS.map((t) => (
+                  {TRI_VALUES.map((val) => (
                     <button
-                      key={t.value}
-                      onClick={() => setTri(t.value)}
+                      key={val}
+                      onClick={() => setTri(val)}
                       className="px-2.5 py-1.5 text-[12px] font-medium rounded-lg whitespace-nowrap"
                       style={
-                        tri === t.value
+                        tri === val
                           ? { color: "var(--text-primary)", textDecoration: "underline", textUnderlineOffset: "3px" }
                           : { color: "var(--text-tertiary)" }
                       }
                     >
-                      {t.label}
+                      {t(TRI_KEYS[val])}
                     </button>
                   ))}
                 </div>
@@ -590,7 +593,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                   className="hidden md:block text-[11px] font-medium transition-opacity hover:opacity-70"
                   style={{ color: "var(--green)" }}
                 >
-                  Voir la page de {villeActive?.nom} →
+                  {t("home.voir_page")} {villeActive?.nom} →
                 </Link>
               )}
             </div>
@@ -603,7 +606,7 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                   className="px-4 py-2 rounded-full text-[13px] font-semibold text-white transition-transform hover:scale-105"
                   style={{ background: "var(--green)", boxShadow: "0 2px 8px rgba(29,158,117,0.3)" }}
                 >
-                  {newPostsCount} nouvelle{newPostsCount > 1 ? "s" : ""} discussion{newPostsCount > 1 ? "s" : ""}
+                  {newPostsCount} {t("home.nouvelles_discussions")}
                 </button>
               </div>
             )}
@@ -622,14 +625,14 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <p className="text-[14px]" style={{ color: "var(--text-secondary)" }}>
-                  Aucune discussion à {quartierActif?.nom ?? villeActive?.nom} pour l&apos;instant.
+                  {t("home.aucune_discussion")}
                 </p>
                 <Link
                   href="/nouveau-post"
                   className="inline-block mt-4 text-[13px] font-semibold text-white px-4 py-2 rounded-lg"
                   style={{ background: "var(--green)" }}
                 >
-                  Soyez le premier à publier
+                  {t("home.premier_publier")}
                 </Link>
               </div>
             ) : (
@@ -646,13 +649,13 @@ export function HomepageView({ initialPosts, initialTotal, initialVotedPostIds, 
                     <SkeletonPostCard />
                     <SkeletonPostCard />
                     <p className="text-center pt-1" style={{ color: "var(--text-tertiary)", fontSize: "12px" }}>
-                      Chargement...
+                      {t("common.chargement")}
                     </p>
                   </div>
                 )}
                 {!hasMore && posts.length > 0 && !loadingMore && (
                   <p className="text-center py-4" style={{ color: "var(--text-tertiary)", fontSize: "12px" }}>
-                    Aucune autre discussion
+                    {t("home.aucune_autre")}
                   </p>
                 )}
               </>

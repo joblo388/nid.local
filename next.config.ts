@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: "/outils", destination: "/ressources", permanent: false },
+      { source: "/outils", destination: "/ressources", permanent: true },
     ];
   },
 };

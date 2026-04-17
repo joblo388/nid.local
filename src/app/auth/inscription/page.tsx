@@ -3,28 +3,29 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-// signIn is still used for Google OAuth button
 import Link from "next/link";
+import { useLocale } from "@/lib/useLocale";
 
 export default function InscriptionPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [website, setWebsite] = useState(""); // honeypot
+  const [website, setWebsite] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
     if (username.length < 3 || username.length > 20)
-      return setError("Le nom d'utilisateur doit faire entre 3 et 20 caractères.");
+      return setError(t("auth.username_length"));
     if (!/^[a-z0-9_]+$/.test(username))
-      return setError("Nom d'utilisateur invalide (lettres, chiffres, _ seulement).");
+      return setError(t("auth.username_invalid"));
     if (password.length < 8)
-      return setError("Le mot de passe doit faire au moins 8 caractères.");
+      return setError(t("auth.password_min"));
 
     setLoading(true);
 
@@ -40,15 +41,14 @@ export default function InscriptionPage() {
       try { data = JSON.parse(text); } catch { /* HTML error page */ }
 
       if (!res.ok) {
-        setError(data.error ?? `Erreur ${res.status} : vérifie la console du serveur.`);
+        setError(data.error ?? t("auth.error_generic"));
         setLoading(false);
         return;
       }
 
-      // Rediriger vers la page de vérification courriel
       router.push(`/auth/verifier-courriel?email=${encodeURIComponent(email)}`);
     } catch {
-      setError("Impossible de contacter le serveur.");
+      setError(t("auth.error_generic"));
       setLoading(false);
     }
   }
@@ -56,44 +56,39 @@ export default function InscriptionPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "var(--bg-page)" }}>
       <div className="w-full max-w-[400px]">
-        {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="text-[22px] font-black tracking-tight">
             <span style={{ color: "var(--text-primary)" }}>nid</span>
             <span style={{ color: "var(--green)" }}>.local</span>
           </Link>
           <p className="text-[13px] mt-2" style={{ color: "var(--text-tertiary)" }}>
-            Rejoignez la communauté québécoise
+            {t("auth.create_account")}
           </p>
         </div>
 
-        {/* Card */}
         <div
           className="rounded-xl p-6 space-y-4"
           style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
         >
-          {/* Google */}
           <button
             onClick={() => signIn("google", { callbackUrl: "/" })}
             className="w-full flex items-center justify-center gap-3 py-2.5 rounded-xl text-[14px] font-medium transition-opacity hover:opacity-80"
             style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", border: "0.5px solid var(--border)" }}
           >
             <GoogleIcon />
-            Continuer avec Google
+            {t("auth.google")}
           </button>
 
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-[0.5px]" style={{ background: "var(--border)" }} />
-            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>ou</span>
+            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{t("common.ou")}</span>
             <div className="flex-1 h-[0.5px]" style={{ background: "var(--border)" }} />
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-                Nom d&apos;utilisateur
+                {t("auth.username")}
               </label>
               <div className="relative">
                 <span
@@ -107,7 +102,7 @@ export default function InscriptionPage() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
-                  placeholder="votre_pseudo"
+                  placeholder={t("auth.username_placeholder")}
                   maxLength={20}
                   className="w-full pl-8 pr-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
                   style={{
@@ -117,21 +112,18 @@ export default function InscriptionPage() {
                   }}
                 />
               </div>
-              <p className="text-[11px] mt-1" style={{ color: "var(--text-tertiary)" }}>
-                Lettres, chiffres et _ · 3–20 caractères
-              </p>
             </div>
 
             <div>
               <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-                Courriel
+                {t("auth.email")}
               </label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="vous@exemple.com"
+                placeholder={t("auth.email_placeholder")}
                 className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
                 style={{
                   background: "var(--bg-secondary)",
@@ -143,14 +135,14 @@ export default function InscriptionPage() {
 
             <div>
               <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-                Mot de passe
+                {t("auth.password")}
               </label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimum 8 caractères"
+                placeholder={t("auth.password_min")}
                 className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
                 style={{
                   background: "var(--bg-secondary)",
@@ -160,7 +152,6 @@ export default function InscriptionPage() {
               />
             </div>
 
-            {/* Honeypot — invisible to humans, bots fill it */}
             <div style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, overflow: "hidden" }} aria-hidden="true" tabIndex={-1}>
               <label>Website</label>
               <input type="text" name="website" value={website} onChange={(e) => setWebsite(e.target.value)} autoComplete="off" tabIndex={-1} />
@@ -178,19 +169,15 @@ export default function InscriptionPage() {
               className="w-full py-2.5 rounded-xl text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
               style={{ background: "var(--green)" }}
             >
-              {loading ? "Création du compte..." : "Créer mon compte"}
+              {loading ? t("auth.loading") : t("auth.create_account")}
             </button>
           </form>
-
-          <p className="text-[11px] text-center" style={{ color: "var(--text-tertiary)" }}>
-            En créant un compte, vous acceptez les conditions d&apos;utilisation.
-          </p>
         </div>
 
         <p className="text-center text-[13px] mt-5" style={{ color: "var(--text-tertiary)" }}>
-          Déjà un compte ?{" "}
+          {t("auth.already_have_account")}{" "}
           <Link href="/auth/connexion" className="font-semibold transition-opacity hover:opacity-70" style={{ color: "var(--green)" }}>
-            Se connecter
+            {t("auth.connexion")}
           </Link>
         </p>
       </div>

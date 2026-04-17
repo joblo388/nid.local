@@ -5,24 +5,22 @@ import { useRouter } from "next/navigation";
 import { villes, quartiersDeVille } from "@/lib/data";
 import { MarkdownEditor } from "@/components/MarkdownEditor";
 import { useConfetti } from "@/components/Confetti";
+import { useLocale } from "@/lib/useLocale";
 
 const DRAFT_KEY = "nid_nouveau_post_draft";
 
-const CATEGORIES = [
-  { value: "question", label: "Question" },
-  { value: "vente", label: "Vente" },
-  { value: "location", label: "Location" },
-  { value: "renovation", label: "Conseil / Rénovation" },
-  { value: "voisinage", label: "Voisinage" },
-  { value: "construction", label: "Construction" },
-  { value: "legal", label: "Légal" },
-  { value: "financement", label: "Financement" },
-  { value: "copropriete", label: "Condo" },
-];
+const CATEGORY_VALUES = ["question", "vente", "location", "renovation", "voisinage", "construction", "legal", "financement", "copropriete"] as const;
+const CATEGORY_KEYS: Record<string, string> = {
+  question: "cat.question", vente: "cat.vente", location: "cat.location",
+  renovation: "cat.renovation", voisinage: "cat.voisinage",
+  construction: "cat.construction", legal: "cat.legal",
+  financement: "cat.financement", copropriete: "cat.condo",
+};
 
 export function NouveauPostForm() {
   const router = useRouter();
   const { celebrate } = useConfetti();
+  const { t } = useLocale();
   const [titre, setTitre] = useState("");
   const [contenu, setContenu] = useState("");
   const [villeSlug, setVilleSlug] = useState("montreal");
@@ -116,7 +114,7 @@ export function NouveauPostForm() {
     if (showPoll) {
       const filledOptions = pollOptions.filter((o) => o.trim());
       if (filledOptions.length < 2) {
-        setErreur("Le sondage doit avoir au moins 2 options.");
+        setErreur(t("auth.error_generic"));
         return;
       }
     }
@@ -137,14 +135,14 @@ export function NouveauPostForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setErreur(data.error ?? "Une erreur est survenue.");
+        setErreur(data.error ?? t("auth.error_generic"));
         return;
       }
       clearDraft();
       celebrate();
       router.push(`/post/${data.id}`);
     } catch {
-      setErreur("Une erreur est survenue. Veuillez réessayer.");
+      setErreur(t("auth.error_generic"));
     } finally {
       setLoading(false);
     }
@@ -180,7 +178,7 @@ export function NouveauPostForm() {
             : { background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
           }
         >
-          Discussion
+          {t("sidebar.discussions")}
         </button>
         <button
           type="button"
@@ -191,29 +189,29 @@ export function NouveauPostForm() {
             : { background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
           }
         >
-          Sondage
+          {t("poll.titre")}
         </button>
       </div>
 
       {/* Catégorie */}
       <div>
         <label className="block text-[12px] font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
-          Catégorie
+          {t("post.categorie")}
         </label>
         <div className="flex flex-wrap gap-1.5">
-          {CATEGORIES.map((cat) => (
+          {CATEGORY_VALUES.map((val) => (
             <button
-              key={cat.value}
+              key={val}
               type="button"
-              onClick={() => setCategorie(cat.value)}
+              onClick={() => setCategorie(val)}
               className="px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors"
               style={
-                categorie === cat.value
+                categorie === val
                   ? { background: "var(--green)", color: "#fff" }
                   : { background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
               }
             >
-              {cat.label}
+              {t(CATEGORY_KEYS[val])}
             </button>
           ))}
         </div>
@@ -222,7 +220,7 @@ export function NouveauPostForm() {
       {/* Titre */}
       <div>
         <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Titre
+          {t("post.titre")}
         </label>
         <input
           type="text"
@@ -248,7 +246,7 @@ export function NouveauPostForm() {
           <MarkdownEditor
             value={contenu}
             onChange={setContenu}
-            placeholder="Décrivez votre question, annonce ou situation en détail…"
+            placeholder={t("post.contenu_placeholder")}
             required
             minLength={20}
             rows={6}
@@ -260,7 +258,7 @@ export function NouveauPostForm() {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Ville <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>(optionnel)</span>
+            {t("post.ville")} <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>({t("common.optionnel")})</span>
           </label>
           <select
             value={villeSlug}
@@ -277,7 +275,7 @@ export function NouveauPostForm() {
         {villeSlug && quartiersDispo.length > 0 && (
           <div>
             <label className="block text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
-              Quartier <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>(optionnel)</span>
+              {t("post.quartier")} <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>({t("common.optionnel")})</span>
             </label>
             <select
               value={quartierSlug}
@@ -401,7 +399,7 @@ export function NouveauPostForm() {
         className="w-full py-3 rounded-xl text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
         style={{ background: "var(--green)" }}
       >
-        {imageUploading ? "Téléversement de l'image…" : loading ? "Publication en cours…" : "Publier la discussion"}
+        {imageUploading ? "\u2026" : loading ? t("post.publier_loading") : t("post.publier")}
       </button>
     </form>
   );

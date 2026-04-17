@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { ConciergeModal } from "@/components/ConciergeModal";
+import { useLocale } from "@/lib/useLocale";
 
 export function ConciergeCard() {
   const [open, setOpen] = useState(false);
+  const { t } = useLocale();
 
   return (
     <>
@@ -20,20 +22,19 @@ export function ConciergeCard() {
             className="text-[13px] font-semibold leading-snug"
             style={{ color: "var(--text-primary)" }}
           >
-            On publie votre annonce pour vous
+            {t("concierge.titre")}
           </h3>
           <p
             className="text-[11px] font-medium mt-0.5"
             style={{ color: "var(--amber-text)" }}
           >
-            Gratuit, réponse en 24h
+            {t("concierge.desc")}
           </p>
           <p
             className="text-[11px] mt-2 leading-relaxed"
             style={{ color: "var(--text-secondary)" }}
           >
-            Envoyez-nous les infos de votre propriété et on s&apos;occupe de
-            créer une belle annonce pour vous.
+            {t("concierge.long_desc")}
           </p>
           <button
             onClick={() => setOpen(true)}
@@ -53,7 +54,7 @@ export function ConciergeCard() {
               transition: "opacity 0.15s",
             }}
           >
-            Soumettre ma propriété
+            {t("concierge.soumettre")}
           </button>
         </div>
       </div>

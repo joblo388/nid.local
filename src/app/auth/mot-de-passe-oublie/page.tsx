@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLocale } from "@/lib/useLocale";
 
 export default function MotDePasseOubliePage() {
+  const { t } = useLocale();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,12 +23,12 @@ export default function MotDePasseOubliePage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error ?? "Une erreur est survenue.");
+        setError(data.error ?? t("auth.error_generic"));
         return;
       }
       setSubmitted(true);
     } catch {
-      setError("Impossible de contacter le serveur.");
+      setError(t("auth.error_generic"));
     } finally {
       setLoading(false);
     }
@@ -41,7 +43,7 @@ export default function MotDePasseOubliePage() {
             <span style={{ color: "var(--green)" }}>.local</span>
           </Link>
           <p className="text-[13px] mt-2" style={{ color: "var(--text-tertiary)" }}>
-            Réinitialiser votre mot de passe
+            {t("auth.reset_password")}
           </p>
         </div>
 
@@ -60,34 +62,34 @@ export default function MotDePasseOubliePage() {
                 </svg>
               </div>
               <p className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>
-                Courriel envoyé
+                {t("auth.email_sent")}
               </p>
               <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-                Si ce courriel est associé à un compte, vous recevrez un lien de réinitialisation dans quelques instants.
+                {t("auth.email_sent_desc")}
               </p>
               <Link
                 href="/auth/connexion"
                 className="inline-block mt-2 text-[13px] font-medium transition-opacity hover:opacity-70"
                 style={{ color: "var(--green)" }}
               >
-                Retour à la connexion
+                {t("auth.back_to_login")}
               </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-                Entrez votre adresse courriel et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+                {t("auth.reset_desc")}
               </p>
               <div>
                 <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-                  Courriel
+                  {t("auth.email")}
                 </label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="vous@exemple.com"
+                  placeholder={t("auth.email_placeholder")}
                   className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
                   style={{
                     background: "var(--bg-secondary)",
@@ -109,7 +111,7 @@ export default function MotDePasseOubliePage() {
                 className="w-full py-2.5 rounded-xl text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: "var(--green)" }}
               >
-                {loading ? "Envoi..." : "Envoyer le lien"}
+                {loading ? t("auth.sending") : t("auth.send_link")}
               </button>
             </form>
           )}
@@ -118,7 +120,7 @@ export default function MotDePasseOubliePage() {
         {!submitted && (
           <p className="text-center text-[13px] mt-5" style={{ color: "var(--text-tertiary)" }}>
             <Link href="/auth/connexion" className="font-semibold transition-opacity hover:opacity-70" style={{ color: "var(--green)" }}>
-              Retour à la connexion
+              {t("auth.back_to_login")}
             </Link>
           </p>
         )}

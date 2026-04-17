@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLocale } from "@/lib/useLocale";
 
 export function QuickCalcClient() {
+  const { t } = useLocale();
   const [revenu, setRevenu] = useState("");
   const [mise, setMise] = useState("");
 
@@ -24,7 +26,7 @@ export function QuickCalcClient() {
           className="text-[10px] font-semibold uppercase tracking-wider"
           style={{ color: "var(--text-tertiary)" }}
         >
-          Calculateur rapide
+          {t("calc.rapide")}
         </h3>
       </div>
       <div className="p-4 space-y-3">
@@ -33,7 +35,7 @@ export function QuickCalcClient() {
             className="text-[11px] font-medium block mb-1"
             style={{ color: "var(--text-secondary)" }}
           >
-            Revenu annuel ($)
+            {t("calc.revenu_annuel")}
           </label>
           <input
             type="text"
@@ -54,7 +56,7 @@ export function QuickCalcClient() {
             className="text-[11px] font-medium block mb-1"
             style={{ color: "var(--text-secondary)" }}
           >
-            Mise de fonds ($)
+            {t("calc.mise_de_fonds_dollar")}
           </label>
           <input
             type="text"
@@ -80,7 +82,7 @@ export function QuickCalcClient() {
               className="text-[10px] font-semibold uppercase tracking-wider mb-0.5"
               style={{ color: "var(--amber-text)" }}
             >
-              Capacité estimée
+              {t("calc.capacite_estimee")}
             </p>
             <p
               className="text-[16px] font-bold"
@@ -100,7 +102,7 @@ export function QuickCalcClient() {
             border: "0.5px solid var(--border)",
           }}
         >
-          Calcul détaillé
+          {t("calc.calcul_detaille")}
         </Link>
       </div>
     </div>

@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 export function BackToTop() {
+  const { t } = useLocale();
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const handler = () => setVisible(window.scrollY > 300);
@@ -11,7 +13,7 @@ export function BackToTop() {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Retour en haut"
+      aria-label={t("backtotop")}
       className="fixed z-50 flex items-center justify-center w-10 h-10 rounded-full transition-opacity"
       style={{
         bottom: 80, right: 20,

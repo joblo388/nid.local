@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useLocale } from "@/lib/useLocale";
 
-const RAISONS = [
-  "Contenu inapproprié",
-  "Spam ou publicité",
-  "Information fausse ou trompeuse",
-  "Harcèlement ou abus",
-  "Autre",
+const RAISON_KEYS = [
+  "report.inapproprie",
+  "report.spam",
+  "report.faux",
+  "report.harcelement",
+  "report.autre",
 ];
 
 export function ReportButton({ type, targetId }: { type: "post" | "comment" | "listing"; targetId: string }) {
   const { data: session } = useSession();
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export function ReportButton({ type, targetId }: { type: "post" | "comment" | "l
 
   if (!session || done) {
     return done ? (
-      <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>Signalement envoyé</span>
+      <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{t("report.envoye")}</span>
     ) : null;
   }
 
@@ -44,7 +46,7 @@ export function ReportButton({ type, targetId }: { type: "post" | "comment" | "l
         className="text-[11px] transition-opacity hover:opacity-70"
         style={{ color: "var(--text-tertiary)" }}
       >
-        Signaler
+        {t("report.signaler")}
       </button>
 
       {open && (
@@ -53,22 +55,25 @@ export function ReportButton({ type, targetId }: { type: "post" | "comment" | "l
           style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)", boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
         >
           <p className="text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>
-            Raison du signalement
+            {t("report.raison")}
           </p>
           <div className="space-y-1">
-            {RAISONS.map((r) => (
-              <button
-                key={r}
-                onClick={() => setReason(r)}
-                className="w-full text-left px-2.5 py-1.5 rounded-lg text-[12px] transition-colors"
-                style={{
-                  background: reason === r ? "var(--green-light-bg)" : "transparent",
-                  color: reason === r ? "var(--green-text)" : "var(--text-secondary)",
-                }}
-              >
-                {r}
-              </button>
-            ))}
+            {RAISON_KEYS.map((key) => {
+              const label = t(key);
+              return (
+                <button
+                  key={key}
+                  onClick={() => setReason(label)}
+                  className="w-full text-left px-2.5 py-1.5 rounded-lg text-[12px] transition-colors"
+                  style={{
+                    background: reason === label ? "var(--green-light-bg)" : "transparent",
+                    color: reason === label ? "var(--green-text)" : "var(--text-secondary)",
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
           <div className="flex gap-2 pt-1">
             <button
@@ -77,14 +82,14 @@ export function ReportButton({ type, targetId }: { type: "post" | "comment" | "l
               className="flex-1 py-1.5 rounded-lg text-[12px] font-semibold text-white disabled:opacity-40"
               style={{ background: "var(--green)" }}
             >
-              {loading ? "…" : "Envoyer"}
+              {loading ? "\u2026" : t("common.envoyer")}
             </button>
             <button
               onClick={() => setOpen(false)}
               className="px-3 py-1.5 rounded-lg text-[12px] transition-opacity hover:opacity-70"
               style={{ color: "var(--text-tertiary)" }}
             >
-              Annuler
+              {t("common.annuler")}
             </button>
           </div>
         </div>

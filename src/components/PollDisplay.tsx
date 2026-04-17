@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 type PollOption = {
   id: string;
@@ -17,6 +18,7 @@ type PollData = {
 };
 
 export function PollDisplay({ pollId }: { pollId: string }) {
+  const { t } = useLocale();
   const [poll, setPoll] = useState<PollData | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
@@ -52,12 +54,12 @@ export function PollDisplay({ pollId }: { pollId: string }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Une erreur est survenue.");
+        setError(data.error ?? t("auth.error_generic"));
         return;
       }
       setPoll(data);
     } catch {
-      setError("Une erreur est survenue.");
+      setError(t("auth.error_generic"));
     } finally {
       setVoting(false);
     }
@@ -112,7 +114,7 @@ export function PollDisplay({ pollId }: { pollId: string }) {
           />
         </svg>
         <span className="text-[13px] font-semibold" style={{ color: "var(--text-primary)" }}>
-          Sondage
+          {t("poll.titre")}
         </span>
       </div>
 
@@ -218,8 +220,8 @@ export function PollDisplay({ pollId }: { pollId: string }) {
       )}
 
       <p className="mt-3 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-        {poll.totalVotes} vote{poll.totalVotes !== 1 ? "s" : ""}
-        {hasVoted && " · Vous avez voté"}
+        {poll.totalVotes} {poll.totalVotes !== 1 ? t("poll.votes") : t("poll.vote")}
+        {hasVoted && ` · ${t("poll.voted")}`}
       </p>
     </div>
   );

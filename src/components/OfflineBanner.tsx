@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 export function OfflineBanner() {
+  const { t } = useLocale();
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export function OfflineBanner() {
           flexShrink: 0,
         }}
       />
-      Mode hors-ligne : les calculatrices restent disponibles
+      {t("offline.banner")}
     </div>
   );
 }

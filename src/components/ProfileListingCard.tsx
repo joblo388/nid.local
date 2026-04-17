@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/lib/useLocale";
 
 type Props = {
   listing: {
@@ -18,14 +19,15 @@ type Props = {
   isOwn: boolean;
 };
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  active: { bg: "var(--green-light-bg)", text: "var(--green-text)", label: "Active" },
-  vendu: { bg: "var(--red-bg)", text: "var(--red-text)", label: "Vendu" },
-  retire: { bg: "var(--bg-secondary)", text: "var(--text-tertiary)", label: "Retiré" },
+const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
+  active: { bg: "var(--green-light-bg)", text: "var(--green-text)", labelKey: "listing.remettre_active" },
+  vendu: { bg: "var(--red-bg)", text: "var(--red-text)", labelKey: "listing.marquer_vendu" },
+  retire: { bg: "var(--bg-secondary)", text: "var(--text-tertiary)", labelKey: "listing.retirer" },
 };
 
 export function ProfileListingCard({ listing, isOwn }: Props) {
   const router = useRouter();
+  const { t } = useLocale();
   const [showActions, setShowActions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -83,14 +85,14 @@ export function ProfileListingCard({ listing, isOwn }: Props) {
               className="text-[10px] font-medium px-1.5 py-0.5 rounded-md shrink-0"
               style={{ background: status.bg, color: status.text }}
             >
-              {status.label}
+              {t(status.labelKey)}
             </span>
           </div>
           <p className="text-[13px] truncate" style={{ color: "var(--text-secondary)" }}>
             {listing.titre}
           </p>
           <p className="text-[11px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-            {listing.adresse} · {listing.nbVues} vues · {listing.nbClics} clics
+            {listing.adresse} · {listing.nbVues} {t("common.vues")} · {listing.nbClics} clics
           </p>
         </div>
       </Link>
@@ -103,21 +105,21 @@ export function ProfileListingCard({ listing, isOwn }: Props) {
         >
           {confirmDelete ? (
             <div className="flex items-center gap-2">
-              <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>Supprimer ?</span>
+              <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{t("common.supprimer")} ?</span>
               <button
                 onClick={handleDelete}
                 disabled={loading}
                 className="text-[11px] font-medium px-2.5 py-1 rounded-md"
                 style={{ background: "var(--red-bg)", color: "var(--red-text)", border: "none", cursor: "pointer", fontFamily: "inherit" }}
               >
-                {loading ? "…" : "Confirmer"}
+                {loading ? "\u2026" : t("common.confirmer")}
               </button>
               <button
                 onClick={() => setConfirmDelete(false)}
                 className="text-[11px]"
                 style={{ color: "var(--text-tertiary)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}
               >
-                Annuler
+                {t("common.annuler")}
               </button>
             </div>
           ) : showActions ? (
@@ -127,7 +129,7 @@ export function ProfileListingCard({ listing, isOwn }: Props) {
                 className="text-[11px] font-medium px-2.5 py-1 rounded-md"
                 style={{ background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }}
               >
-                Modifier
+                {t("common.modifier")}
               </Link>
               {listing.statut === "active" ? (
                 <button
@@ -136,7 +138,7 @@ export function ProfileListingCard({ listing, isOwn }: Props) {
                   className="text-[11px] font-medium px-2.5 py-1 rounded-md"
                   style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "none", cursor: "pointer", fontFamily: "inherit" }}
                 >
-                  Marquer vendu
+                  {t("listing.marquer_vendu")}
                 </button>
               ) : (
                 <button
@@ -145,7 +147,7 @@ export function ProfileListingCard({ listing, isOwn }: Props) {
                   className="text-[11px] font-medium px-2.5 py-1 rounded-md"
                   style={{ background: "var(--green-light-bg)", color: "var(--green-text)", border: "none", cursor: "pointer", fontFamily: "inherit" }}
                 >
-                  Remettre active
+                  {t("listing.remettre_active")}
                 </button>
               )}
               <button
@@ -153,14 +155,14 @@ export function ProfileListingCard({ listing, isOwn }: Props) {
                 className="text-[11px]"
                 style={{ color: "var(--red-text)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}
               >
-                Supprimer
+                {t("common.supprimer")}
               </button>
               <button
                 onClick={() => setShowActions(false)}
                 className="text-[11px]"
                 style={{ color: "var(--text-tertiary)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", marginLeft: "auto" }}
               >
-                Fermer
+                {t("common.fermer")}
               </button>
             </div>
           ) : (
@@ -169,7 +171,7 @@ export function ProfileListingCard({ listing, isOwn }: Props) {
               className="text-[11px] font-medium transition-opacity hover:opacity-70"
               style={{ color: "var(--text-tertiary)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}
             >
-              Gérer l&apos;annonce ›
+              {t("common.modifier")} ›
             </button>
           )}
         </div>

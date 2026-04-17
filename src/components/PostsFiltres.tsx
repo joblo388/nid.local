@@ -4,31 +4,28 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Post, Categorie } from "@/lib/types";
 import { PostCard } from "./PostCard";
+import { useLocale } from "@/lib/useLocale";
 
 const PAGE_SIZE = 20;
 
-const CATEGORIES: { value: Categorie | "tous"; label: string }[] = [
-  { value: "tous", label: "Tout" },
-  { value: "vente", label: "Vente" },
-  { value: "location", label: "Location" },
-  { value: "question", label: "Questions" },
-  { value: "renovation", label: "Conseils" },
-  { value: "voisinage", label: "Voisinage" },
-  { value: "construction", label: "Construction" },
-  { value: "legal", label: "Légal" },
-  { value: "financement", label: "Financement" },
-  { value: "copropriete", label: "Condo" },
+const CATEGORY_VALUES: (Categorie | "tous")[] = [
+  "tous", "vente", "location", "question", "renovation",
+  "voisinage", "construction", "legal", "financement", "copropriete",
 ];
 
-const TRIS = [
-  { value: "populaire", label: "Populaires" },
-  { value: "recent", label: "Récents" },
-  { value: "actif", label: "Actifs" },
-] as const;
+const CATEGORY_KEYS: Record<string, string> = {
+  tous: "home.tout",
+  vente: "cat.vente", location: "cat.location", question: "cat.question",
+  renovation: "cat.renovation", voisinage: "cat.voisinage",
+  construction: "cat.construction", legal: "cat.legal",
+  financement: "cat.financement", copropriete: "cat.condo",
+};
 
-const CATEGORIE_LABELS: Record<string, string> = {
-  vente: "Vente", location: "Location", question: "Questions",
-  renovation: "Conseils", voisinage: "Voisinage", alerte: "Alertes",
+const TRI_VALUES = ["populaire", "recent", "actif"] as const;
+const TRI_KEYS: Record<string, string> = {
+  populaire: "home.populaires",
+  recent: "home.recents",
+  actif: "home.actifs",
 };
 
 function Pagination({ page, total, onPage }: { page: number; total: number; onPage: (p: number) => void }) {
@@ -115,6 +112,7 @@ export function PostsFiltres({
   quartierSlug,
   isAdmin = false,
 }: Props) {
+  const { t } = useLocale();
   const [categorie, setCategorie] = useState<string>("tous");
   const [tri, setTri] = useState<"populaire" | "recent" | "actif">("populaire");
   const [page, setPage] = useState(1);
@@ -174,34 +172,34 @@ export function PostsFiltres({
       {/* Filtres */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex flex-wrap gap-1.5 flex-1">
-          {CATEGORIES.map((cat) => (
+          {CATEGORY_VALUES.map((val) => (
             <button
-              key={cat.value}
-              onClick={() => setCategorie(cat.value)}
+              key={val}
+              onClick={() => setCategorie(val)}
               className="px-2.5 py-1 rounded-lg text-[12px] font-medium transition-colors"
               style={
-                categorie === cat.value
+                categorie === val
                   ? { background: "var(--green)", color: "#fff" }
                   : { background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
               }
             >
-              {cat.label}
+              {t(CATEGORY_KEYS[val])}
             </button>
           ))}
         </div>
         <div className="flex gap-1">
-          {TRIS.map((t) => (
+          {TRI_VALUES.map((val) => (
             <button
-              key={t.value}
-              onClick={() => setTri(t.value)}
+              key={val}
+              onClick={() => setTri(val)}
               className="px-2.5 py-1 rounded-lg text-[12px] font-medium transition-colors"
               style={
-                tri === t.value
+                tri === val
                   ? { background: "var(--bg-secondary)", color: "var(--text-primary)", border: "0.5px solid var(--border-secondary)" }
                   : { color: "var(--text-tertiary)" }
               }
             >
-              {t.label}
+              {t(TRI_KEYS[val])}
             </button>
           ))}
         </div>
@@ -209,7 +207,7 @@ export function PostsFiltres({
 
       {/* Compteur */}
       <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-        Discussions{" "}
+        {t("sidebar.discussions")}{" "}
         <span
           className="ml-1 px-1.5 py-0.5 rounded-md text-[11px] font-bold normal-case tracking-normal"
           style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}
@@ -235,7 +233,7 @@ export function PostsFiltres({
             {categorie !== "tous" ? (
               <>
                 <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
-                  Aucune discussion dans la catégorie <span className="font-semibold">{CATEGORIE_LABELS[categorie] ?? categorie}</span> pour l&apos;instant.
+                  {t("home.aucune_discussion")}
                 </p>
                 <div className="flex items-center justify-center gap-3">
                   <button
@@ -243,7 +241,7 @@ export function PostsFiltres({
                     className="text-[12px] font-medium transition-opacity hover:opacity-70"
                     style={{ color: "var(--green)" }}
                   >
-                    Voir toutes les catégories
+                    {t("common.voir_tout")}
                   </button>
                   <span style={{ color: "var(--border-secondary)" }}>·</span>
                   <Link
@@ -251,21 +249,21 @@ export function PostsFiltres({
                     className="text-[12px] font-semibold text-white px-3 py-1.5 rounded-lg"
                     style={{ background: "var(--green)" }}
                   >
-                    Publier dans cette catégorie
+                    {t("common.publier")}
                   </Link>
                 </div>
               </>
             ) : (
               <>
                 <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
-                  Aucune discussion pour l&apos;instant.
+                  {t("home.aucune_discussion")}
                 </p>
                 <Link
                   href="/nouveau-post"
                   className="inline-block text-[13px] font-semibold text-white px-4 py-2 rounded-lg"
                   style={{ background: "var(--green)" }}
                 >
-                  Soyez le premier à publier
+                  {t("home.premier_publier")}
                 </Link>
               </>
             )}

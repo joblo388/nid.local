@@ -5,6 +5,8 @@ import { TaxeBienvenueClient } from "./TaxeBienvenueClient";
 import { CalcActions } from "@/components/CalcActions";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
+import { getServerLocale } from "@/lib/serverLocale";
+import { calcContent } from "./content";
 import type { Metadata } from "next";
 
 const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.local";
@@ -109,6 +111,9 @@ const jsonLd = {
 const ressources = ressourcesUtiles;
 
 export default async function TaxeBienvenuePage() {
+  const locale = await getServerLocale();
+  const c = calcContent[locale];
+
   const dbPosts = await prisma.post.findMany({
     orderBy: [{ epingle: "desc" }, { nbVotes: "desc" }],
     take: 5,
@@ -130,7 +135,7 @@ export default async function TaxeBienvenuePage() {
               nid.local
             </Link>
             <span>/</span>
-            <span style={{ color: "var(--text-secondary)" }}>Taxe de bienvenue</span>
+            <span style={{ color: "var(--text-secondary)" }}>{c.breadcrumb}</span>
           </nav>
 
           <div className="flex gap-5 items-start">
@@ -138,11 +143,10 @@ export default async function TaxeBienvenuePage() {
             <div className="flex-1 min-w-0 space-y-5">
               <div>
                 <h1 className="text-[22px] font-bold leading-snug mb-2" style={{ color: "var(--text-primary)" }}>
-                  Calculateur de taxe de bienvenue Québec
+                  {c.h1}
                 </h1>
                 <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Calculez les droits de mutation immobilière pour votre achat au Québec. Taux par tranche, surcharge
-                  Montréal et exemptions pour premiers acheteurs inclus.
+                  {c.intro}
                 </p>
               </div>
 
@@ -161,26 +165,10 @@ export default async function TaxeBienvenuePage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
-                  Comment fonctionne la taxe de bienvenue?
+                  {c.howItWorks}
                 </h2>
                 <div className="grid md:grid-cols-3 gap-4">
-                  {[
-                    {
-                      n: "1",
-                      titre: "Base de calcul",
-                      texte: "La taxe est calculée sur le montant le plus élevé entre le prix d'achat et la valeur au rôle d'évaluation municipale multipliée par le facteur comparatif.",
-                    },
-                    {
-                      n: "2",
-                      titre: "Taux par tranche",
-                      texte: "Les taux sont progressifs : 0,5% sur les premiers 58 900 $, puis 1,0% et 1,5% sur les tranches suivantes. Montréal applique des taux plus élevés au-delà de 500 000 $.",
-                    },
-                    {
-                      n: "3",
-                      titre: "Paiement unique",
-                      texte: "La taxe est payable une seule fois dans les 90 jours suivant la réception du compte. Elle ne peut pas être ajoutée à votre hypothèque.",
-                    },
-                  ].map((step) => (
+                  {c.steps.map((step) => (
                     <div key={step.n} className="flex gap-3">
                       <div
                         className="w-6 h-6 rounded-full text-[12px] font-bold flex items-center justify-center shrink-0 mt-0.5 text-white"
@@ -203,35 +191,10 @@ export default async function TaxeBienvenuePage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
-                  Barèmes des droits de mutation au Québec 2026
+                  {c.ratesTitle}
                 </h2>
                 <div className="space-y-3">
-                  {[
-                    {
-                      titre: "Taux de base (toutes les villes)",
-                      texte: "0,5% sur les premiers 58 900 $, 1,0% de 58 900 $ à 294 600 $, 1,5% au-delà de 294 600 $.",
-                      couleur: "var(--blue-bg)",
-                      textColor: "var(--blue-text)",
-                    },
-                    {
-                      titre: "Taux Montréal (au-delà de 500 000 $)",
-                      texte: "2,0% de 500 000 $ à 1 000 000 $, 2,5% au-delà de 1 000 000 $. Ces taux remplacent le 1,5% de base.",
-                      couleur: "var(--amber-bg)",
-                      textColor: "var(--amber-text)",
-                    },
-                    {
-                      titre: "Taxe supplémentaire de Montréal",
-                      texte: "En plus des droits de base, Montréal prélève une surtaxe : 0,5% de 500 000 $ à 1 000 000 $, 1,0% de 1 M$ à 2 M$, 1,5% au-delà de 2 M$.",
-                      couleur: "var(--red-bg)",
-                      textColor: "var(--red-text)",
-                    },
-                    {
-                      titre: "Exemptions possibles",
-                      texte: "Certaines municipalités offrent un remboursement de la taxe pour les premiers acheteurs. Le transfert entre conjoints et certains liens de parenté directs peuvent aussi être exemptés.",
-                      couleur: "var(--green-light-bg)",
-                      textColor: "var(--green-text)",
-                    },
-                  ].map((rule) => (
+                  {c.rules.map((rule) => (
                     <div key={rule.titre} className="flex gap-3 p-3 rounded-lg" style={{ background: rule.couleur }}>
                       <div className="flex-1">
                         <p className="text-[12px] font-semibold mb-0.5" style={{ color: rule.textColor }}>{rule.titre}</p>
@@ -241,7 +204,7 @@ export default async function TaxeBienvenuePage() {
                   ))}
                 </div>
                 <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                  Ces barèmes sont à titre informatif. Consultez votre notaire pour les montants exacts applicables à votre transaction.
+                  {c.ratesDisclaimer}
                 </p>
               </div>
 
@@ -251,27 +214,10 @@ export default async function TaxeBienvenuePage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
-                  Questions fréquentes sur la taxe de bienvenue
+                  {c.faqTitle}
                 </h2>
                 <dl className="space-y-4">
-                  {[
-                    {
-                      q: "Qu'est-ce que la taxe de bienvenue au Québec?",
-                      r: "La taxe de bienvenue, officiellement appelée droits de mutation immobilière, est un impôt prélevé par les municipalités lors du transfert de propriété d'un immeuble. Elle est calculée sur la base de la plus élevée entre le prix d'achat et la valeur inscrite au rôle d'évaluation municipale. Cette taxe est payable une seule fois, lors de l'achat.",
-                    },
-                    {
-                      q: "Comment est calculée la taxe de bienvenue?",
-                      r: "La taxe est calculée par tranches progressives : 0,5% sur les premiers 58 900 $, 1,0% de 58 900 $ à 294 600 $, et 1,5% sur le montant excédant 294 600 $. À Montréal, des taux plus élevés s'appliquent au-delà de 500 000 $, avec une taxe supplémentaire de 0,5% à 1,5% selon le prix.",
-                    },
-                    {
-                      q: "Y a-t-il des exemptions pour les premiers acheteurs?",
-                      r: "Certaines municipalités offrent un remboursement partiel ou total de la taxe de bienvenue pour les premiers acheteurs. Ces programmes varient d'une ville à l'autre. De plus, les transferts entre conjoints et certains liens de parenté directs peuvent être exemptés de la taxe.",
-                    },
-                    {
-                      q: "Quand doit-on payer la taxe de bienvenue?",
-                      r: "La taxe doit être payée dans les 90 jours suivant la réception du compte envoyé par la municipalité, après l'enregistrement de l'acte de vente. Le montant ne peut pas être financé dans l'hypothèque, il doit être payé séparément. En cas de retard, des intérêts de pénalité s'appliquent.",
-                    },
-                  ].map((item) => (
+                  {c.faqs.map((item) => (
                     <div key={item.q} className="pb-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
                       <dt className="text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-primary)" }}>
                         {item.q}
@@ -286,13 +232,9 @@ export default async function TaxeBienvenuePage() {
 
               {/* Outils connexes */}
               <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.relatedTitle}</h2>
                 <div className="grid sm:grid-cols-3 gap-3">
-                  {[
-                    { href: "/frais-achat", label: "Frais d’achat", desc: "Liste complète des frais à prévoir lors de l’achat d’une propriété." },
-                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypothécaire", desc: "Estimez votre paiement mensuel et la prime SCHL." },
-                    { href: "/premier-acheteur", label: "Guide premier acheteur", desc: "CELIAPP, RAP et aide financière pour votre premier achat." },
-                  ].map((tool) => (
+                  {c.relatedTools.map((tool) => (
                     <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
                       <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
                       <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
@@ -315,7 +257,7 @@ export default async function TaxeBienvenuePage() {
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                Voir les discussions
+                {c.seeDiscussions}
               </Link>
 
               {popularPosts.length > 0 && (
@@ -325,7 +267,7 @@ export default async function TaxeBienvenuePage() {
                 >
                   <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
                     <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                      Discussions populaires
+                      {c.popularDiscussions}
                     </h3>
                   </div>
                   <ul>
@@ -336,7 +278,7 @@ export default async function TaxeBienvenuePage() {
                             {post.titre}
                           </span>
                           <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                            {post.quartier.nom} · {post.nbVotes} vote{post.nbVotes !== 1 ? "s" : ""}
+                            {post.quartier.nom} · {post.nbVotes} {post.nbVotes !== 1 ? c.votePlural : c.voteSingular}
                           </span>
                         </Link>
                       </li>
@@ -344,7 +286,7 @@ export default async function TaxeBienvenuePage() {
                   </ul>
                   <div className="px-4 py-2.5">
                     <Link href="/" className="text-[12px] font-medium transition-opacity hover:opacity-70" style={{ color: "var(--green)" }}>
-                      Toutes les discussions →
+                      {c.allDiscussions} →
                     </Link>
                   </div>
                 </div>
@@ -356,7 +298,7 @@ export default async function TaxeBienvenuePage() {
               >
                 <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
                   <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                    Ressources utiles
+                    {c.usefulResources}
                   </h3>
                 </div>
                 <ul>
@@ -379,19 +321,18 @@ export default async function TaxeBienvenuePage() {
                 style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
               >
                 <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
-                  À propos de l&apos;outil
+                  {c.aboutTool}
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Les calculs sont basés sur les barèmes de droits de mutation immobilière du Québec en vigueur en 2026.
-                  La taxe supplémentaire de Montréal est incluse automatiquement.
+                  {c.aboutText1}
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Pour le montant exact, consultez votre <strong>notaire</strong>.
+                  {c.aboutText2}
                 </p>
               </div>
 
               <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>
-                &copy; 2026 nid.local | Fait au Québec
+                {c.copyright}
               </p>
             </aside>
           </div>

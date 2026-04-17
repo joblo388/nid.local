@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/lib/useLocale";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -13,30 +14,6 @@ interface ResultItem {
   href: string;
   icon: "page" | "action" | "post" | "annonce";
 }
-
-// ─── Static data ─────────────────────────────────────────────────────────────
-
-const PAGES: ResultItem[] = [
-  { id: "p-fil", category: "page", title: "Fil", subtitle: "Page", href: "/", icon: "page" },
-  { id: "p-tendances", category: "page", title: "Tendances", subtitle: "Page", href: "/tendances", icon: "page" },
-  { id: "p-villes", category: "page", title: "Villes", subtitle: "Page", href: "/villes", icon: "page" },
-  { id: "p-annonces", category: "page", title: "Annonces", subtitle: "Page", href: "/annonces", icon: "page" },
-  { id: "p-calc", category: "page", title: "Calculatrice", subtitle: "Outils", href: "/calculatrice", icon: "page" },
-  { id: "p-capacite", category: "page", title: "Capacité d\u2019emprunt", subtitle: "Outils", href: "/capacite-emprunt", icon: "page" },
-  { id: "p-marche", category: "page", title: "Données de marché", subtitle: "Outils", href: "/donnees-marche", icon: "page" },
-  { id: "p-estimation", category: "page", title: "Estimation", subtitle: "Outils", href: "/estimation", icon: "page" },
-  { id: "p-suggestions", category: "page", title: "Suggestions", subtitle: "Page", href: "/suggestions", icon: "page" },
-  { id: "p-parametres", category: "page", title: "Paramètres", subtitle: "Page", href: "/parametres", icon: "page" },
-  { id: "p-favoris", category: "page", title: "Favoris", subtitle: "Page", href: "/favoris", icon: "page" },
-  { id: "p-messages", category: "page", title: "Messages", subtitle: "Page", href: "/messages", icon: "page" },
-  { id: "p-alertes", category: "page", title: "Alertes", subtitle: "Page", href: "/alertes", icon: "page" },
-];
-
-const ACTIONS: ResultItem[] = [
-  { id: "a-discussion", category: "action", title: "Nouvelle discussion", subtitle: "Action", href: "/nouveau-post", icon: "action" },
-  { id: "a-annonce", category: "action", title: "Publier une annonce", subtitle: "Action", href: "/annonces/publier", icon: "action" },
-  { id: "a-alerte", category: "action", title: "Créer une alerte", subtitle: "Action", href: "/alertes", icon: "action" },
-];
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 
@@ -90,6 +67,31 @@ export function CommandPalette() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const router = useRouter();
+  const { t } = useLocale();
+
+  // ── Static data (translated) ────────────────────────────────────────────
+
+  const PAGES: ResultItem[] = useMemo(() => [
+    { id: "p-fil", category: "page", title: t("cmd.page.fil"), subtitle: t("cmd.subtitle.page"), href: "/", icon: "page" },
+    { id: "p-tendances", category: "page", title: t("cmd.page.tendances"), subtitle: t("cmd.subtitle.page"), href: "/tendances", icon: "page" },
+    { id: "p-villes", category: "page", title: t("cmd.page.villes"), subtitle: t("cmd.subtitle.page"), href: "/villes", icon: "page" },
+    { id: "p-annonces", category: "page", title: t("cmd.page.annonces"), subtitle: t("cmd.subtitle.page"), href: "/annonces", icon: "page" },
+    { id: "p-calc", category: "page", title: t("cmd.page.calculatrice"), subtitle: t("cmd.subtitle.outils"), href: "/calculatrice", icon: "page" },
+    { id: "p-capacite", category: "page", title: t("cmd.page.capacite"), subtitle: t("cmd.subtitle.outils"), href: "/capacite-emprunt", icon: "page" },
+    { id: "p-marche", category: "page", title: t("cmd.page.marche"), subtitle: t("cmd.subtitle.outils"), href: "/donnees-marche", icon: "page" },
+    { id: "p-estimation", category: "page", title: t("cmd.page.estimation"), subtitle: t("cmd.subtitle.outils"), href: "/estimation", icon: "page" },
+    { id: "p-suggestions", category: "page", title: t("cmd.page.suggestions"), subtitle: t("cmd.subtitle.page"), href: "/suggestions", icon: "page" },
+    { id: "p-parametres", category: "page", title: t("cmd.page.parametres"), subtitle: t("cmd.subtitle.page"), href: "/parametres", icon: "page" },
+    { id: "p-favoris", category: "page", title: t("cmd.page.favoris"), subtitle: t("cmd.subtitle.page"), href: "/favoris", icon: "page" },
+    { id: "p-messages", category: "page", title: t("cmd.page.messages"), subtitle: t("cmd.subtitle.page"), href: "/messages", icon: "page" },
+    { id: "p-alertes", category: "page", title: t("cmd.page.alertes"), subtitle: t("cmd.subtitle.page"), href: "/alertes", icon: "page" },
+  ], [t]);
+
+  const ACTIONS: ResultItem[] = useMemo(() => [
+    { id: "a-discussion", category: "action", title: t("cmd.action.discussion"), subtitle: t("cmd.subtitle.action"), href: "/nouveau-post", icon: "action" },
+    { id: "a-annonce", category: "action", title: t("cmd.action.annonce"), subtitle: t("cmd.subtitle.action"), href: "/annonces/publier", icon: "action" },
+    { id: "a-alerte", category: "action", title: t("cmd.action.alerte"), subtitle: t("cmd.subtitle.action"), href: "/alertes", icon: "action" },
+  ], [t]);
 
   // ── Keyboard shortcut (Cmd+K / Ctrl+K) ──────────────────────────────────
 
@@ -112,7 +114,6 @@ export function CommandPalette() {
       setSelectedIndex(0);
       setApiResults([]);
       setApiLoading(false);
-      // Autofocus after render
       requestAnimationFrame(() => inputRef.current?.focus());
     }
   }, [open]);
@@ -157,7 +158,7 @@ export function CommandPalette() {
               id: `post-${p.id}`,
               category: "post",
               title: p.titre,
-              subtitle: p.quartier?.nom ?? "Discussion",
+              subtitle: p.quartier?.nom ?? t("cmd.discussions"),
               href: `/post/${p.id}`,
               icon: "post",
             });
@@ -173,7 +174,7 @@ export function CommandPalette() {
               id: `annonce-${a.id}`,
               category: "annonce",
               title: a.titre,
-              subtitle: a.quartierNom ?? a.villeNom ?? "Annonce",
+              subtitle: a.quartierNom ?? a.villeNom ?? t("cmd.annonces"),
               href: `/annonces/${a.id}`,
               icon: "annonce",
             });
@@ -182,7 +183,7 @@ export function CommandPalette() {
 
         setApiResults(results);
       } catch {
-        // Silently fail — the palette still works with static results
+        // Silently fail
       } finally {
         setApiLoading(false);
       }
@@ -191,7 +192,7 @@ export function CommandPalette() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [query]);
+  }, [query, t]);
 
   // ── Filtered results ─────────────────────────────────────────────────────
 
@@ -204,7 +205,7 @@ export function CommandPalette() {
         item.title.toLowerCase().includes(q) ||
         item.subtitle.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, PAGES, ACTIONS]);
 
   const allResults = useMemo(() => {
     return [...filteredStatic, ...apiResults];
@@ -219,13 +220,13 @@ export function CommandPalette() {
     const posts = allResults.filter((r) => r.category === "post");
     const annonces = allResults.filter((r) => r.category === "annonce");
 
-    if (pages.length) groups.push({ label: "Pages", items: pages });
-    if (actions.length) groups.push({ label: "Actions", items: actions });
-    if (posts.length) groups.push({ label: "Discussions", items: posts });
-    if (annonces.length) groups.push({ label: "Annonces", items: annonces });
+    if (pages.length) groups.push({ label: t("cmd.pages"), items: pages });
+    if (actions.length) groups.push({ label: t("cmd.actions"), items: actions });
+    if (posts.length) groups.push({ label: t("cmd.discussions"), items: posts });
+    if (annonces.length) groups.push({ label: t("cmd.annonces"), items: annonces });
 
     return groups;
-  }, [allResults]);
+  }, [allResults, t]);
 
   // ── Flat index for keyboard nav ──────────────────────────────────────────
 
@@ -278,11 +279,8 @@ export function CommandPalette() {
     if (el) el.scrollIntoView({ block: "nearest" });
   }, [selectedIndex]);
 
-  // ── Public open method for Header button ─────────────────────────────────
-
   if (!open) return null;
 
-  // ── Flat index counter ───────────────────────────────────────────────────
   let flatIdx = 0;
 
   return (
@@ -301,7 +299,6 @@ export function CommandPalette() {
         }}
         onKeyDown={onKeyDown}
       >
-        {/* ── Search input ─────────────────────────────────────────────── */}
         <div className="flex items-center gap-3 px-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
           <svg
             width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -316,7 +313,7 @@ export function CommandPalette() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher une page, action ou discussion..."
+            placeholder={t("cmd.search_placeholder")}
             className="flex-1 py-3.5 text-[16px] font-normal outline-none"
             style={{
               background: "transparent",
@@ -340,11 +337,10 @@ export function CommandPalette() {
           )}
         </div>
 
-        {/* ── Results ──────────────────────────────────────────────────── */}
         <div ref={listRef} className="overflow-y-auto flex-1 py-2" style={{ scrollbarWidth: "thin" }}>
           {grouped.length === 0 && !apiLoading && (
             <div className="px-4 py-8 text-center text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-              Aucun résultat pour &laquo;{query}&raquo;
+              {t("cmd.no_results")} &laquo;{query}&raquo;
             </div>
           )}
 
@@ -403,21 +399,20 @@ export function CommandPalette() {
 
           {apiLoading && (
             <div className="px-4 py-3 text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-              Recherche en cours...
+              {t("cmd.searching")}
             </div>
           )}
         </div>
 
-        {/* ── Footer ───────────────────────────────────────────────────── */}
         <div
           className="px-4 py-2 flex items-center gap-4 text-[11px] shrink-0"
           style={{ color: "var(--text-tertiary)", borderTop: "0.5px solid var(--border)" }}
         >
-          <span>↑↓ naviguer</span>
+          <span>↑↓ {t("cmd.navigate")}</span>
           <span>·</span>
-          <span>↵ ouvrir</span>
+          <span>↵ {t("cmd.open")}</span>
           <span>·</span>
-          <span>esc fermer</span>
+          <span>esc {t("cmd.close")}</span>
         </div>
       </div>
     </div>
@@ -428,11 +423,12 @@ export function CommandPalette() {
 
 export function CommandPaletteTrigger() {
   const handleClick = useCallback(() => {
-    // Dispatch Cmd+K to open the palette
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
     );
   }, []);
+
+  const { t } = useLocale();
 
   return (
     <button
@@ -443,7 +439,7 @@ export function CommandPaletteTrigger() {
         border: "0.5px solid var(--border)",
         color: "var(--text-tertiary)",
       }}
-      title="Recherche rapide (⌘K)"
+      title={`${t("cmd.quick_search")} (\u2318K)`}
     >
       <svg
         width="13" height="13" viewBox="0 0 24 24" fill="none"

@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 export function ShareButton() {
   const [copied, setCopied] = useState(false);
+  const { t } = useLocale();
 
   async function handleCopy() {
     const url = window.location.href;
@@ -47,7 +49,7 @@ export function ShareButton() {
           </>
         )}
       </svg>
-      {copied ? "Lien copié !" : "Copier le lien"}
+      {copied ? t("common.lien_copie") : t("common.copier_lien")}
     </button>
   );
 }

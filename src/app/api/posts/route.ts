@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { quartierBySlug, villeBySlug, dbPostToAppPost } from "@/lib/data";
 import { rateLimit, getIp } from "@/lib/rateLimit";
 import { sendNotifEmail } from "@/lib/email";
+import { notifySearchEngines } from "@/lib/indexnow";
 
 const PAGE_SIZE = 20;
 
@@ -176,6 +177,9 @@ export async function POST(req: NextRequest) {
       }
     }).catch(() => {});
   }
+
+  // Notify search engines of new content (fire-and-forget)
+  notifySearchEngines([`/post/${post.id}`]).catch(() => {});
 
   return NextResponse.json({ id: post.id }, { status: 201 });
 }

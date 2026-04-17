@@ -3,10 +3,12 @@
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "@/lib/useLocale";
 
 function ResetForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useLocale();
   const token = searchParams.get("token") ?? "";
 
   const [password, setPassword] = useState("");
@@ -19,10 +21,10 @@ function ResetForm() {
     return (
       <div className="text-center space-y-3">
         <p className="text-[14px]" style={{ color: "var(--red-text)" }}>
-          Lien invalide ou expiré.
+          {t("auth.invalid_link")}
         </p>
         <Link href="/auth/mot-de-passe-oublie" className="text-[13px] font-medium underline" style={{ color: "var(--green)" }}>
-          Demander un nouveau lien
+          {t("auth.request_new_link")}
         </Link>
       </div>
     );
@@ -31,11 +33,11 @@ function ResetForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (password !== confirm) {
-      setError("Les mots de passe ne correspondent pas.");
+      setError(t("auth.passwords_mismatch"));
       return;
     }
     if (password.length < 8) {
-      setError("Le mot de passe doit contenir au moins 8 caractères.");
+      setError(t("auth.password_min"));
       return;
     }
     setLoading(true);
@@ -48,13 +50,13 @@ function ResetForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Une erreur est survenue.");
+        setError(data.error ?? t("auth.error_generic"));
         return;
       }
       setDone(true);
       setTimeout(() => router.push("/auth/connexion"), 2500);
     } catch {
-      setError("Impossible de contacter le serveur.");
+      setError(t("auth.error_generic"));
     } finally {
       setLoading(false);
     }
@@ -72,10 +74,10 @@ function ResetForm() {
           </svg>
         </div>
         <p className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>
-          Mot de passe mis à jour
+          {t("auth.password_updated")}
         </p>
         <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-          Redirection vers la connexion…
+          {t("auth.redirecting")}
         </p>
       </div>
     );
@@ -85,7 +87,7 @@ function ResetForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Nouveau mot de passe
+          {t("auth.new_password")}
         </label>
         <input
           type="password"
@@ -93,7 +95,7 @@ function ResetForm() {
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
+          placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
           className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
           style={{
             background: "var(--bg-secondary)",
@@ -105,7 +107,7 @@ function ResetForm() {
 
       <div>
         <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-          Confirmer le mot de passe
+          {t("auth.confirm_password")}
         </label>
         <input
           type="password"
@@ -113,7 +115,7 @@ function ResetForm() {
           minLength={8}
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          placeholder="••••••••"
+          placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
           className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
           style={{
             background: "var(--bg-secondary)",
@@ -135,13 +137,14 @@ function ResetForm() {
         className="w-full py-2.5 rounded-xl text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
         style={{ background: "var(--green)" }}
       >
-        {loading ? "Mise à jour..." : "Réinitialiser le mot de passe"}
+        {loading ? t("auth.loading") : t("auth.reset_password")}
       </button>
     </form>
   );
 }
 
 export default function ReinitialiserMotDePassePage() {
+  const { t } = useLocale();
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--bg-page)" }}>
       <div className="w-full max-w-[400px]">
@@ -151,7 +154,7 @@ export default function ReinitialiserMotDePassePage() {
             <span style={{ color: "var(--green)" }}>.local</span>
           </Link>
           <p className="text-[13px] mt-2" style={{ color: "var(--text-tertiary)" }}>
-            Choisir un nouveau mot de passe
+            {t("auth.new_password_choose")}
           </p>
         </div>
 

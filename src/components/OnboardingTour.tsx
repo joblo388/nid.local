@@ -1,47 +1,44 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 // ─── Tour step definitions ───────────────────────────────────────────────────
 
 type TourStep = {
-  title: string;
-  description: string;
-  target: string | null; // data-tour attribute value, null = centered modal
-  targetDesktop?: string; // optional separate target for desktop
-  buttonLabel: string;
+  titleKey: string;
+  descKey: string;
+  target: string | null;
+  targetDesktop?: string;
+  buttonKey: string;
 };
 
 const STEPS: TourStep[] = [
   {
-    title: "Bienvenue sur nid.local!",
-    description:
-      "Le forum immobilier qu\u00e9b\u00e9cois. D\u00e9couvrez les discussions de votre quartier, explorez les outils financiers et publiez vos questions.",
+    titleKey: "tour.welcome_title",
+    descKey: "tour.welcome_desc",
     target: null,
-    buttonLabel: "Commencer le tour",
+    buttonKey: "tour.welcome_btn",
   },
   {
-    title: "Le fil de discussions",
-    description:
-      "Retrouvez ici toutes les discussions de votre ville et quartier\u00a0: questions, ventes, r\u00e9novations et plus encore.",
+    titleKey: "tour.feed_title",
+    descKey: "tour.feed_desc",
     target: "posts",
-    buttonLabel: "Suivant",
+    buttonKey: "tour.next",
   },
   {
-    title: "Les outils",
-    description:
-      "Calculatrices hypoth\u00e9caires, estimation de capacit\u00e9 d\u2019emprunt, donn\u00e9es de march\u00e9\u2026 tout pour vos d\u00e9cisions immobili\u00e8res.",
+    titleKey: "tour.tools_title",
+    descKey: "tour.tools_desc",
     target: "outils",
     targetDesktop: "outils-desktop",
-    buttonLabel: "Suivant",
+    buttonKey: "tour.next",
   },
   {
-    title: "Publiez votre premier post!",
-    description:
-      "Posez une question, partagez un conseil ou signalez un \u00e9v\u00e9nement dans votre quartier. La communaut\u00e9 est l\u00e0 pour vous aider.",
+    titleKey: "tour.publish_title",
+    descKey: "tour.publish_desc",
     target: "publier-mobile",
     targetDesktop: "publier-desktop",
-    buttonLabel: "Terminer",
+    buttonKey: "tour.finish",
   },
 ];
 
@@ -57,12 +54,12 @@ export function OnboardingTour() {
   const [arrowStyle, setArrowStyle] = useState<React.CSSProperties>({});
   const tooltipRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
+  const { t } = useLocale();
 
   // Check localStorage on mount
   useEffect(() => {
     try {
       if (typeof window !== "undefined" && !localStorage.getItem(STORAGE_KEY)) {
-        // Small delay so the page is rendered and target elements exist
         const timer = setTimeout(() => setActive(true), 800);
         return () => clearTimeout(timer);
       }
@@ -94,7 +91,6 @@ export function OnboardingTour() {
     const current = STEPS[step];
     if (!current) return;
 
-    // Center modal (step 0)
     if (current.target === null) {
       setSpotlightStyle({ display: "none" });
       setArrowStyle({ display: "none" });
@@ -107,13 +103,11 @@ export function OnboardingTour() {
       return;
     }
 
-    // Determine if desktop (md breakpoint = 768px)
     const isDesktop = window.innerWidth >= 768;
     const targetAttr = isDesktop && current.targetDesktop ? current.targetDesktop : current.target;
     const el = document.querySelector(`[data-tour="${targetAttr}"]`) as HTMLElement | null;
 
     if (!el) {
-      // Fallback: center the tooltip if target not found
       setSpotlightStyle({ display: "none" });
       setArrowStyle({ display: "none" });
       setTooltipStyle({
@@ -126,13 +120,12 @@ export function OnboardingTour() {
     }
 
     const rect = el.getBoundingClientRect();
-    const pad = 8; // padding around the spotlight
+    const pad = 8;
     const tooltipMaxW = 300;
     const tooltipEl = tooltipRef.current;
     const tooltipH = tooltipEl ? tooltipEl.offsetHeight : 200;
-    const gap = 12; // gap between spotlight and tooltip
+    const gap = 12;
 
-    // Spotlight rect
     const sLeft = rect.left - pad;
     const sTop = rect.top - pad;
     const sWidth = rect.width + pad * 2;
@@ -148,43 +141,35 @@ export function OnboardingTour() {
       display: "block",
     });
 
-    // Tooltip positioning
     let tLeft: number;
     let tTop: number;
     let aDir: "up" | "down" | "left" | "right" = "up";
 
     if (!isDesktop) {
-      // Mobile: always position below or above the target
       tLeft = Math.max(12, Math.min(window.innerWidth - tooltipMaxW - 12, rect.left + rect.width / 2 - tooltipMaxW / 2));
 
       if (rect.bottom + gap + tooltipH + 60 < window.innerHeight) {
-        // Below
         tTop = rect.bottom + pad + gap;
         aDir = "up";
       } else {
-        // Above
         tTop = rect.top - pad - gap - tooltipH;
         aDir = "down";
       }
     } else {
-      // Desktop: prefer to the side if there's room, else below/above
       const spaceRight = window.innerWidth - rect.right;
       const spaceLeft = rect.left;
 
       if (spaceRight > tooltipMaxW + gap + pad + 20) {
-        // Right of the target
         tLeft = rect.right + pad + gap;
         tTop = rect.top + rect.height / 2 - tooltipH / 2;
         tTop = Math.max(12, Math.min(window.innerHeight - tooltipH - 12, tTop));
         aDir = "left";
       } else if (spaceLeft > tooltipMaxW + gap + pad + 20) {
-        // Left of the target
         tLeft = rect.left - pad - gap - tooltipMaxW;
         tTop = rect.top + rect.height / 2 - tooltipH / 2;
         tTop = Math.max(12, Math.min(window.innerHeight - tooltipH - 12, tTop));
         aDir = "right";
       } else {
-        // Below / above
         tLeft = Math.max(12, Math.min(window.innerWidth - tooltipMaxW - 12, rect.left + rect.width / 2 - tooltipMaxW / 2));
         if (rect.bottom + gap + tooltipH + 20 < window.innerHeight) {
           tTop = rect.bottom + pad + gap;
@@ -202,7 +187,6 @@ export function OnboardingTour() {
       top: tTop,
     });
 
-    // Arrow positioning
     const arrowSize = 8;
     const arrowBase: React.CSSProperties = {
       position: "absolute",
@@ -212,7 +196,6 @@ export function OnboardingTour() {
     };
 
     if (aDir === "up") {
-      // Arrow points up, sits on top of tooltip
       Object.assign(arrowBase, {
         top: -arrowSize,
         left: "50%",
@@ -253,7 +236,6 @@ export function OnboardingTour() {
     setArrowStyle(arrowBase);
   }, [step]);
 
-  // Reposition on step change, resize, scroll
   useEffect(() => {
     if (!active) return;
 
@@ -281,7 +263,6 @@ export function OnboardingTour() {
 
   return (
     <>
-      {/* Dark overlay covering the whole screen */}
       <div
         onClick={finish}
         style={{
@@ -292,7 +273,6 @@ export function OnboardingTour() {
         }}
       />
 
-      {/* Spotlight cutout — punch a hole in the overlay */}
       {spotlightStyle.display !== "none" && (
         <div
           style={{
@@ -306,7 +286,6 @@ export function OnboardingTour() {
         />
       )}
 
-      {/* Tooltip */}
       <div
         ref={tooltipRef}
         onClick={(e) => e.stopPropagation()}
@@ -319,7 +298,6 @@ export function OnboardingTour() {
           transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
         }}
       >
-        {/* Arrow */}
         {!isCenter && <div style={arrowStyle} />}
 
         <div
@@ -332,7 +310,6 @@ export function OnboardingTour() {
             position: "relative",
           }}
         >
-          {/* Close button */}
           <button
             onClick={finish}
             style={{
@@ -350,7 +327,6 @@ export function OnboardingTour() {
           >
             x
           </button>
-          {/* Step title */}
           <h3
             style={{
               fontSize: 15,
@@ -360,10 +336,9 @@ export function OnboardingTour() {
               lineHeight: 1.3,
             }}
           >
-            {current.title}
+            {t(current.titleKey)}
           </h3>
 
-          {/* Description */}
           <p
             style={{
               fontSize: 13,
@@ -372,10 +347,9 @@ export function OnboardingTour() {
               lineHeight: 1.5,
             }}
           >
-            {current.description}
+            {t(current.descKey)}
           </p>
 
-          {/* Step dots */}
           <div
             style={{
               display: "flex",
@@ -398,7 +372,6 @@ export function OnboardingTour() {
             ))}
           </div>
 
-          {/* Buttons */}
           <div
             style={{
               display: "flex",
@@ -407,7 +380,6 @@ export function OnboardingTour() {
               gap: 8,
             }}
           >
-            {/* Passer link — hidden on first step and last step */}
             {step > 0 && step < STEPS.length - 1 ? (
               <button
                 onClick={finish}
@@ -420,13 +392,12 @@ export function OnboardingTour() {
                   padding: "4px 0",
                 }}
               >
-                Passer
+                {t("tour.skip")}
               </button>
             ) : (
               <span />
             )}
 
-            {/* Primary button */}
             <button
               onClick={next}
               style={{
@@ -443,11 +414,10 @@ export function OnboardingTour() {
               onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
             >
-              {current.buttonLabel}
+              {t(current.buttonKey)}
             </button>
           </div>
 
-          {/* Step counter */}
           {!isCenter && (
             <p
               style={{

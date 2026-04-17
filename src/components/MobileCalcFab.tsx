@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 export function MobileCalcFab() {
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [revenu, setRevenu] = useState("75 000");
   const [mise, setMise] = useState("50 000");
@@ -16,7 +18,7 @@ export function MobileCalcFab() {
       {/* Bouton flottant */}
       <button
         onClick={() => setOpen(true)}
-        aria-label="Calculateur rapide"
+        aria-label={t("calc.rapide")}
         className="md:hidden fixed z-50 flex items-center justify-center w-11 h-11 rounded-full"
         style={{
           bottom: 80,
@@ -70,13 +72,13 @@ export function MobileCalcFab() {
           className="text-[15px] font-bold mb-4"
           style={{ color: "var(--text-primary)" }}
         >
-          Calculateur rapide
+          {t("calc.rapide")}
         </h3>
 
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
             <p className="text-[11px] mb-1" style={{ color: "var(--text-tertiary)" }}>
-              Revenu annuel ($)
+              {t("calc.revenu_annuel")}
             </p>
             <input
               type="text"
@@ -93,7 +95,7 @@ export function MobileCalcFab() {
           </div>
           <div>
             <p className="text-[11px] mb-1" style={{ color: "var(--text-tertiary)" }}>
-              Mise de fonds ($)
+              {t("calc.mise_de_fonds_dollar")}
             </p>
             <input
               type="text"
@@ -118,7 +120,7 @@ export function MobileCalcFab() {
           }}
         >
           <span className="text-[11px]" style={{ color: "var(--amber-text)" }}>
-            Capacité estimée
+            {t("calc.capacite_estimee")}
           </span>
           <span className="text-[17px] font-bold" style={{ color: "var(--amber-text)" }}>
             ~{fmt(cap)} $
@@ -135,7 +137,7 @@ export function MobileCalcFab() {
             textDecoration: "none",
           }}
         >
-          Calcul détaillé
+          {t("calc.calcul_detaille")}
         </a>
       </div>
     </>

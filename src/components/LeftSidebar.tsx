@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { villes, quartiers } from "@/lib/data";
+import { useLocale } from "@/lib/useLocale";
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
 
@@ -11,18 +12,7 @@ const FAVS_KEY = "nl-favs";
 const RECENTS_KEY = "nl-recents";
 const MAX_RECENTS = 5;
 
-const CATEGORIES = [
-  { slug: "vente", label: "Vente" },
-  { slug: "location", label: "Location" },
-  { slug: "question", label: "Questions" },
-  { slug: "renovation", label: "Conseils" },
-  { slug: "voisinage", label: "Voisinage" },
-  { slug: "construction", label: "Construction" },
-  { slug: "legal", label: "Légal" },
-  { slug: "financement", label: "Financement" },
-  { slug: "copropriete", label: "TAL" },
-  { slug: "condo", label: "Condo" },
-];
+const CATEGORY_SLUGS = ["vente", "location", "question", "renovation", "voisinage", "construction", "legal", "financement", "copropriete", "condo"] as const;
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -294,6 +284,7 @@ export function LeftSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLocale();
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -373,8 +364,7 @@ export function LeftSidebar() {
   const favLabel = (key: string) => {
     const { type, slug } = parseFavKey(key);
     if (type === "cat") {
-      const c = CATEGORIES.find((x) => x.slug === slug);
-      return c ? c.label : slug;
+      return t(`cat.${slug}`);
     }
     if (type === "ville") {
       const v = villes.find((x) => x.slug === slug);
@@ -385,9 +375,9 @@ export function LeftSidebar() {
       return q ? q.nom : slug;
     }
     if (type === "nav") {
-      if (slug === "fil") return "Fil d'actualite";
-      if (slug === "populaire") return "Populaire";
-      if (slug === "recent") return "Recent";
+      if (slug === "fil") return t("nav.fil_actualite");
+      if (slug === "populaire") return t("nav.populaire");
+      if (slug === "recent") return t("nav.recent");
     }
     return slug;
   };
@@ -455,7 +445,7 @@ export function LeftSidebar() {
             color: "var(--blue-text)",
           }}
         >
-          COMMUNAUTÉ
+          {t("nav.communaute").toUpperCase()}
         </span>
       </div>
 
@@ -472,7 +462,7 @@ export function LeftSidebar() {
           }}
         >
           <PlusIcon />
-          Nouvelle discussion
+          {t("common.nouvelle_discussion")}
         </Link>
       </div>
 
@@ -488,7 +478,7 @@ export function LeftSidebar() {
           <span className="shrink-0" style={{ color: isFilActive ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <FeedIcon />
           </span>
-          <span className="truncate">Fil d&apos;actualité</span>
+          <span className="truncate">{t("nav.fil_actualite")}</span>
         </button>
 
         <Link
@@ -500,12 +490,12 @@ export function LeftSidebar() {
           <span className="shrink-0" style={{ color: isActive("/tendances") ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <TrendingIcon />
           </span>
-          <span className="truncate">Populaire</span>
+          <span className="truncate">{t("nav.populaire")}</span>
           <span
             className="text-[10px] px-1.5 py-[1px] rounded-full font-semibold ml-auto"
             style={{ background: "var(--red-bg)", color: "var(--red-text)" }}
           >
-            chaud
+            {t("nav.chaud")}
           </span>
         </Link>
 
@@ -517,7 +507,7 @@ export function LeftSidebar() {
           <span className="shrink-0" style={{ color: isRecentActive ? "var(--green-text)" : "var(--text-tertiary)" }}>
             <ClockIcon />
           </span>
-          <span className="truncate">Récent</span>
+          <span className="truncate">{t("nav.recent")}</span>
         </button>
 
         <Link
@@ -531,7 +521,7 @@ export function LeftSidebar() {
               <rect x="1" y="3" width="14" height="10" rx="2" /><path d="M5 3V2m6 1V2" /><line x1="1" y1="7" x2="15" y2="7" /><line x1="5" y1="10" x2="7" y2="10" />
             </svg>
           </span>
-          <span className="truncate">Outils</span>
+          <span className="truncate">{t("nav.outils")}</span>
         </Link>
 
         <Link
@@ -545,7 +535,7 @@ export function LeftSidebar() {
               <path d="M1 6l7-4 7 4v8a1 1 0 01-1 1H2a1 1 0 01-1-1V6z" /><path d="M6 15V9h4v6" />
             </svg>
           </span>
-          <span className="truncate">Marketplace</span>
+          <span className="truncate">{t("nav.marketplace")}</span>
         </Link>
       </div>
 
@@ -558,7 +548,7 @@ export function LeftSidebar() {
           5. Favoris section
       ═══════════════════════════════════════════════════════════════════════ */}
       <CollapsibleSection
-        label="Favoris"
+        label={t("sidebar.favoris")}
         expanded={expandedSections.favoris}
         onToggle={() => toggleSection("favoris")}
       >
@@ -567,7 +557,7 @@ export function LeftSidebar() {
             className="text-[11px] italic px-[18px] py-2"
             style={{ color: "var(--text-tertiary)" }}
           >
-            Etoile un feed pour l&apos;epingler ici
+            {t("sidebar.epingler_ici")}
           </p>
         ) : (
           <div className="pb-1">
@@ -598,7 +588,7 @@ export function LeftSidebar() {
           6. Visites recentes section
       ═══════════════════════════════════════════════════════════════════════ */}
       <CollapsibleSection
-        label="Visites recemment"
+        label={t("sidebar.visites_recemment")}
         expanded={expandedSections.recents}
         onToggle={() => toggleSection("recents")}
       >
@@ -607,7 +597,7 @@ export function LeftSidebar() {
             className="text-[11px] italic px-[18px] py-2"
             style={{ color: "var(--text-tertiary)" }}
           >
-            Tes visites recentes apparaitront ici
+            {t("sidebar.visites_recentes_vide")}
           </p>
         ) : (
           <div className="pb-1">
@@ -647,33 +637,33 @@ export function LeftSidebar() {
           8. Categories section
       ═══════════════════════════════════════════════════════════════════════ */}
       <CollapsibleSection
-        label="Categories"
+        label={t("sidebar.categories")}
         expanded={expandedSections.categories}
         onToggle={() => toggleSection("categories")}
       >
         <div className="pb-1">
-          {CATEGORIES.map((cat) => {
-            const CatIcon = CAT_ICONS[cat.slug] || CatVenteIcon;
-            const href = `/categorie/${cat.slug}`;
+          {CATEGORY_SLUGS.map((slug) => {
+            const CatIcon = CAT_ICONS[slug] || CatVenteIcon;
+            const href = `/categorie/${slug}`;
             const active = isActive(href);
-            const fk = favKey("cat", cat.slug);
+            const fk = favKey("cat", slug);
             const isFav = favorites.includes(fk);
 
             return (
               <div
-                key={cat.slug}
+                key={slug}
                 className="group relative"
               >
                 <Link
                   href={href}
                   className={navItemClass(active)}
                   style={navItemStyle(active)}
-                  onClick={() => addRecent(favKey("cat", cat.slug))}
+                  onClick={() => addRecent(favKey("cat", slug))}
                 >
                   <span className="shrink-0" style={{ color: active ? "var(--green-text)" : "var(--text-tertiary)" }}>
                     <CatIcon />
                   </span>
-                  <span className="truncate">{cat.label}</span>
+                  <span className="truncate">{t(`cat.${slug}`)}</span>
                   <span
                     className="text-[10px] px-1.5 py-[1px] rounded-full font-semibold ml-auto"
                     style={{
@@ -690,7 +680,7 @@ export function LeftSidebar() {
                       opacity: isFav ? 1 : undefined,
                       color: isFav ? "var(--green)" : "var(--text-tertiary)",
                     }}
-                    aria-label={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
+                    aria-label={isFav ? t("common.retirer_favoris") : t("common.ajouter_favoris")}
                   >
                     <span className={isFav ? "" : "opacity-0 group-hover:opacity-100 transition-opacity"}>
                       <StarIcon filled={isFav} size={14} />
@@ -712,7 +702,7 @@ export function LeftSidebar() {
           10. Villes section
       ═══════════════════════════════════════════════════════════════════════ */}
       <CollapsibleSection
-        label="Villes"
+        label={t("sidebar.villes")}
         expanded={expandedSections.villes}
         onToggle={() => toggleSection("villes")}
       >
@@ -730,7 +720,7 @@ export function LeftSidebar() {
             </span>
             <input
               type="text"
-              placeholder="Chercher une ville..."
+              placeholder={t("common.rechercher_ville")}
               value={villeSearch}
               onChange={(e) => {
                 setVilleSearch(e.target.value);
@@ -775,7 +765,7 @@ export function LeftSidebar() {
                       opacity: isFav ? 1 : undefined,
                       color: isFav ? "var(--green)" : "var(--text-tertiary)",
                     }}
-                    aria-label={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
+                    aria-label={isFav ? t("common.retirer_favoris") : t("common.ajouter_favoris")}
                   >
                     <span className={isFav ? "" : "opacity-0 group-hover:opacity-100 transition-opacity"}>
                       <StarIcon filled={isFav} size={14} />
@@ -793,7 +783,7 @@ export function LeftSidebar() {
               className="flex items-center gap-1 text-[11px] font-medium pl-[26px] mx-[10px] pt-1 pb-0.5 cursor-pointer"
               style={{ color: "var(--green)" }}
             >
-              Voir toutes les villes
+              {t("common.voir_toutes_villes")}
               <DownChevronSmall />
             </button>
           )}
@@ -803,7 +793,7 @@ export function LeftSidebar() {
               className="flex items-center gap-1 text-[11px] font-medium pl-[26px] mx-[10px] pt-1 pb-0.5 cursor-pointer"
               style={{ color: "var(--green)" }}
             >
-              Voir moins
+              {t("common.voir_moins")}
             </button>
           )}
         </div>
@@ -818,7 +808,7 @@ export function LeftSidebar() {
           12. Quartiers section
       ═══════════════════════════════════════════════════════════════════════ */}
       <CollapsibleSection
-        label="Quartiers"
+        label={t("sidebar.quartiers")}
         expanded={expandedSections.quartiers}
         onToggle={() => toggleSection("quartiers")}
       >
@@ -836,7 +826,7 @@ export function LeftSidebar() {
             </span>
             <input
               type="text"
-              placeholder="Chercher un quartier..."
+              placeholder={t("common.rechercher_quartier")}
               value={quartierSearch}
               onChange={(e) => {
                 setQuartierSearch(e.target.value);
@@ -881,7 +871,7 @@ export function LeftSidebar() {
                       opacity: isFav ? 1 : undefined,
                       color: isFav ? "var(--green)" : "var(--text-tertiary)",
                     }}
-                    aria-label={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
+                    aria-label={isFav ? t("common.retirer_favoris") : t("common.ajouter_favoris")}
                   >
                     <span className={isFav ? "" : "opacity-0 group-hover:opacity-100 transition-opacity"}>
                       <StarIcon filled={isFav} size={14} />
@@ -899,7 +889,7 @@ export function LeftSidebar() {
               className="flex items-center gap-1 text-[11px] font-medium pl-[26px] mx-[10px] pt-1 pb-0.5 cursor-pointer"
               style={{ color: "var(--green)" }}
             >
-              Voir tous les quartiers
+              {t("common.voir_tous_quartiers")}
               <DownChevronSmall />
             </button>
           )}
@@ -909,7 +899,7 @@ export function LeftSidebar() {
               className="flex items-center gap-1 text-[11px] font-medium pl-[26px] mx-[10px] pt-1 pb-0.5 cursor-pointer"
               style={{ color: "var(--green)" }}
             >
-              Voir moins
+              {t("common.voir_moins")}
             </button>
           )}
         </div>

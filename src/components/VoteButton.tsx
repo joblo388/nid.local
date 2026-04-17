@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { useToast } from "./Toast";
 import { useConfetti } from "./Confetti";
+import { useLocale } from "@/lib/useLocale";
 
 export function VoteButton({
   postId,
@@ -22,6 +23,7 @@ export function VoteButton({
   const pathname = usePathname();
   const { toast } = useToast();
   const { celebrate } = useConfetti();
+  const { t } = useLocale();
   const [nbVotes, setNbVotes] = useState(initialVotes);
   const [hasVoted, setHasVoted] = useState(initialHasVoted);
   const [loading, setLoading] = useState(false);
@@ -72,12 +74,12 @@ export function VoteButton({
         // Revert
         setHasVoted(hasVoted);
         setNbVotes((n) => n + (hasVoted ? 1 : -1));
-        toast({ message: data.error ?? "Erreur lors du vote.", type: "error" });
+        toast({ message: data.error ?? t("vote.erreur"), type: "error" });
       }
     } catch {
       setHasVoted(hasVoted);
       setNbVotes((n) => n + (hasVoted ? 1 : -1));
-      toast({ message: "Une erreur est survenue.", type: "error" });
+      toast({ message: t("auth.error_generic"), type: "error" });
     } finally {
       setLoading(false);
     }
@@ -95,7 +97,7 @@ export function VoteButton({
         }}
         onMouseEnter={(e) => { if (!hasVoted) (e.currentTarget as HTMLElement).style.color = "var(--green)"; }}
         onMouseLeave={(e) => { if (!hasVoted) (e.currentTarget as HTMLElement).style.color = "var(--text-tertiary)"; }}
-        title={hasVoted ? "Retirer mon vote" : "Voter pour ce post"}
+        title={hasVoted ? t("vote.retirer") : t("vote.voter")}
       >
         <svg className="w-4 h-4" fill={hasVoted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />

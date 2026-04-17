@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useLocale } from "@/lib/useLocale";
 
 type Notification = {
   id: string;
@@ -23,6 +24,7 @@ function tempsRelatif(dateStr: string): string {
 }
 
 export function NotificationBell() {
+  const { t } = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -43,16 +45,16 @@ export function NotificationBell() {
       if (latestUnread) {
         const body =
           latestUnread.type === "price_drop"
-            ? `Baisse de prix : ${latestUnread.postTitre}`
+            ? t("notif.price_drop")
             : latestUnread.type === "comment"
-            ? `${latestUnread.acteurNom} a commenté votre discussion`
+            ? `${latestUnread.acteurNom} ${t("notif.commentaire")}`
             : latestUnread.type === "reply"
-            ? `${latestUnread.acteurNom} a répondu à votre commentaire`
+            ? `${latestUnread.acteurNom} ${t("notif.reponse")}`
             : latestUnread.type === "message" || latestUnread.type === "conversation"
-            ? `${latestUnread.acteurNom} vous a envoyé un message`
+            ? `${latestUnread.acteurNom} ${t("notif.message")}`
             : latestUnread.type === "mention"
-            ? `${latestUnread.acteurNom} vous a mentionné`
-            : `${latestUnread.acteurNom} a interagi avec votre post`;
+            ? `${latestUnread.acteurNom} ${t("notif.mention")}`
+            : `${latestUnread.acteurNom} ${t("notif.interaction")}`;
         try {
           new window.Notification("nid.local", {
             body,
@@ -142,7 +144,7 @@ export function NotificationBell() {
         onClick={handleOpen}
         className="relative flex items-center justify-center w-8 h-8 rounded-lg transition-opacity hover:opacity-70"
         style={{ color: "var(--text-tertiary)" }}
-        title="Notifications"
+        title={t("notif.titre")}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -168,7 +170,7 @@ export function NotificationBell() {
             style={{ borderBottom: "0.5px solid var(--border)" }}
           >
             <span className="text-[13px] font-semibold" style={{ color: "var(--text-primary)" }}>
-              Notifications
+              {t("notif.titre")}
             </span>
             {notifications.length > 0 && (
               <button
@@ -179,7 +181,7 @@ export function NotificationBell() {
                 className="text-[11px] transition-opacity hover:opacity-70"
                 style={{ color: "var(--green)" }}
               >
-                Tout marquer lu
+                {t("notif.marquer_lues")}
               </button>
             )}
           </div>
@@ -187,7 +189,7 @@ export function NotificationBell() {
           <div className="max-h-[360px] overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="px-4 py-8 text-center text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-                Aucune notification
+                {t("notif.aucune")}
               </div>
             ) : (
               notifications.map((n) => (
@@ -202,27 +204,27 @@ export function NotificationBell() {
                 >
                   <p className="text-[12px] leading-snug" style={{ color: "var(--text-primary)" }}>
                     {n.type === "comment" ? (
-                      <><span className="font-semibold">{n.acteurNom}</span> a commenté votre discussion</>
+                      <><span className="font-semibold">{n.acteurNom}</span> {t("notif.commentaire")}</>
                     ) : n.type === "reply" ? (
-                      <><span className="font-semibold">{n.acteurNom}</span> a répondu à votre commentaire</>
+                      <><span className="font-semibold">{n.acteurNom}</span> {t("notif.reponse")}</>
                     ) : n.type === "mention" ? (
-                      <><span className="font-semibold">{n.acteurNom}</span> vous a mentionné</>
+                      <><span className="font-semibold">{n.acteurNom}</span> {t("notif.mention")}</>
                     ) : n.type === "message" || n.type === "conversation" ? (
-                      <><span className="font-semibold">{n.acteurNom}</span> vous a envoyé un message</>
+                      <><span className="font-semibold">{n.acteurNom}</span> {t("notif.message")}</>
                     ) : n.type === "price_drop" ? (
-                      <>Baisse de prix sur une annonce que vous suivez</>
+                      <>{t("notif.price_drop")}</>
                     ) : n.type === "listing_comment" ? (
-                      <><span className="font-semibold">{n.acteurNom}</span> a commenté votre annonce</>
+                      <><span className="font-semibold">{n.acteurNom}</span> {t("notif.listing_comment")}</>
                     ) : n.type === "listing_favorite" ? (
-                      <><span className="font-semibold">{n.acteurNom}</span> a ajouté votre annonce en favoris</>
+                      <><span className="font-semibold">{n.acteurNom}</span> {t("notif.listing_favorite")}</>
                     ) : n.type === "expert_request" ? (
-                      <>Quelqu&apos;un a besoin de votre expertise</>
+                      <>{t("notif.expert")}</>
                     ) : (
-                      <><span className="font-semibold">{n.acteurNom}</span> a interagi avec votre post</>
+                      <><span className="font-semibold">{n.acteurNom}</span> {t("notif.interaction")}</>
                     )}
                   </p>
                   <p className="text-[11px] mt-0.5 truncate" style={{ color: "var(--text-tertiary)" }}>
-                    {n.type === "message" || n.type === "conversation" ? "Nouveau message privé" : n.postTitre}
+                    {n.type === "message" || n.type === "conversation" ? t("notif.nouveau_message") : n.postTitre}
                   </p>
                   <p className="text-[10px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>
                     {tempsRelatif(n.creeLe)}
@@ -240,7 +242,7 @@ export function NotificationBell() {
                 className="block px-4 py-2.5 text-center text-[12px] transition-opacity hover:opacity-70"
                 style={{ color: "var(--green)" }}
               >
-                Voir tout l&apos;historique
+                {t("notif.voir_historique")}
               </Link>
             </div>
           )}

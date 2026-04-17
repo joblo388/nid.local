@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 type Props = {
   quartierSlug: string;
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export function SubscribeButton({ quartierSlug, initialSubscribed }: Props) {
+  const { t } = useLocale();
   const [subscribed, setSubscribed] = useState(initialSubscribed);
   const [isPending, startTransition] = useTransition();
 
@@ -55,7 +57,7 @@ export function SubscribeButton({ quartierSlug, initialSubscribed }: Props) {
             }
       }
     >
-      {subscribed ? "Suivi \u2713" : "Suivre"}
+      {subscribed ? `${t("subscribe.suivi")} \u2713` : t("subscribe.suivre")}
     </button>
   );
 }

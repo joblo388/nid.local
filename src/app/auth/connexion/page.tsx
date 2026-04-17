@@ -4,12 +4,13 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "@/lib/useLocale";
 
 function ConnexionForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLocale();
   const rawCallback = searchParams.get("callbackUrl") ?? "/";
-  // Sécurité : accepter uniquement les URLs relatives (prévention open redirect)
   const callbackUrl = rawCallback.startsWith("/") && !rawCallback.startsWith("//") ? rawCallback : "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,14 +36,14 @@ function ConnexionForm() {
       }
 
       if (res?.error) {
-        setError("Courriel ou mot de passe incorrect.");
+        setError(t("auth.error_credentials"));
         setLoading(false);
       } else {
         router.push(callbackUrl);
         router.refresh();
       }
     } catch {
-      setError("Impossible de contacter le serveur.");
+      setError(t("auth.error_generic"));
       setLoading(false);
     }
   }
@@ -50,51 +51,46 @@ function ConnexionForm() {
   return (
     <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "var(--bg-page)" }}>
       <div className="w-full max-w-[400px]">
-        {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="text-[22px] font-black tracking-tight">
             <span style={{ color: "var(--text-primary)" }}>nid</span>
             <span style={{ color: "var(--green)" }}>.local</span>
           </Link>
           <p className="text-[13px] mt-2" style={{ color: "var(--text-tertiary)" }}>
-            Connectez-vous à votre compte
+            {t("auth.connexion")}
           </p>
         </div>
 
-        {/* Card */}
         <div
           className="rounded-xl p-6 space-y-4"
           style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
         >
-          {/* Google */}
           <button
             onClick={() => signIn("google", { callbackUrl: "/" })}
             className="w-full flex items-center justify-center gap-3 py-2.5 rounded-xl text-[14px] font-medium transition-opacity hover:opacity-80"
             style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", border: "0.5px solid var(--border)" }}
           >
             <GoogleIcon />
-            Continuer avec Google
+            {t("auth.google")}
           </button>
 
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-[0.5px]" style={{ background: "var(--border)" }} />
-            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>ou</span>
+            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{t("common.ou")}</span>
             <div className="flex-1 h-[0.5px]" style={{ background: "var(--border)" }} />
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="block text-[12px] font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-                Courriel
+                {t("auth.email")}
               </label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="vous@exemple.com"
+                placeholder={t("auth.email_placeholder")}
                 className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
                 style={{
                   background: "var(--bg-secondary)",
@@ -107,14 +103,14 @@ function ConnexionForm() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-[12px] font-medium" style={{ color: "var(--text-secondary)" }}>
-                  Mot de passe
+                  {t("auth.password")}
                 </label>
                 <Link
                   href="/auth/mot-de-passe-oublie"
                   className="text-[11px] transition-opacity hover:opacity-70"
                   style={{ color: "var(--text-tertiary)" }}
                 >
-                  Mot de passe oublié ?
+                  {t("auth.forgot_password")}
                 </Link>
               </div>
               <input
@@ -122,7 +118,7 @@ function ConnexionForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
                 className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
                 style={{
                   background: "var(--bg-secondary)",
@@ -132,7 +128,7 @@ function ConnexionForm() {
               />
             </div>
 
-            {error && error !== "email_not_verified" && (
+            {error && error !== "email_not_verified" && error !== "verification_sent" && (
               <p className="text-[12px] px-3 py-2 rounded-lg" style={{ background: "var(--red-bg)", color: "var(--red-text)" }}>
                 {error}
               </p>
@@ -140,10 +136,10 @@ function ConnexionForm() {
             {error === "email_not_verified" && (
               <div className="px-3 py-3 rounded-lg space-y-2" style={{ background: "var(--amber-bg)", border: "0.5px solid var(--amber-text)" }}>
                 <p className="text-[12px] font-semibold" style={{ color: "var(--amber-text)" }}>
-                  Courriel non vérifié
+                  {t("auth.verify_email")}
                 </p>
                 <p className="text-[11px]" style={{ color: "var(--amber-text)" }}>
-                  Vérifiez votre boite de réception et cliquez sur le lien de confirmation.
+                  {t("auth.verify_email_desc")}
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -157,22 +153,22 @@ function ConnexionForm() {
                           body: JSON.stringify({ email }),
                         });
                         if (r.ok) setError("verification_sent");
-                        else setError("Impossible de renvoyer le courriel.");
+                        else setError(t("auth.error_generic"));
                       } catch {
-                        setError("Impossible de contacter le serveur.");
+                        setError(t("auth.error_generic"));
                       }
                     }}
                     className="text-[11px] font-semibold px-3 py-1.5 rounded-lg"
                     style={{ background: "var(--green)", color: "#fff", border: "none", cursor: "pointer" }}
                   >
-                    Renvoyer le courriel
+                    {t("auth.resend")}
                   </button>
                 </div>
               </div>
             )}
             {error === "verification_sent" && (
               <p className="text-[12px] px-3 py-2 rounded-lg" style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}>
-                Courriel de vérification envoyé! Vérifiez votre boite de réception.
+                {t("auth.reset_sent")}
               </p>
             )}
 
@@ -182,15 +178,15 @@ function ConnexionForm() {
               className="w-full py-2.5 rounded-xl text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
               style={{ background: "var(--green)" }}
             >
-              {loading ? "Connexion..." : "Se connecter"}
+              {loading ? t("auth.loading") : t("auth.connexion")}
             </button>
           </form>
         </div>
 
         <p className="text-center text-[13px] mt-5" style={{ color: "var(--text-tertiary)" }}>
-          Pas encore de compte ?{" "}
+          {t("auth.no_account")}{" "}
           <Link href="/auth/inscription" className="font-semibold transition-opacity hover:opacity-70" style={{ color: "var(--green)" }}>
-            S&apos;inscrire
+            {t("auth.inscription")}
           </Link>
         </p>
       </div>

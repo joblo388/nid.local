@@ -3,9 +3,11 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "@/lib/useLocale";
 
 function Content() {
   const searchParams = useSearchParams();
+  const { t } = useLocale();
   const error = searchParams.get("error");
   const email = searchParams.get("email") ?? "";
   const [resending, setResending] = useState(false);
@@ -26,12 +28,12 @@ function Content() {
       });
       const data = await res.json();
       if (res.ok) {
-        setResendMsg("Courriel envoyé ! Vérifiez votre boîte de réception.");
+        setResendMsg(t("auth.reset_sent"));
       } else {
-        setResendError(data.error ?? "Une erreur est survenue.");
+        setResendError(data.error ?? t("auth.error_generic"));
       }
     } catch {
-      setResendError("Impossible de contacter le serveur.");
+      setResendError(t("auth.error_generic"));
     } finally {
       setResending(false);
     }
@@ -47,9 +49,9 @@ function Content() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <p className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>Lien expiré</p>
+          <p className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>{t("auth.link_expired")}</p>
           <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-            Ce lien de vérification a expiré. Renvoyez-en un nouveau.
+            {t("auth.link_expired_desc")}
           </p>
           {email ? (
             <>
@@ -59,7 +61,7 @@ function Content() {
                 className="w-full py-2.5 rounded-lg text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: "var(--green)" }}
               >
-                {resending ? "Envoi en cours..." : "Renvoyer le courriel"}
+                {resending ? t("auth.sending") : t("auth.resend_email")}
               </button>
               {resendMsg && (
                 <p className="text-[12px] px-3 py-2 rounded-lg" style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}>
@@ -74,7 +76,7 @@ function Content() {
             </>
           ) : (
             <Link href="/auth/connexion" className="inline-block text-[13px] font-medium transition-opacity hover:opacity-70" style={{ color: "var(--green)" }}>
-              Se connecter pour renvoyer le courriel
+              {t("auth.resend_login")}
             </Link>
           )}
         </>
@@ -86,12 +88,12 @@ function Content() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <p className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>Vérifiez votre boîte de réception</p>
+          <p className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>{t("auth.verify_inbox")}</p>
           <p className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
-            Un courriel de vérification a été envoyé{email ? ` à ${email}` : ""}. Cliquez sur le lien pour activer votre compte.
+            {t("auth.verify_sent_desc")}
           </p>
           <p className="text-[12px]" style={{ color: "var(--text-tertiary)" }}>
-            Le lien expire dans 24 heures. Vérifiez vos courriels indésirables si vous ne le trouvez pas.
+            {t("auth.verify_expires")}
           </p>
           {email && (
             <>
@@ -101,7 +103,7 @@ function Content() {
                 className="w-full py-2.5 rounded-lg text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: "var(--green)" }}
               >
-                {resending ? "Envoi en cours..." : "Renvoyer le courriel"}
+                {resending ? t("auth.sending") : t("auth.resend_email")}
               </button>
               {resendMsg && (
                 <p className="text-[12px] px-3 py-2 rounded-lg" style={{ background: "var(--green-light-bg)", color: "var(--green-text)" }}>
@@ -116,7 +118,7 @@ function Content() {
             </>
           )}
           <Link href="/auth/connexion" className="inline-block text-[13px] font-medium transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>
-            Retour à la connexion
+            {t("auth.back_to_login")}
           </Link>
         </>
       )}

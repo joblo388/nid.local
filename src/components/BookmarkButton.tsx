@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/lib/useLocale";
 
 export function BookmarkButton({
   postId,
@@ -13,6 +14,7 @@ export function BookmarkButton({
 }) {
   const { data: session } = useSession();
   const router = useRouter();
+  const { t } = useLocale();
   const [bookmarked, setBookmarked] = useState(initialBookmarked);
   const [loading, setLoading] = useState(false);
 
@@ -37,8 +39,8 @@ export function BookmarkButton({
   return (
     <button
       onClick={toggle}
-      title={bookmarked ? "Retirer des favoris" : "Sauvegarder"}
-      aria-label={bookmarked ? "Retirer des favoris" : "Sauvegarder"}
+      title={bookmarked ? t("common.retirer_favoris") : t("post.bookmark")}
+      aria-label={bookmarked ? t("common.retirer_favoris") : t("post.bookmark")}
       className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0"
       style={{
         color: bookmarked ? "var(--green)" : "var(--text-tertiary)",

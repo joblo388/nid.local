@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 type ThemeMode = "auto" | "light" | "dark";
 
@@ -27,6 +28,7 @@ const CYCLE: ThemeMode[] = ["auto", "light", "dark"];
 
 export function ThemeToggle() {
   const [mode, setMode] = useState<ThemeMode>("auto");
+  const { t } = useLocale();
 
   useEffect(() => {
     const saved = getThemeCookie();
@@ -56,14 +58,14 @@ export function ThemeToggle() {
         padding: 0,
       }}
       aria-label={
-        mode === "auto" ? "Thème : automatique" :
-        mode === "light" ? "Thème : clair" :
-        "Thème : sombre"
+        mode === "auto" ? t("theme.auto_label") :
+        mode === "light" ? t("theme.light_label") :
+        t("theme.dark_label")
       }
       title={
-        mode === "auto" ? "Automatique (système)" :
-        mode === "light" ? "Mode clair" :
-        "Mode sombre"
+        mode === "auto" ? t("theme.auto") :
+        mode === "light" ? t("theme.light") :
+        t("theme.dark")
       }
     >
       {mode === "light" && (

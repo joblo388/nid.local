@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 type LightboxProps = {
   images: string[];
@@ -9,6 +10,7 @@ type LightboxProps = {
 };
 
 export function Lightbox({ images, startIndex, onClose }: LightboxProps) {
+  const { t } = useLocale();
   const [index, setIndex] = useState(startIndex);
   const [visible, setVisible] = useState(false);
   const [zoomed, setZoomed] = useState(false);
@@ -175,7 +177,7 @@ export function Lightbox({ images, startIndex, onClose }: LightboxProps) {
       {/* Close button */}
       <button
         onClick={(e) => { e.stopPropagation(); animateClose(); }}
-        aria-label="Fermer"
+        aria-label={t("common.fermer")}
         style={{
           position: "absolute",
           top: 16,
@@ -208,7 +210,7 @@ export function Lightbox({ images, startIndex, onClose }: LightboxProps) {
       {hasMultiple && (
         <button
           onClick={(e) => { e.stopPropagation(); navigate(-1); }}
-          aria-label="Image precedente"
+          aria-label={t("common.precedent")}
           style={{
             position: "absolute",
             left: 12,
@@ -286,7 +288,7 @@ export function Lightbox({ images, startIndex, onClose }: LightboxProps) {
       {hasMultiple && (
         <button
           onClick={(e) => { e.stopPropagation(); navigate(1); }}
-          aria-label="Image suivante"
+          aria-label={t("common.suivant")}
           style={{
             position: "absolute",
             right: 12,

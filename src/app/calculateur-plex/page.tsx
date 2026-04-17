@@ -5,6 +5,8 @@ import { CalculateurPlex } from "./CalculateurPlex";
 import { CalcActions } from "@/components/CalcActions";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
+import { getServerLocale } from "@/lib/serverLocale";
+import { calcContent } from "./content";
 import type { Metadata } from "next";
 
 const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.local";
@@ -72,11 +74,12 @@ const jsonLd = {
 const ressources = ressourcesUtiles;
 
 export default async function CalculateurPlexPage() {
-  const dbPosts = await prisma.post.findMany({
-    orderBy: [{ epingle: "desc" }, { nbVotes: "desc" }],
-    take: 5,
-  });
+  const [dbPosts, locale] = await Promise.all([
+    prisma.post.findMany({ orderBy: [{ epingle: "desc" }, { nbVotes: "desc" }], take: 5 }),
+    getServerLocale(),
+  ]);
   const popularPosts = dbPosts.map(dbPostToAppPost);
+  const c = calcContent[locale];
 
   return (
     <>
@@ -88,7 +91,7 @@ export default async function CalculateurPlexPage() {
         <nav className="flex items-center gap-1.5 text-[12px] mb-5" style={{ color: "var(--text-tertiary)" }}>
           <Link href="/" className="transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>nid.local</Link>
           <span>/</span>
-          <span style={{ color: "var(--text-secondary)" }}>Calculateur plex</span>
+          <span style={{ color: "var(--text-secondary)" }}>{c.breadcrumb}</span>
         </nav>
 
         <div className="flex gap-5 items-start">
@@ -96,10 +99,10 @@ export default async function CalculateurPlexPage() {
           <div className="flex-1 min-w-0 space-y-5">
             <div>
               <h1 className="text-[22px] font-bold leading-snug mb-2" style={{ color: "var(--text-primary)" }}>
-                Calculateur de rendement plex
+                {c.h1}
               </h1>
               <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                Estimez le MRB, cashflow mensuel, rendement sur mise de fonds et prise de valeur sur 5 ans pour un duplex, triplex ou quadruplex au Québec.
+                {c.intro}
               </p>
             </div>
 
@@ -111,13 +114,9 @@ export default async function CalculateurPlexPage() {
 
             {/* How to use */}
             <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Comment utiliser ce calculateur</h2>
+              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.howToUse}</h2>
               <div className="grid md:grid-cols-3 gap-4">
-                {[
-                  { n: "1", titre: "Entrez le prix et la mise de fonds", texte: "Le taux hypothécaire et l'amortissement déterminent votre paiement mensuel selon les règles canadiennes (composition semestrielle)." },
-                  { n: "2", titre: "Ajoutez les revenus locatifs", texte: "Entrez le loyer de chaque unité. Les unités 3 et 4 sont optionnelles pour les duplex." },
-                  { n: "3", titre: "Analysez le rendement", texte: "Le MRB, le cashflow mensuel, le rendement sur mise de fonds et la projection sur 5 ans sont calculés instantanément." },
-                ].map((step) => (
+                {c.steps.map((step) => (
                   <div key={step.n} className="flex gap-3">
                     <div className="w-6 h-6 rounded-full text-[12px] font-bold flex items-center justify-center shrink-0 mt-0.5 text-white" style={{ background: "var(--green)" }}>{step.n}</div>
                     <div>
@@ -131,14 +130,9 @@ export default async function CalculateurPlexPage() {
 
             {/* Key concepts */}
             <div className="rounded-xl p-6 space-y-4" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Comprendre les indicateurs</h2>
+              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.indicatorsTitle}</h2>
               <div className="space-y-3">
-                {[
-                  { titre: "MRB (Multiplicateur de Revenus Bruts)", texte: "Le MRB = Prix / Revenus annuels bruts. Un MRB sous 12× est excellent, entre 12-15× acceptable, au-dessus de 18× le rendement est limité. C'est le premier indicateur regardé par les investisseurs.", couleur: "var(--green-light-bg)", textColor: "var(--green-text)" },
-                  { titre: "Cashflow", texte: "Le cashflow = Revenus locatifs - Hypothèque - Dépenses. Un cashflow positif signifie que la propriété s'autofinance. Un cashflow négatif veut dire que vous devrez injecter de l'argent chaque mois.", couleur: "var(--blue-bg)", textColor: "var(--blue-text)" },
-                  { titre: "Rendement sur mise de fonds", texte: "Le cashflow annuel divisé par la mise de fonds initiale. Permet de comparer le rendement avec d'autres investissements. Un rendement de 8-12% est considéré bon pour l'immobilier.", couleur: "var(--amber-bg)", textColor: "var(--amber-text)" },
-                  { titre: "Projection sur 5 ans", texte: "Basée sur une appréciation annuelle de 3% (moyenne historique au Québec) et des loyers stables. Le retour total combine le gain en valeur et le cashflow cumulé.", couleur: "var(--bg-secondary)", textColor: "var(--text-secondary)" },
-                ].map((rule) => (
+                {c.indicators.map((rule) => (
                   <div key={rule.titre} className="flex gap-3 p-3 rounded-lg" style={{ background: rule.couleur }}>
                     <div className="flex-1">
                       <p className="text-[12px] font-semibold mb-0.5" style={{ color: rule.textColor }}>{rule.titre}</p>
@@ -151,15 +145,9 @@ export default async function CalculateurPlexPage() {
 
             {/* FAQ */}
             <div className="rounded-xl p-6 space-y-4" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Questions fréquentes sur l&apos;investissement plex</h2>
+              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.faqTitle}</h2>
               <dl className="space-y-4">
-                {[
-                  { q: "Qu'est-ce que le MRB en immobilier?", r: "Le MRB (Multiplicateur de Revenus Bruts) est le ratio entre le prix d'achat et les revenus locatifs annuels bruts. Un MRB sous 12× est excellent au Québec, entre 12-15× acceptable, au-dessus de 18× le rendement est limité." },
-                  { q: "Comment calculer le cashflow d'un plex?", r: "Cashflow = Revenus locatifs - Hypothèque - Dépenses (taxes, assurances, entretien). Un cashflow positif signifie que la propriété s'autofinance." },
-                  { q: "Quel rendement viser pour un plex au Québec?", r: "Un rendement sur mise de fonds de 8-12% est considéré bon. Ce rendement ne tient pas compte de la prise de valeur, qui ajoute historiquement environ 3% par an au Québec." },
-                  { q: "Quelle mise de fonds pour un plex?", r: "Duplex occupant : 5% minimum. Triplex/quadruplex occupant : 10%. Non-occupant : 20%. 5+ logements : financement commercial, généralement 25%." },
-                  { q: "L'appréciation de 3% est-elle réaliste?", r: "3% correspond à la moyenne historique au Québec sur 20 ans. Certains quartiers de Montréal (Rosemont, Villeray) ont connu des appréciations supérieures à 5% par an récemment." },
-                ].map((item) => (
+                {c.faqs.map((item) => (
                   <div key={item.q} className="pb-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
                     <dt className="text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-primary)" }}>{item.q}</dt>
                     <dd className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>{item.r}</dd>
@@ -168,15 +156,11 @@ export default async function CalculateurPlexPage() {
               </dl>
             </div>
 
-            {/* Outils connexes */}
+            {/* Related tools */}
             <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+              <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.relatedTitle}</h2>
               <div className="grid sm:grid-cols-3 gap-3">
-                {[
-                  { href: "/calculatrice-hypothecaire", label: "Calculatrice hypothécaire", desc: "Calculez votre paiement mensuel et la prime SCHL." },
-                  { href: "/donnees-marche", label: "Données de marché", desc: "Prix médians et tendances par ville et quartier au Québec." },
-                  { href: "/estimation", label: "Estimation de valeur", desc: "Estimez la valeur marchande d’une propriété dans votre quartier." },
-                ].map((tool) => (
+                {c.relatedTools.map((tool) => (
                   <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
                     <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
                     <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
@@ -193,13 +177,13 @@ export default async function CalculateurPlexPage() {
           <aside className="hidden md:flex flex-col gap-3 w-[240px] shrink-0">
             <Link href="/annonces" className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: "var(--green)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-              Voir les annonces
+              {c.seeListings}
             </Link>
 
             {popularPosts.length > 0 && (
               <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
                 <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-                  <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Discussions populaires</h3>
+                  <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{c.popularDiscussions}</h3>
                 </div>
                 <ul>
                   {popularPosts.map((post, i) => (
@@ -216,7 +200,7 @@ export default async function CalculateurPlexPage() {
 
             <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
               <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-                <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Ressources utiles</h3>
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{c.usefulResources}</h3>
               </div>
               <ul>
                 {ressources.map((r, i) => (
@@ -231,16 +215,16 @@ export default async function CalculateurPlexPage() {
             </div>
 
             <div className="rounded-xl p-4 space-y-2" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-              <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>À propos de l&apos;outil</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{c.aboutTool}</p>
               <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                Les calculs utilisent la composition semestrielle canadienne. L&apos;appréciation est estimée à 3% par an (moyenne historique québécoise).
+                {c.aboutText1}
               </p>
               <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                Pour une analyse personnalisée, consultez un <strong>courtier immobilier</strong>.
+                {c.aboutText2Plain}<strong>{c.aboutText2Bold}</strong>.
               </p>
             </div>
 
-            <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local | Fait au Québec</p>
+            <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>{c.footer}</p>
           </aside>
         </div>
       </main>

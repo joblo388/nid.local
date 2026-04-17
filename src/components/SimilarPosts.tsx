@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useLocale } from "@/lib/useLocale";
 
 type SimilarPost = {
   id: string;
@@ -37,16 +38,17 @@ const badgeFg: Record<string, string> = {
   copropriete:  "var(--green-text)",
 };
 
-const badgeLabels: Record<string, string> = {
-  question: "Question", vente: "Vente", location: "Location",
-  renovation: "Conseil", voisinage: "Voisinage",
-  construction: "Construction", legal: "Légal",
-  financement: "Financement", copropriete: "Condo",
+const badgeLabelKeys: Record<string, string> = {
+  question: "cat.question", vente: "cat.vente", location: "cat.location",
+  renovation: "cat.renovation", voisinage: "cat.voisinage",
+  construction: "cat.construction", legal: "cat.legal",
+  financement: "cat.financement", copropriete: "cat.condo",
 };
 
 export function SimilarPosts({ postId }: { postId: string }) {
   const [posts, setPosts] = useState<SimilarPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLocale();
 
   useEffect(() => {
     let cancelled = false;
@@ -70,7 +72,7 @@ export function SimilarPosts({ postId }: { postId: string }) {
         className="text-[11px] font-semibold uppercase tracking-wider mb-3"
         style={{ color: "var(--text-tertiary)", letterSpacing: "0.05em" }}
       >
-        Discussions similaires
+        {t("post.similaires")}
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {posts.map((p) => (
@@ -91,7 +93,7 @@ export function SimilarPosts({ postId }: { postId: string }) {
                   color: badgeFg[p.categorie] ?? "var(--text-secondary)",
                 }}
               >
-                {badgeLabels[p.categorie] ?? p.categorie}
+                {badgeLabelKeys[p.categorie] ? t(badgeLabelKeys[p.categorie]) : p.categorie}
               </span>
               <span
                 className="text-[11px] font-medium"
@@ -107,7 +109,7 @@ export function SimilarPosts({ postId }: { postId: string }) {
               {p.titre}
             </h4>
             <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-              {p.nbVotes} vote{p.nbVotes !== 1 ? "s" : ""} · {p.nbCommentaires} commentaire{p.nbCommentaires !== 1 ? "s" : ""}
+              {p.nbVotes} {p.nbVotes !== 1 ? t("common.votes") : "vote"} · {p.nbCommentaires} {p.nbCommentaires !== 1 ? t("common.commentaires") : t("common.commentaire")}
             </p>
           </Link>
         ))}

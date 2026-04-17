@@ -10,6 +10,7 @@ import { BadgeDisplay } from "./BadgeDisplay";
 import { PinButton } from "./PinButton";
 import type { Badge } from "@/lib/badges";
 import { UserLevel } from "./UserLevel";
+import { useLocale } from "@/lib/useLocale";
 
 const BLUR_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8+P9/PQAJhAN5fMoBGgAAAABJRU5ErkJggg==";
 
@@ -37,23 +38,25 @@ const badgeFg: Record<string, string> = {
   copropriete:  "var(--green-text)",
 };
 
-const badgeLabels: Record<string, string> = {
-  question: "Question", vente: "Vente", location: "Location",
-  renovation: "Conseil", voisinage: "Voisinage",
-  construction: "Construction", legal: "Légal",
-  financement: "Financement", copropriete: "Condo",
+// Category and tag label keys for i18n
+const badgeLabelKeys: Record<string, string> = {
+  question: "cat.question", vente: "cat.vente", location: "cat.location",
+  renovation: "cat.renovation", voisinage: "cat.voisinage",
+  construction: "cat.construction", legal: "cat.legal",
+  financement: "cat.financement", copropriete: "cat.condo",
 };
 
-const tagLabels: Record<string, string> = {
-  courtier: "Courtier", notaire: "Notaire", finance: "Finance",
-  entrepreneur: "Entrepreneur", electricien: "Électricien", plombier: "Plombier",
-  charpentier: "Charpentier", proprietaire: "Propriétaire", locataire: "Locataire",
+const tagLabelKeys: Record<string, string> = {
+  courtier: "rep.courtier", notaire: "rep.notaire", finance: "rep.finance",
+  entrepreneur: "rep.entrepreneur", electricien: "tag.electricien", plombier: "tag.plombier",
+  charpentier: "tag.charpentier", proprietaire: "tag.proprietaire", locataire: "tag.locataire",
 };
 
-function AuthorWithTag({ name, tag }: { name: string; tag?: string | null }) {
+function AuthorWithTag({ name, tag, t }: { name: string; tag?: string | null; t: (k: string) => string }) {
   if (!tag) {
     return <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{name}</span>;
   }
+  const tagKey = tagLabelKeys[tag];
   return (
     <span
       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] leading-none"
@@ -61,7 +64,7 @@ function AuthorWithTag({ name, tag }: { name: string; tag?: string | null }) {
     >
       <span className="font-medium" style={{ color: "var(--text-primary)" }}>{name}</span>
       <span style={{ color: "var(--green-text)" }}>·</span>
-      <span className="font-medium" style={{ color: "var(--green-text)" }}>{tagLabels[tag] ?? tag}</span>
+      <span className="font-medium" style={{ color: "var(--green-text)" }}>{tagKey ? t(tagKey) : tag}</span>
     </span>
   );
 }
@@ -147,6 +150,7 @@ function PostImage({ src }: { src: string }) {
 }
 
 export const PostCard = React.memo(function PostCard({ post, searchQuery = "", hasVoted = false, isBookmarked = false, authorBadges, isAdmin = false, authorLevel }: { post: Post; searchQuery?: string; hasVoted?: boolean; isBookmarked?: boolean; authorBadges?: Badge[]; isAdmin?: boolean; authorLevel?: { name: string; color: string } }) {
+  const { t } = useLocale();
   return (
     <article
       className="rounded-xl transition-colors hover-bg card-hover-lift"
@@ -177,7 +181,7 @@ export const PostCard = React.memo(function PostCard({ post, searchQuery = "", h
               className="inline-block px-2 py-0.5 rounded-md text-[11px] font-medium leading-none"
               style={{ background: badgeBg[post.categorie] ?? "var(--bg-secondary)", color: badgeFg[post.categorie] ?? "var(--text-secondary)" }}
             >
-              {badgeLabels[post.categorie] ?? post.categorie}
+              {badgeLabelKeys[post.categorie] ? t(badgeLabelKeys[post.categorie]) : post.categorie}
             </span>
             {post.epingle && (
               <span className="text-[11px] font-semibold" style={{ color: "var(--green)" }}>📌 Épinglé</span>
@@ -191,7 +195,7 @@ export const PostCard = React.memo(function PostCard({ post, searchQuery = "", h
               {post.quartier.nom}
             </Link>
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>
-            <AuthorWithTag name={post.auteur} tag={post.auteurTag} />
+            <AuthorWithTag name={post.auteur} tag={post.auteurTag} t={t} />
             {authorLevel && <span className="hidden md:inline"><UserLevel levelName={authorLevel.name} levelColor={authorLevel.color} compact /></span>}
             {authorBadges && authorBadges.length > 0 && <span className="hidden md:inline"><BadgeDisplay badges={authorBadges} compact /></span>}
             <span style={{ color: "var(--border-secondary)" }} className="text-[11px]">·</span>

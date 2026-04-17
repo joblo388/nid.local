@@ -9,6 +9,7 @@ import { RichContent } from "./RichContent";
 import { MarkdownToolbar } from "./MarkdownToolbar";
 import { useToast } from "./Toast";
 import { useLightbox } from "./LightboxProvider";
+import { useLocale } from "@/lib/useLocale";
 
 type Comment = {
   id: string;
@@ -22,15 +23,16 @@ type Comment = {
   replies?: Comment[];
 };
 
-const tagLabels: Record<string, string> = {
-  courtier: "Courtier", notaire: "Notaire", finance: "Finance",
-  entrepreneur: "Entrepreneur", electricien: "Électricien", plombier: "Plombier",
-  charpentier: "Charpentier", proprietaire: "Propriétaire", locataire: "Locataire",
+const tagLabelKeys: Record<string, string> = {
+  courtier: "rep.courtier", notaire: "rep.notaire", finance: "rep.finance",
+  entrepreneur: "rep.entrepreneur", electricien: "tag.electricien", plombier: "tag.plombier",
+  charpentier: "tag.charpentier", proprietaire: "tag.proprietaire", locataire: "tag.locataire",
 };
 
 // ─── CommentVoteButton ──────────────────────────────────────────────────────
 
 function CommentVoteButton({ commentId, initialVotes }: { commentId: string; initialVotes: number }) {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const [nbVotes, setNbVotes] = useState(initialVotes);
   const [hasVoted, setHasVoted] = useState(false);
@@ -60,7 +62,7 @@ function CommentVoteButton({ commentId, initialVotes }: { commentId: string; ini
       onClick={handleVote}
       className="flex items-center gap-1 text-[11px] transition-opacity hover:opacity-70"
       style={{ color: hasVoted ? "var(--green)" : "var(--text-tertiary)" }}
-      title={hasVoted ? "Retirer mon vote" : "Voter"}
+      title={hasVoted ? t("vote.retirer") : t("vote.voter")}
     >
       <svg className="w-3 h-3" fill={hasVoted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
@@ -77,6 +79,7 @@ function ReplyForm({ commentId, onReply, onCancel }: {
   onReply: (reply: Comment) => void;
   onCancel: () => void;
 }) {
+  const { t } = useLocale();
   const [contenu, setContenu] = useState("");
   const [loading, setLoading] = useState(false);
   const [erreur, setErreur] = useState("");
@@ -96,7 +99,7 @@ function ReplyForm({ commentId, onReply, onCancel }: {
       onReply({ ...data, replies: [] });
       setContenu("");
     } catch {
-      setErreur("Une erreur est survenue.");
+      setErreur(t("auth.error_generic"));
     } finally {
       setLoading(false);
     }
@@ -107,7 +110,7 @@ function ReplyForm({ commentId, onReply, onCancel }: {
       <textarea
         value={contenu}
         onChange={(e) => setContenu(e.target.value)}
-        placeholder="Écrire une réponse…"
+        placeholder={t("comment.ecrire")}
         required
         minLength={2}
         rows={2}
@@ -126,7 +129,7 @@ function ReplyForm({ commentId, onReply, onCancel }: {
           className="px-3 py-1 rounded-lg text-[12px] font-semibold text-white disabled:opacity-50 btn-press"
           style={{ background: "var(--green)" }}
         >
-          {loading ? "…" : "Répondre"}
+          {loading ? "\u2026" : t("comment.repondre")}
         </button>
         <button
           type="button"
@@ -152,6 +155,7 @@ function CommentItem({
   currentUserId?: string;
   isReply?: boolean;
 }) {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const pathname = usePathname();
   const { openLightbox } = useLightbox();
@@ -183,7 +187,7 @@ function CommentItem({
       if (!res.ok) { setErreur(data.error ?? "Erreur"); return; }
       setDisplayed(contenu);
       setMode("view");
-    } catch { setErreur("Une erreur est survenue."); }
+    } catch { setErreur(t("auth.error_generic")); }
     finally { setLoading(false); }
   }
 
@@ -214,7 +218,7 @@ function CommentItem({
             >
               <span className="font-medium" style={{ color: "var(--text-primary)" }}>{comment.auteurNom}</span>
               <span style={{ color: "var(--green-text)" }}>·</span>
-              <span className="font-medium" style={{ color: "var(--green-text)" }}>{tagLabels[comment.auteurTag] ?? comment.auteurTag}</span>
+              <span className="font-medium" style={{ color: "var(--green-text)" }}>{tagLabelKeys[comment.auteurTag] ? t(tagLabelKeys[comment.auteurTag]) : comment.auteurTag}</span>
             </span>
           ) : (
             <span className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
@@ -249,7 +253,7 @@ function CommentItem({
             {erreur && <p className="text-[11px]" style={{ color: "var(--red-text)" }}>{erreur}</p>}
             <div className="flex gap-2">
               <button onClick={handleSave} disabled={loading} className="px-3 py-1 rounded-lg text-[12px] font-semibold text-white disabled:opacity-50" style={{ background: "var(--green)" }}>
-                {loading ? "…" : "Sauvegarder"}
+                {loading ? "\u2026" : t("common.enregistrer")}
               </button>
               <button onClick={() => { setMode("view"); setContenu(displayed); }} className="px-3 py-1 rounded-lg text-[12px] transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>
                 Annuler
@@ -258,9 +262,9 @@ function CommentItem({
           </div>
         ) : mode === "delete" ? (
           <div className="flex items-center gap-3">
-            <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>Supprimer ce commentaire ?</p>
+            <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{t("common.supprimer")} ?</p>
             <button onClick={handleDelete} disabled={loading} className="px-2.5 py-1 rounded-lg text-[12px] font-semibold text-white disabled:opacity-50" style={{ background: "var(--red-text)" }}>
-              {loading ? "…" : "Confirmer"}
+              {loading ? "\u2026" : t("common.confirmer")}
             </button>
             <button onClick={() => setMode("view")} className="text-[12px] transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>
               Annuler
@@ -289,7 +293,7 @@ function CommentItem({
                   className="text-[11px] transition-opacity hover:opacity-70"
                   style={{ color: "var(--text-tertiary)" }}
                 >
-                  {showReplyForm ? "Annuler" : "↩ Répondre"}
+                  {showReplyForm ? t("common.annuler") : `\u21a9 ${t("comment.repondre")}`}
                 </button>
               ) : (
                 <Link
@@ -332,6 +336,7 @@ function CommentItem({
 // ─── GuestCommentPrompt ─────────────────────────────────────────────────────
 
 function GuestCommentPrompt({ postId, hasComments }: { postId: string; hasComments: boolean }) {
+  const { t } = useLocale();
   const pathname = usePathname();
   const [pendingText, setPendingText] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
@@ -428,6 +433,7 @@ function GuestCommentPrompt({ postId, hasComments }: { postId: string; hasCommen
 // ─── CommentSection ──────────────────────────────────────────────────────────
 
 export function CommentSection({ postId, initial }: { postId: string; initial: Comment[] }) {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const pathname = usePathname();
   const { toast } = useToast();
@@ -517,7 +523,7 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
         body: JSON.stringify({ contenu, imageUrl: imageData, mentions }),
       });
       const data = await res.json();
-      if (!res.ok) { setErreur(data.error ?? "Une erreur est survenue."); return; }
+      if (!res.ok) { setErreur(data.error ?? t("auth.error_generic")); return; }
       const newComment = { ...data, auteurId: data.auteurId ?? null, nbVotes: 0, replies: [] };
       setComments((prev) => [...prev, newComment]);
       setNewestId(newComment.id);
@@ -527,7 +533,7 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
       if (fileRef.current) fileRef.current.value = "";
       toast({ message: "Commentaire ajouté.", type: "success" });
     } catch {
-      setErreur("Une erreur est survenue. Veuillez réessayer.");
+      setErreur(t("auth.error_generic"));
     } finally {
       setLoading(false);
     }
@@ -541,7 +547,7 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
       style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
     >
       <h2 className="text-[14px] font-bold mb-4" style={{ color: "var(--text-primary)" }}>
-        {totalCount} {totalCount === 1 ? "réponse" : "réponses"}
+        {totalCount} {totalCount === 1 ? t("common.commentaire") : t("common.commentaires")}
       </h2>
 
       {newReplies > 0 && (
@@ -629,7 +635,7 @@ export function CommentSection({ postId, initial }: { postId: string; initial: C
           <button type="submit" disabled={loading || imageUploading}
             className="px-4 py-2 rounded-lg text-[13px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 btn-press"
             style={{ background: "var(--green)" }}>
-            {imageUploading ? "Téléversement…" : loading ? "Envoi…" : "Répondre"}
+            {imageUploading ? "\u2026" : loading ? "\u2026" : t("comment.repondre")}
           </button>
         </form>
       ) : (

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
+import { useLocale } from "@/lib/useLocale";
 
 type ReviewUser = {
   id: string;
@@ -35,13 +36,14 @@ type UserReview = {
 
 type Averages = Record<string, number>;
 
-const CRITERIA: { key: string; label: string }[] = [
-  { key: "securite", label: "Securite" },
-  { key: "transport", label: "Transport" },
-  { key: "commerces", label: "Commerces" },
-  { key: "ecoles", label: "Ecoles" },
-  { key: "ambiance", label: "Ambiance" },
-];
+const CRITERIA_KEYS = ["securite", "transport", "commerces", "ecoles", "ambiance"] as const;
+const CRITERIA_LABEL_KEYS: Record<string, string> = {
+  securite: "review.securite",
+  transport: "review.transport",
+  commerces: "review.commerces",
+  ecoles: "review.ecoles",
+  ambiance: "review.ambiance",
+};
 
 /* ---------- SVG star icon ---------- */
 function Star({ filled, onClick, interactive }: { filled: boolean; onClick?: () => void; interactive?: boolean }) {
@@ -113,6 +115,7 @@ function StarRatingInput({
 
 /* ---------- Main component ---------- */
 export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -182,9 +185,9 @@ export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
     setFormError("");
 
     // Validate all criteria selected
-    for (const c of CRITERIA) {
-      if (formData[c.key as keyof typeof formData] === 0) {
-        setFormError("Veuillez noter tous les critères.");
+    for (const c of CRITERIA_KEYS) {
+      if (formData[c as keyof typeof formData] === 0) {
+        setFormError(t("auth.error_generic"));
         return;
       }
     }
@@ -267,16 +270,16 @@ export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
 
             {/* Criteria bars */}
             <div className="flex-1 space-y-2">
-              {CRITERIA.map((c) => {
-                const val = averages[c.key] ?? 0;
+              {CRITERIA_KEYS.map((c) => {
+                const val = averages[c] ?? 0;
                 const pct = (val / 5) * 100;
                 return (
-                  <div key={c.key} className="flex items-center gap-2">
+                  <div key={c} className="flex items-center gap-2">
                     <span
                       className="text-[11px] w-[70px] shrink-0"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      {c.label}
+                      {t(CRITERIA_LABEL_KEYS[c])}
                     </span>
                     <div
                       className="flex-1 h-[6px] rounded-full overflow-hidden"
@@ -329,15 +332,15 @@ export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
               className="rounded-lg p-4 space-y-3"
               style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}
             >
-              {CRITERIA.map((c) => (
-                <div key={c.key} className="flex items-center justify-between">
+              {CRITERIA_KEYS.map((c) => (
+                <div key={c} className="flex items-center justify-between">
                   <span className="text-[12px] shrink-0 w-20 truncate" style={{ color: "var(--text-secondary)" }}>
-                    {c.label}
+                    {t(CRITERIA_LABEL_KEYS[c])}
                   </span>
                   <StarRatingInput
-                    value={formData[c.key as keyof typeof formData] as number}
+                    value={formData[c as keyof typeof formData] as number}
                     onChange={(v) =>
-                      setFormData((prev) => ({ ...prev, [c.key]: v }))
+                      setFormData((prev) => ({ ...prev, [c]: v }))
                     }
                   />
                 </div>
@@ -451,11 +454,11 @@ export function QuartierReviews({ quartierSlug }: { quartierSlug: string }) {
 
                 {/* Individual criteria as small inline badges */}
                 <div className="flex flex-wrap gap-x-3 gap-y-1 mb-1.5">
-                  {CRITERIA.map((c) => (
-                    <span key={c.key} className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                      {c.label}{" "}
+                  {CRITERIA_KEYS.map((c) => (
+                    <span key={c} className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                      {t(CRITERIA_LABEL_KEYS[c])}{" "}
                       <span className="font-medium" style={{ color: "var(--text-secondary)" }}>
-                        {review[c.key as keyof Review] as number}/5
+                        {review[c as keyof Review] as number}/5
                       </span>
                     </span>
                   ))}

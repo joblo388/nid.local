@@ -5,6 +5,8 @@ import { AcheterOuLouer } from "./AcheterOuLouer";
 import { CalcActions } from "@/components/CalcActions";
 import { prisma } from "@/lib/prisma";
 import { dbPostToAppPost, ressourcesUtiles } from "@/lib/data";
+import { getServerLocale } from "@/lib/serverLocale";
+import { calcContent } from "./content";
 import type { Metadata } from "next";
 
 const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.local";
@@ -72,6 +74,9 @@ const jsonLd = {
 const ressources = ressourcesUtiles;
 
 export default async function AcheterOuLouerPage() {
+  const locale = await getServerLocale();
+  const c = calcContent[locale];
+
   const dbPosts = await prisma.post.findMany({
     orderBy: [{ epingle: "desc" }, { nbVotes: "desc" }],
     take: 5,
@@ -87,17 +92,17 @@ export default async function AcheterOuLouerPage() {
           <nav className="flex items-center gap-1.5 text-[12px] mb-5" style={{ color: "var(--text-tertiary)" }}>
             <Link href="/" className="transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>nid.local</Link>
             <span>/</span>
-            <span style={{ color: "var(--text-secondary)" }}>Acheter ou louer?</span>
+            <span style={{ color: "var(--text-secondary)" }}>{c.breadcrumb}</span>
           </nav>
 
           <div className="flex gap-5 items-start">
             <div className="flex-1 min-w-0 space-y-5">
               <div>
                 <h1 className="text-[22px] font-bold leading-snug mb-2" style={{ color: "var(--text-primary)" }}>
-                  Acheter ou louer au Québec?
+                  {c.h1}
                 </h1>
                 <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Comparez le coût réel d&apos;acheter versus louer sur votre horizon de temps. Hypothèque, taxes, appréciation, coût d&apos;opportunité et épargne du locataire. Tous les facteurs sont pris en compte.
+                  {c.intro}
                 </p>
               </div>
 
@@ -108,13 +113,9 @@ export default async function AcheterOuLouerPage() {
 
               {/* How it works */}
               <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Comment fonctionne le comparateur</h2>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.howItWorks}</h2>
                 <div className="grid md:grid-cols-3 gap-4">
-                  {[
-                    { n: "1", titre: "Entrez vos chiffres", texte: "Prix d'achat, mise de fonds, loyer actuel et dépenses. Les valeurs par défaut reflètent le marché montréalais de 2026." },
-                    { n: "2", titre: "Ajustez l'horizon", texte: "Utilisez le curseur pour voir comment le résultat change selon la durée. Acheter est souvent plus avantageux après 5-7 ans." },
-                    { n: "3", titre: "Analysez le verdict", texte: "Le comparateur tient compte de tous les coûts cachés : intérêts, taxes, coût d'opportunité, épargne du locataire et appréciation." },
-                  ].map((step) => (
+                  {c.steps.map((step) => (
                     <div key={step.n} className="flex gap-3">
                       <div className="w-6 h-6 rounded-full text-[12px] font-bold flex items-center justify-center shrink-0 mt-0.5 text-white" style={{ background: "var(--green)" }}>{step.n}</div>
                       <div>
@@ -128,14 +129,9 @@ export default async function AcheterOuLouerPage() {
 
               {/* Key factors */}
               <div className="rounded-xl p-6 space-y-4" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Les facteurs clés de la décision</h2>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.factorsTitle}</h2>
                 <div className="space-y-3">
-                  {[
-                    { titre: "Appréciation immobilière", texte: "Au Québec, l'immobilier s'apprécie en moyenne de 3% par an. C'est le facteur qui fait pencher la balance vers l'achat à long terme. Certains quartiers de Montréal ont connu des hausses supérieures à 5%.", couleur: "var(--green-light-bg)", textColor: "var(--green-text)" },
-                    { titre: "Coût d'opportunité", texte: "Votre mise de fonds placée en bourse ou en obligations générerait un rendement. Ce coût caché de l'achat est souvent négligé mais peut représenter des milliers de dollars par an.", couleur: "var(--blue-bg)", textColor: "var(--blue-text)" },
-                    { titre: "Hausse des loyers", texte: "Au Québec, les hausses sont encadrées par le TAL mais atteignent 3-5% par an en 2026. Sur 10 ans, un loyer de 2 200 $ peut devenir 2 960 $ avec 3% de hausse annuelle.", couleur: "var(--amber-bg)", textColor: "var(--amber-text)" },
-                    { titre: "Horizon de temps", texte: "Les frais d'achat (notaire, taxe de bienvenue, déménagement) sont absorbés sur la durée. Si vous prévoyez rester moins de 3-4 ans, louer est presque toujours plus avantageux.", couleur: "var(--bg-secondary)", textColor: "var(--text-secondary)" },
-                  ].map((rule) => (
+                  {c.factors.map((rule) => (
                     <div key={rule.titre} className="flex gap-3 p-3 rounded-lg" style={{ background: rule.couleur }}>
                       <div className="flex-1">
                         <p className="text-[12px] font-semibold mb-0.5" style={{ color: rule.textColor }}>{rule.titre}</p>
@@ -148,15 +144,9 @@ export default async function AcheterOuLouerPage() {
 
               {/* FAQ */}
               <div className="rounded-xl p-6 space-y-4" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Questions fréquentes</h2>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.faqTitle}</h2>
                 <dl className="space-y-4">
-                  {[
-                    { q: "Vaut-il mieux acheter ou louer au Québec en 2026?", r: "Ça dépend de votre horizon. Acheter devient généralement plus avantageux après 5-7 ans grâce à l'appréciation. Utilisez le curseur d'horizon pour trouver votre point d'équilibre." },
-                    { q: "Qu'est-ce que le coût d'opportunité de la mise de fonds?", r: "C'est le rendement que vous auriez eu en plaçant votre mise de fonds ailleurs. 100 000 $ à 4% = 4 000 $/an manqués. Ce coût est intégré dans l'analyse d'achat." },
-                    { q: "Comment l'épargne du locataire est-elle calculée?", r: "Si l'achat coûte plus cher mensuellement, le locataire place la différence au taux de rendement indiqué. Cette épargne accumulée est déduite du coût de la location." },
-                    { q: "Pourquoi le résultat change-t-il autant selon l'horizon?", r: "À court terme, les frais fixes de l'achat (intérêts élevés, taxes) dominent. À long terme, l'appréciation immobilière et le remboursement du capital font pencher la balance vers l'achat." },
-                    { q: "Les frais de notaire et taxe de bienvenue sont-ils inclus?", r: "Non, ces frais ponctuels ne sont pas inclus dans ce comparateur. Ajoutez environ 2-3% du prix d'achat pour avoir une vue complète (notaire ~1 500 $, taxe de bienvenue variable selon la municipalité)." },
-                  ].map((item) => (
+                  {c.faqs.map((item) => (
                     <div key={item.q} className="pb-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
                       <dt className="text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-primary)" }}>{item.q}</dt>
                       <dd className="text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>{item.r}</dd>
@@ -167,13 +157,9 @@ export default async function AcheterOuLouerPage() {
 
               {/* Outils connexes */}
               <div className="rounded-xl p-6 space-y-3" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>Outils connexes</h2>
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>{c.relatedTitle}</h2>
                 <div className="grid sm:grid-cols-3 gap-3">
-                  {[
-                    { href: "/calculatrice-hypothecaire", label: "Calculatrice hypothécaire", desc: "Estimez votre paiement mensuel selon les taux du marché." },
-                    { href: "/capacite-emprunt", label: "Capacité d’emprunt", desc: "Découvrez combien vous pouvez emprunter selon vos revenus." },
-                    { href: "/donnees-marche", label: "Données de marché", desc: "Prix médians et tendances par ville et quartier au Québec." },
-                  ].map((tool) => (
+                  {c.relatedTools.map((tool) => (
                     <Link key={tool.href} href={tool.href} className="p-3 rounded-lg transition-colors hover-bg" style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)" }}>
                       <p className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-primary)" }}>{tool.label}</p>
                       <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>{tool.desc}</p>
@@ -189,13 +175,13 @@ export default async function AcheterOuLouerPage() {
             {/* Sidebar */}
             <aside className="hidden md:flex flex-col gap-3 w-[240px] shrink-0">
               <Link href="/annonces" className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white transition-opacity hover:opacity-90 flex items-center justify-center gap-2" style={{ background: "var(--green)" }}>
-                Voir les annonces
+                {c.seeListings}
               </Link>
 
               {popularPosts.length > 0 && (
                 <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
                   <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-                    <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Discussions populaires</h3>
+                    <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{c.popularDiscussions}</h3>
                   </div>
                   <ul>
                     {popularPosts.map((post, i) => (
@@ -212,7 +198,7 @@ export default async function AcheterOuLouerPage() {
 
               <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
                 <div className="px-4 py-3" style={{ borderBottom: "0.5px solid var(--border)" }}>
-                  <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Ressources utiles</h3>
+                  <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{c.usefulResources}</h3>
                 </div>
                 <ul>
                   {ressources.map((r, i) => (
@@ -227,16 +213,16 @@ export default async function AcheterOuLouerPage() {
               </div>
 
               <div className="rounded-xl p-4 space-y-2" style={{ background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>À propos</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{c.aboutLabel}</p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Ce comparateur tient compte des intérêts (composition semestrielle canadienne), taxes, entretien, appréciation, coût d&apos;opportunité et épargne du locataire.
+                  {c.aboutText1}
                 </p>
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  Pour une analyse personnalisée, consultez un <strong>planificateur financier</strong>.
+                  {c.aboutText2}
                 </p>
               </div>
 
-              <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>© 2026 nid.local | Fait au Québec</p>
+              <p className="text-[11px] text-center px-2" style={{ color: "var(--text-tertiary)" }}>{c.copyright}</p>
             </aside>
           </div>
         </main>

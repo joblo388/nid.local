@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { sendAlertEmail } from "@/lib/email";
 import { rateLimit, getIp } from "@/lib/rateLimit";
 import { quartierBySlug } from "@/lib/data";
+import { notifySearchEngines } from "@/lib/indexnow";
 
 const PAGE_SIZE = 20;
 const TYPES_VALIDES = [
@@ -388,6 +389,9 @@ export async function POST(req: NextRequest) {
       console.error("[alert-email] Error matching alerts:", err);
     }
   })();
+
+  // Notify search engines of new content (fire-and-forget)
+  notifySearchEngines([`/annonces/${listing.id}`]).catch(() => {});
 
   return NextResponse.json({ id: listing.id }, { status: 201 });
 }

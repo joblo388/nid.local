@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/lib/useLocale";
 
 export function CalcActions() {
   const [copied, setCopied] = useState(false);
+  const { t } = useLocale();
 
   async function handleCopy() {
     try {
@@ -28,7 +30,7 @@ export function CalcActions() {
         className="text-[13px] font-semibold"
         style={{ color: "var(--text-primary)" }}
       >
-        Garder une trace de ce calcul
+        {t("calcaction.garder_trace")}
       </p>
       <div className="flex gap-2">
         <button
@@ -42,7 +44,7 @@ export function CalcActions() {
             cursor: "pointer",
           }}
         >
-          {copied ? "Lien copi\u00e9!" : "Copier le lien"}
+          {copied ? t("calcaction.lien_copie") : t("calcaction.copier_lien")}
         </button>
         <button
           onClick={() => window.print()}
@@ -55,7 +57,7 @@ export function CalcActions() {
             cursor: "pointer",
           }}
         >
-          Imprimer
+          {t("calcaction.imprimer")}
         </button>
       </div>
     </div>

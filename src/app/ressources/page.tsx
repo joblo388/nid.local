@@ -5,6 +5,8 @@ import { ressourcesUtiles } from "@/lib/data";
 import { IconHome, IconChart, IconCalculator, IconDollar, IconBuilding, IconLandmark, IconScale, IconRuler, IconLightbulb, IconUsers, IconSearch, IconBook, IconGraduation, IconReceipt, IconBookOpen } from "@/components/Icons";
 import { ReactNode } from "react";
 import type { Metadata } from "next";
+import { getServerLocale } from "@/lib/serverLocale";
+import { pageContent } from "./content";
 
 const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://nid.local";
 const PAGE_URL = `${BASE_URL}/ressources`;
@@ -141,7 +143,10 @@ const icons: Record<string, ReactNode> = {
 
 /* ── Page component ─────────────────────────────────────────────────────── */
 
-export default function RessourcesPage() {
+export default async function RessourcesPage() {
+  const locale = await getServerLocale();
+  const c = pageContent[locale];
+
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-page)" }}>
       <Header />
@@ -155,9 +160,9 @@ export default function RessourcesPage() {
       <main className="max-w-[1100px] mx-auto px-4 py-6 pb-20 md:pb-6">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-[12px] mb-5" style={{ color: "var(--text-tertiary)" }}>
-          <Link href="/" className="transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>nid.local</Link>
+          <Link href="/" className="transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>{c.breadcrumbHome}</Link>
           <span>/</span>
-          <span style={{ color: "var(--text-secondary)" }}>Outils et ressources</span>
+          <span style={{ color: "var(--text-secondary)" }}>{c.breadcrumbCurrent}</span>
         </nav>
 
         {/* ── Hero ──────────────────────────────────────────────────────── */}
@@ -165,13 +170,10 @@ export default function RessourcesPage() {
           className="text-[22px] font-bold mb-2"
           style={{ color: "var(--text-primary)" }}
         >
-          Outils immobiliers gratuits | Québec 2026
+          {c.h1}
         </h1>
         <p className="text-[13px] mb-6 max-w-2xl" style={{ color: "var(--text-secondary)" }}>
-          Calculatrices hypothécaires, capacité d&apos;emprunt, rentabilité plex,
-          taxe de bienvenue, estimation de valeur, données de marché par quartier,
-          comparateur de quartiers et guide premier achat. Tous les outils sont
-          gratuits, instantanés et fonctionnent sur mobile comme sur ordinateur.
+          {c.intro}
         </p>
 
         {/* ── Tools grid ────────────────────────────────────────────────── */}
@@ -215,10 +217,10 @@ export default function RessourcesPage() {
             className="text-[17px] font-bold mb-4"
             style={{ color: "var(--text-primary)" }}
           >
-            Questions fréquentes
+            {c.faqTitle}
           </h2>
           <dl className="space-y-4">
-            {faqItems.map((f) => (
+            {c.faqs.map((f) => (
               <div key={f.question} className="pb-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
                 <dt className="text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-primary)" }}>
                   {f.question}

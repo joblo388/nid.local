@@ -5,18 +5,19 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Categorie } from "@/lib/types";
 import { ReportButton } from "./ReportButton";
+import { useLocale } from "@/lib/useLocale";
 
-const CATEGORIES: { value: Categorie; label: string }[] = [
-  { value: "question", label: "Question" },
-  { value: "vente", label: "Vente" },
-  { value: "location", label: "Location" },
-  { value: "renovation", label: "Conseil / Rénovation" },
-  { value: "voisinage", label: "Voisinage" },
-  { value: "construction", label: "Construction" },
-  { value: "legal", label: "Légal" },
-  { value: "financement", label: "Financement" },
-  { value: "copropriete", label: "Condo" },
+const CATEGORY_VALUES: Categorie[] = [
+  "question", "vente", "location", "renovation",
+  "voisinage", "construction", "legal", "financement", "copropriete",
 ];
+
+const CATEGORY_KEYS: Record<string, string> = {
+  question: "cat.question", vente: "cat.vente", location: "cat.location",
+  renovation: "cat.renovation", voisinage: "cat.voisinage",
+  construction: "cat.construction", legal: "cat.legal",
+  financement: "cat.financement", copropriete: "cat.condo",
+};
 
 type Props = {
   postId: string;
@@ -29,6 +30,7 @@ type Props = {
 export function PostActions({ postId, auteurId, initialTitre, initialContenu, initialCategorie }: Props) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useLocale();
   const [mode, setMode] = useState<"view" | "edit" | "delete">("view");
   const [titre, setTitre] = useState(initialTitre);
   const [contenu, setContenu] = useState(initialContenu);
@@ -40,7 +42,6 @@ export function PostActions({ postId, auteurId, initialTitre, initialContenu, in
 
   const isAuthor = !!(session?.user?.id && session.user.id === auteurId);
 
-  // Non-authors see the report button
   if (!isAuthor) {
     return <ReportButton type="post" targetId={postId} />;
   }
@@ -55,11 +56,11 @@ export function PostActions({ postId, auteurId, initialTitre, initialContenu, in
         body: JSON.stringify({ titre, contenu, categorie }),
       });
       const data = await res.json();
-      if (!res.ok) { setErreur(data.error ?? "Erreur"); return; }
+      if (!res.ok) { setErreur(data.error ?? t("common.erreur")); return; }
       setMode("view");
       router.refresh();
     } catch {
-      setErreur("Une erreur est survenue.");
+      setErreur(t("auth.error_generic"));
     } finally {
       setLoading(false);
     }
@@ -71,7 +72,7 @@ export function PostActions({ postId, auteurId, initialTitre, initialContenu, in
       const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
       if (res.ok) router.push("/");
     } catch {
-      setErreur("Une erreur est survenue.");
+      setErreur(t("auth.error_generic"));
       setLoading(false);
     }
   }
@@ -80,19 +81,19 @@ export function PostActions({ postId, auteurId, initialTitre, initialContenu, in
     return (
       <div className="space-y-4 mt-4 pt-4" style={{ borderTop: "0.5px solid var(--border)" }}>
         <div className="flex flex-wrap gap-1.5">
-          {CATEGORIES.map((cat) => (
+          {CATEGORY_VALUES.map((val) => (
             <button
-              key={cat.value}
+              key={val}
               type="button"
-              onClick={() => setCategorie(cat.value)}
+              onClick={() => setCategorie(val)}
               className="px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors"
               style={
-                categorie === cat.value
+                categorie === val
                   ? { background: "var(--green)", color: "#fff" }
                   : { background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }
               }
             >
-              {cat.label}
+              {t(CATEGORY_KEYS[val])}
             </button>
           ))}
         </div>
@@ -128,14 +129,14 @@ export function PostActions({ postId, auteurId, initialTitre, initialContenu, in
             className="px-4 py-2 rounded-lg text-[13px] font-semibold text-white disabled:opacity-50"
             style={{ background: "var(--green)" }}
           >
-            {loading ? "Sauvegarde…" : "Sauvegarder"}
+            {loading ? `${t("common.enregistrer")}...` : t("common.enregistrer")}
           </button>
           <button
             onClick={() => { setMode("view"); setTitre(initialTitre); setContenu(initialContenu); setCategorie(initialCategorie); }}
             className="px-4 py-2 rounded-lg text-[13px] font-medium transition-opacity hover:opacity-70"
             style={{ background: "var(--bg-secondary)", color: "var(--text-secondary)" }}
           >
-            Annuler
+            {t("common.annuler")}
           </button>
         </div>
       </div>
@@ -146,7 +147,7 @@ export function PostActions({ postId, auteurId, initialTitre, initialContenu, in
     return (
       <div className="flex items-center gap-3 mt-4 pt-4" style={{ borderTop: "0.5px solid var(--border)" }}>
         <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
-          Supprimer cette discussion ?
+          {t("common.supprimer")} ?
         </p>
         <button
           onClick={handleDelete}
@@ -154,14 +155,14 @@ export function PostActions({ postId, auteurId, initialTitre, initialContenu, in
           className="px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white disabled:opacity-50"
           style={{ background: "var(--red-text)" }}
         >
-          {loading ? "Suppression…" : "Confirmer"}
+          {loading ? "..." : t("common.confirmer")}
         </button>
         <button
           onClick={() => setMode("view")}
           className="px-3 py-1.5 rounded-lg text-[12px] font-medium transition-opacity hover:opacity-70"
           style={{ color: "var(--text-tertiary)" }}
         >
-          Annuler
+          {t("common.annuler")}
         </button>
       </div>
     );
@@ -174,14 +175,14 @@ export function PostActions({ postId, auteurId, initialTitre, initialContenu, in
         className="px-3 py-1.5 rounded-lg text-[12px] font-medium transition-opacity hover:opacity-70"
         style={{ background: "var(--bg-secondary)", color: "var(--text-secondary)", border: "0.5px solid var(--border)" }}
       >
-        Modifier
+        {t("common.modifier")}
       </button>
       <button
         onClick={() => setMode("delete")}
         className="px-3 py-1.5 rounded-lg text-[12px] font-medium transition-opacity hover:opacity-70"
         style={{ color: "var(--red-text)" }}
       >
-        Supprimer
+        {t("common.supprimer")}
       </button>
     </div>
   );

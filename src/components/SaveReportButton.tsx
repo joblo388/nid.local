@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLocale } from "@/lib/useLocale";
 
 type Props = {
   type: "hypothecaire" | "plex" | "acheter_louer" | "capacite_emprunt";
@@ -15,6 +16,7 @@ type Props = {
 export function SaveReportButton({ type, getDonnees, getResultats, getTitre }: Props) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const { t } = useLocale();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -34,7 +36,7 @@ export function SaveReportButton({ type, getDonnees, getResultats, getTitre }: P
         style={{ background: "var(--bg-secondary)", border: "0.5px solid var(--border)", color: "var(--text-secondary)" }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
-        Connectez-vous pour sauvegarder
+        {t("savereport.connectez")}
       </Link>
     );
   }
@@ -72,12 +74,12 @@ export function SaveReportButton({ type, getDonnees, getResultats, getTitre }: P
       {saved ? (
         <>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
-          Sauvegardé! Voir dans mon profil
+          {t("savereport.sauvegarde")}
         </>
       ) : (
         <>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
-          {saving ? "Sauvegarde…" : "Sauvegarder ce rapport"}
+          {saving ? t("savereport.saving") : t("savereport.sauvegarder")}
         </>
       )}
     </button>
